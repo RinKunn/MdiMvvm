@@ -21,6 +21,8 @@ namespace MdiExample
             }
         }
 
+        public ObservableCollection<string> Streams = new ObservableCollection<string>();
+
         private MdiContainerViewModel _selectedContainer;
         public MdiContainerViewModel SelectedContainer
         {

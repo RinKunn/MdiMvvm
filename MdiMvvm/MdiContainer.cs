@@ -1,24 +1,21 @@
-﻿using System;
+﻿using MdiMvvm.Events;
+using MdiMvvm.Extensions;
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using MdiMvvm.Events;
-using System.Linq;
-using System.Collections.Specialized;
-using System.Windows.Media;
-using MdiMvvm.Extensions;
-using System.Collections.Generic;
 
 namespace MdiMvvm
 {
     [TemplatePart(Name = "PART_ContainerBorder", Type = typeof(Border))]
     public sealed class MdiContainer : Selector
     {
-        
         internal Border VisualContainerBorder;
         private IList _internalItemSource;
         internal Canvas ContainerCanvas;
+
 
         private List<MdiWindow> _minimizedWindowsCollection;
         private int _containerRowCapacity;

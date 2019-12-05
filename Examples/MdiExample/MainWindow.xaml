@@ -58,5 +58,15 @@
             </TabControl.ItemTemplate>
 
         </TabControl>
+
+        <Border Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="100">
+            <ItemsControl ItemsSource="{Binding Streams}" >
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid x:Name="StreamsGrid"  ClipToBounds="True" Height="300" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </Border>
     </Grid>
 </Window>
