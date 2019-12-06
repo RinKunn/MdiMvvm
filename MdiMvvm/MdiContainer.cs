@@ -24,18 +24,20 @@ namespace MdiMvvm
         static MdiContainer()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(MdiContainer), new FrameworkPropertyMetadata(typeof(MdiContainer)));
+            
         }
 
         public MdiContainer() : base()
         {
             _minimizedWindowsCollection = new List<MdiWindow>();
-
+            var r = this.ItemsSource;
             this.Loaded += MdiContainer_Loaded;
             this.SelectionChanged += MdiContainer_SelectionChanged;
             this.SizeChanged += MdiContainer_SizeChanged;
             
             Console.WriteLine($"{SystemParameters.VirtualScreenHeight} x {SystemParameters.VirtualScreenWidth}");
         }
+
 
 
         #region Overrides

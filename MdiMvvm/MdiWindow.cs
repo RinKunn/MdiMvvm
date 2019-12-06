@@ -27,6 +27,7 @@ namespace MdiMvvm
     [TemplatePart(Name = "PART_ResizerThumb", Type = typeof(ResizeThumb))]
     [TemplatePart(Name = "PART_Thumblr", Type = typeof(Image))]
     [DebuggerDisplay("{Title}")]
+
     public sealed class MdiWindow : ContentControl
     {
         internal static double MINIMIZED_WINDOW_WIDTH = 200;

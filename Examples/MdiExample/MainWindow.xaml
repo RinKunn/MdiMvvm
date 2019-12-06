@@ -7,8 +7,8 @@
         xmlns:control="clr-namespace:MdiMvvm;assembly=MdiMvvm"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    
-    
+
+
     <Window.Resources>
 
         <Style x:Key="cp"  TargetType="{x:Type control:MdiWindow}">
@@ -40,6 +40,8 @@
         <Menu>
             <MenuItem Header="+" Command="{Binding SelectedContainer.AddCommand}"/>
             <MenuItem Header="++" Command="{Binding SelectedContainer.AddCommandModal}"/>
+            <MenuItem Header="+but" Command="{Binding AddButtonCommand}"/>
+            <MenuItem Header="-but" Command="{Binding RemoveButtonCommand}"/>
             <MenuItem Header="++" Command="{Binding GetInfo}" />
             <MenuItem Header="Save" Command="{Binding Path=SaveCommand}"/>
             <MenuItem Header="Load" Command="{Binding Path=LoadCommand}"/>
@@ -59,14 +61,32 @@
 
         </TabControl>
 
-        <Border Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="100">
-            <ItemsControl ItemsSource="{Binding Streams}" >
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid x:Name="StreamsGrid"  ClipToBounds="True" Height="300" />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-            </ItemsControl>
-        </Border>
+        <!--<ListBox Grid.Row="1" Background="Transparent"
+                  VerticalAlignment="Bottom" HorizontalAlignment="Stretch"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                  ItemsSource="{Binding ButtonList}">
+
+
+
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal" FlowDirection="RightToLeft" RenderTransformOrigin="0.5,0.5">
+                        <WrapPanel.RenderTransform>
+                            <RotateTransform Angle="180"/>
+                        </WrapPanel.RenderTransform>
+                    </WrapPanel>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border RenderTransformOrigin="0.5,0.5" BorderThickness="1" BorderBrush="Red" CornerRadius="2">
+                        <Border.RenderTransform>
+                            <RotateTransform Angle="180"/>
+                        </Border.RenderTransform>
+                        <TextBlock Text="{Binding Name}" Height="24" Width="100" Margin="2,0,2,0" Background="Gray"/>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>-->
     </Grid>
 </Window>
