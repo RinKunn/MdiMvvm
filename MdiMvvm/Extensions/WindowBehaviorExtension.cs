@@ -20,6 +20,7 @@ namespace MdiMvvm.Extensions
             window.PreviousTop = Canvas.GetTop(window);
             window.PreviousWidth = window.ActualWidth;
             window.PreviousHeight = window.ActualHeight;
+            Console.WriteLine($"-- SavePreviousPosition -- {window.PreviousLeft}x{window.PreviousTop} | {window.PreviousWidth}x{window.PreviousHeight}");
         }
 
         /// <summary>
@@ -31,6 +32,7 @@ namespace MdiMvvm.Extensions
             Canvas.SetLeft(window, window.PreviousLeft);
             Canvas.SetTop(window, window.PreviousTop);
             AnimateResize(window, window.PreviousWidth, window.PreviousHeight, false);
+            Console.WriteLine($"-- LoadPreviousPosition -- {window.PreviousLeft}x{window.PreviousTop} | {window.PreviousWidth}x{window.PreviousHeight}");
         }
 
 
@@ -43,13 +45,13 @@ namespace MdiMvvm.Extensions
         {
             if (window.IsResizable)
             {
-                if (window.PreviousWindowState == WindowState.Normal)
+                if (window.WindowState == WindowState.Normal)
                     window.SavePreviousPosition();
 
                 Canvas.SetTop(window, 0.0);
                 Canvas.SetLeft(window, 0.0);
                 AnimateResize(window, window.Container.ActualWidth - 4, window.Container.ActualHeight - 4, true);
-                Panel.SetZIndex(window, 1);
+                Panel.SetZIndex(window, 10);
 
                 //TODO возможно придется убрать
                 window.HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -78,7 +80,7 @@ namespace MdiMvvm.Extensions
         /// <param name="window"></param>
         public static void Minimize(this MdiWindow window)
         {
-            if (window.PreviousWindowState == WindowState.Normal)
+            if (window.WindowState == WindowState.Normal)
                 window.SavePreviousPosition();
 
             RemoveWindowLock(window);

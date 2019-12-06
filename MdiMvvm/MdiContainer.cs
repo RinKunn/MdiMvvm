@@ -209,6 +209,7 @@ namespace MdiMvvm
             var window = sender as MdiWindow;
             if (window?.DataContext != null)
             {
+                if(window.WindowState == WindowState.Minimized) RemoveMinimizedWindow(window);
                 _internalItemSource?.Remove(window.DataContext);
                 if (Items.Count > 0)
                 {

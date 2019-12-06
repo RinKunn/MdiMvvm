@@ -50,9 +50,7 @@
                 <ControlTemplate TargetType="{x:Type local:MdiContainer}">
                     <ScrollViewer CanContentScroll="True" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Style="{StaticResource FavsScrollViewer}">
                         <Border x:Name="PART_ContainerBorder" BorderThickness="2" CornerRadius="1">
-                            <Grid>
-                                <ItemsPresenter />
-                            </Grid>
+                            <ItemsPresenter />
                         </Border>
                     </ScrollViewer>
                 </ControlTemplate>
