@@ -6,19 +6,22 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Collections.ObjectModel;
 
 namespace MdiMvvm
 {
     [TemplatePart(Name = "PART_ContainerScrollViewer", Type = typeof(ScrollViewer))]
+    [TemplatePart(Name = "PART_ContainerMinWin_ListBox", Type = typeof(ListBox))]
     public sealed class MdiContainer : Selector
     {
         internal ScrollViewer ContainerScrollViewer;
+        internal ListBox ContainerMinWinListox;
         private IList _internalItemSource;
         internal Canvas ContainerCanvas;
 
 
         private MdiWindow _maximizedWindow;
-        internal List<MdiWindow> _minimizedWindowsCollection;
+        internal ObservableCollection<MdiWindow> _minimizedWindowsCollection;
         private readonly int _containerRowCapacity;
 
 
@@ -30,7 +33,7 @@ namespace MdiMvvm
 
         public MdiContainer() : base()
         {
-            _minimizedWindowsCollection = new List<MdiWindow>();
+            _minimizedWindowsCollection = new ObservableCollection<MdiWindow>();
             var r = this.ItemsSource;
             this.Loaded += MdiContainer_Loaded;
             this.SelectionChanged += MdiContainer_SelectionChanged;
@@ -46,6 +49,8 @@ namespace MdiMvvm
         {
             base.OnApplyTemplate();
             ContainerScrollViewer = GetTemplateChild("PART_ContainerScrollViewer") as ScrollViewer;
+            ContainerMinWinListox = GetTemplateChild("PART_ContainerMinWin_ListBox") as ListBox;
+            ContainerMinWinListox.ItemsSource = _minimizedWindowsCollection;
         }
 
         protected override DependencyObject GetContainerForItemOverride()
@@ -165,11 +170,12 @@ namespace MdiMvvm
 
         private void RemoveMinimizedWindow(MdiWindow window)
         {
-            int index = _minimizedWindowsCollection.IndexOf(window);
             _minimizedWindowsCollection.Remove(window);
-            // handle situation when removed item was last in collection
-            if (index < _minimizedWindowsCollection.Count)
-                RearrangeMinimizedWindows(index);
+            //int index = _minimizedWindowsCollection.IndexOf(window);
+            //_minimizedWindowsCollection.Remove(window);
+            //// handle situation when removed item was last in collection
+            //if (index < _minimizedWindowsCollection.Count)
+            //    RearrangeMinimizedWindows(index);
         }
 
         /// <summary>
@@ -196,14 +202,14 @@ namespace MdiMvvm
         private void OnMdiWindowStateChanged(object sender, WindowStateChangedEventArgs e)
         {
             MdiWindow window = sender as MdiWindow;
-            //if (e.NewValue == WindowState.Minimized)
-            //{
-            //    AddMinimizedWindow(window);
-            //}
-            //else if (e.OldValue == WindowState.Minimized)
-            //{
-            //    RemoveMinimizedWindow(window);
-            //}
+            if (e.NewValue == WindowState.Minimized)
+            {
+                AddMinimizedWindow(window);
+            }
+            else if (e.OldValue == WindowState.Minimized)
+            {
+                RemoveMinimizedWindow(window);
+            }
 
             if (e.NewValue == WindowState.Maximized)
             {

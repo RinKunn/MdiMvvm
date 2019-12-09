@@ -51,6 +51,7 @@ namespace MdiMvvm
         internal double PreviousHeight { get; set; }
         internal WindowState PreviousWindowState { get; set; }
         internal MdiContainer Container { get; private set; }
+        internal ImageSource ImageSource { get; set; }
 
         public Image Tumblr { get; private set; }
 
@@ -140,7 +141,6 @@ namespace MdiMvvm
 
         public override void OnApplyTemplate()
         {
-            
             _closeButton = GetTemplateChild("PART_ButtonBar_CloseButton") as WindowButton;
             if (_closeButton != null)
             {
@@ -200,6 +200,42 @@ namespace MdiMvvm
 
         public static readonly RoutedEvent WindowStateChangedEvent = EventManager.RegisterRoutedEvent(
            "WindowStateChanged", RoutingStrategy.Bubble, typeof(WindowStateChangedRoutedEventHandler), typeof(MdiWindow));
+
+
+
+
+
+        public static readonly DependencyProperty CloseCommandProperty = 
+            DependencyProperty.Register("CloseWindowCommand", typeof(ICommand), typeof(MdiWindow));
+
+        public static readonly DependencyProperty NormilizeWindowProperty =
+            DependencyProperty.Register("NormilizeWindowCommand", typeof(ICommand), typeof(MdiWindow));
+
+        public ICommand CloseWindowCommand
+        {
+            get
+            {
+                return (ICommand)GetValue(CloseCommandProperty);
+            }
+
+            set
+            {
+                SetValue(CloseCommandProperty, value);
+            }
+        }
+
+        public ICommand NormilizeWindowCommand
+        {
+            get
+            {
+                return (ICommand)GetValue(NormilizeWindowProperty);
+            }
+
+            set
+            {
+                SetValue(NormilizeWindowProperty, value);
+            }
+        }
         #endregion
 
 

@@ -104,7 +104,8 @@ namespace MdiMvvm.Extensions
             if (window.WindowState == WindowState.Normal) window.SavePreviousPosition();
             window.LoadMinimizedPosition();
 
-            window.Tumblr.Source = window.CreateSnapshot();
+            //window.Tumblr.Source = window.CreateSnapshot();
+            window.ImageSource = window.CreateSnapshot();
 
             RemoveWindowLock(window);
             AnimateResize(window, MdiWindow.MINIMIZED_WINDOW_WIDTH, MdiWindow.MINIMIZED_WINDOW_HEIGHT, true);
