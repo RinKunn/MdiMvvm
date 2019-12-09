@@ -30,8 +30,8 @@ namespace MdiMvvm
 
     public sealed class MdiWindow : ContentControl
     {
-        internal static double MINIMIZED_WINDOW_WIDTH = 200;
-        internal static double MINIMIZED_WINDOW_HEIGHT = 32;
+        internal static double MINIMIZED_WINDOW_WIDTH = 170;
+        internal static double MINIMIZED_WINDOW_HEIGHT = 26;
 
         private WindowButton _closeButton;
         private WindowButton _maximizeButton;
@@ -39,7 +39,6 @@ namespace MdiMvvm
 
         private AdornerLayer _myAdornerLayer;
         private Adorner _myAdorner;
-
 
         internal double PreviousLeft { get; set; }
         internal double PreviousTop { get; set; }
@@ -112,7 +111,7 @@ namespace MdiMvvm
                 this.MinHeight = content.MinHeight + 34;
                 this.MinWidth = content.MinWidth + 10;
             }
-            Console.WriteLine($" - MdiWindow {Title} _Loaded");
+            Console.WriteLine($" - MdiWindow {Title} _Loaded: {Container._minimizedWindowsCollection.Count}");
         }
 
 
@@ -120,9 +119,10 @@ namespace MdiMvvm
         {
             if (WindowState == WindowState.Maximized)
             {
-                Width += e.NewSize.Width - e.PreviousSize.Width;
-                Height += e.NewSize.Height - e.PreviousSize.Height;
-
+                //Width += e.NewSize.Width - e.PreviousSize.Width;
+                //Height += e.NewSize.Height - e.PreviousSize.Height;
+                Width = e.NewSize.Width;
+                Height = e.NewSize.Height;
                 this.RemoveWindowLock();
             }
 

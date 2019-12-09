@@ -51,12 +51,9 @@ namespace MdiMvvm.Extensions
                 Canvas.SetTop(window, 0.0);
                 Canvas.SetLeft(window, 0.0);
                 AnimateResize(window, window.Container.ActualWidth - 4, window.Container.ActualHeight - 4, true);
-                Panel.SetZIndex(window, 10);
-
-                //TODO возможно придется убрать
-                window.HorizontalAlignment = HorizontalAlignment.Stretch;
-                window.VerticalAlignment = VerticalAlignment.Stretch;
-
+                //Panel.SetZIndex(window, 10);
+                
+                window.PreviousWindowState = window.WindowState;
                 window.WindowState = WindowState.Maximized;
             }
         }
@@ -69,6 +66,7 @@ namespace MdiMvvm.Extensions
         public static void Normalize(this MdiWindow window)
         {
             window.LoadPreviousPosition();
+            window.PreviousWindowState = window.WindowState;
             window.WindowState = WindowState.Normal;
             Panel.SetZIndex(window, 0);
         }
@@ -82,13 +80,15 @@ namespace MdiMvvm.Extensions
         {
             if (window.WindowState == WindowState.Normal)
                 window.SavePreviousPosition();
+            
+            window.Tumblr.Source = window.CreateSnapshot();
 
             RemoveWindowLock(window);
-            AnimateResize(window, 200, 32, true);
+            AnimateResize(window, MdiWindow.MINIMIZED_WINDOW_WIDTH, MdiWindow.MINIMIZED_WINDOW_HEIGHT, true);
+
+            window.PreviousWindowState = window.WindowState;
             window.WindowState = WindowState.Minimized;
             Panel.SetZIndex(window, 0);
-
-            window.Tumblr.Source = window.CreateSnapshot();
         }
 
 

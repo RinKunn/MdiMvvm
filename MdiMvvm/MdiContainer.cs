@@ -9,16 +9,17 @@ using System.Windows.Controls.Primitives;
 
 namespace MdiMvvm
 {
-    [TemplatePart(Name = "PART_ContainerBorder", Type = typeof(Border))]
+    [TemplatePart(Name = "PART_ContainerScrollViewer", Type = typeof(ScrollViewer))]
     public sealed class MdiContainer : Selector
     {
-        internal Border VisualContainerBorder;
+        internal ScrollViewer ContainerScrollViewer;
         private IList _internalItemSource;
         internal Canvas ContainerCanvas;
 
 
-        private List<MdiWindow> _minimizedWindowsCollection;
-        private int _containerRowCapacity;
+        private MdiWindow _maximizedWindow;
+        internal List<MdiWindow> _minimizedWindowsCollection;
+        private readonly int _containerRowCapacity;
 
 
         static MdiContainer()
@@ -34,10 +35,9 @@ namespace MdiMvvm
             this.Loaded += MdiContainer_Loaded;
             this.SelectionChanged += MdiContainer_SelectionChanged;
             this.SizeChanged += MdiContainer_SizeChanged;
-            
-            Console.WriteLine($"{SystemParameters.VirtualScreenHeight} x {SystemParameters.VirtualScreenWidth}");
-        }
 
+            _containerRowCapacity = (int)(SystemParameters.VirtualScreenWidth / MdiWindow.MINIMIZED_WINDOW_WIDTH);
+        }
 
 
         #region Overrides
@@ -45,7 +45,7 @@ namespace MdiMvvm
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            VisualContainerBorder = GetTemplateChild("PART_ContainerBorder") as Border;
+            ContainerScrollViewer = GetTemplateChild("PART_ContainerScrollViewer") as ScrollViewer;
         }
 
         protected override DependencyObject GetContainerForItemOverride()
@@ -65,6 +65,9 @@ namespace MdiMvvm
                 window.Initialize(this);
 
                 window.InitPosition();
+
+                if (_maximizedWindow != null)
+                    _maximizedWindow.Normalize();
 
                 window.Focus();
             }
@@ -175,7 +178,7 @@ namespace MdiMvvm
         /// <param name="startIndex"></param>
         internal void RearrangeMinimizedWindows(int startIndex = 0)
         {
-            _containerRowCapacity = (int)(ActualWidth / MdiWindow.MINIMIZED_WINDOW_WIDTH);
+            //_containerRowCapacity = (int)(ActualWidth / MdiWindow.MINIMIZED_WINDOW_WIDTH);
 
             for (int i = startIndex; i < _minimizedWindowsCollection.Count; i++)
             {
@@ -201,6 +204,17 @@ namespace MdiMvvm
             {
                 RemoveMinimizedWindow(window);
             }
+
+            if (e.NewValue == WindowState.Maximized)
+            {
+                EnableContainerScroll(false);
+                _maximizedWindow = window;
+            }
+            else if (e.OldValue == WindowState.Maximized)
+            {
+                EnableContainerScroll();
+                _maximizedWindow = null;
+            }
         }
 
         private void OnMdiWindowClosing(object sender, RoutedEventArgs e)
@@ -210,6 +224,8 @@ namespace MdiMvvm
             if (window?.DataContext != null)
             {
                 if(window.WindowState == WindowState.Minimized) RemoveMinimizedWindow(window);
+                if(window.WindowState == WindowState.Maximized) EnableContainerScroll();
+
                 _internalItemSource?.Remove(window.DataContext);
                 if (Items.Count > 0)
                 {
@@ -230,7 +246,6 @@ namespace MdiMvvm
 
         private void OnMdiWindowFocusChanged(object sender, RoutedEventArgs e)
         {
-            // переводит остальные окна в IsSelected = false
             if (((MdiWindow)sender).IsFocused)
             {
                 foreach (var item in Items)
@@ -254,20 +269,31 @@ namespace MdiMvvm
 
         #endregion
 
-
         internal void InvalidateSize()
         {
-            if (ContainerCanvas == null) return;
+            if (ContainerCanvas == null || _maximizedWindow != null) return;
 
             Point largestPoint = new Point(ActualWidth - 5, ActualHeight - 5);
+            RearrangeMinimizedWindows();
 
-            if(_internalItemSource.Count > 0)
+            if (_internalItemSource.Count > 0)
             {
                 foreach (var item in Items)
                 {
                     MdiWindow window = ItemContainerGenerator.ContainerFromItem(item) as MdiWindow;
 
-                    Point farPosition = new Point(Canvas.GetLeft(window) + window.ActualWidth, Canvas.GetTop(window) + window.ActualHeight);
+                    Point farPosition = new Point(Canvas.GetLeft(window), Canvas.GetTop(window));
+
+                    if (window.WindowState == WindowState.Minimized)
+                    {
+                        farPosition.X += MdiWindow.MINIMIZED_WINDOW_WIDTH;
+                        farPosition.Y += MdiWindow.MINIMIZED_WINDOW_HEIGHT;
+                    }
+                    else
+                    {
+                        farPosition.X += window.ActualWidth;
+                        farPosition.Y += window.ActualHeight;
+                    }
 
                     if (farPosition.X > largestPoint.X)
                         largestPoint.X = farPosition.X;
@@ -279,6 +305,12 @@ namespace MdiMvvm
             
             if (ContainerCanvas.Width != largestPoint.X) ContainerCanvas.Width = largestPoint.X;
             if (ContainerCanvas.Height != largestPoint.Y) ContainerCanvas.Height = largestPoint.Y;
+        }
+
+        private void EnableContainerScroll(bool enable = true)
+        {
+            ContainerScrollViewer.VerticalScrollBarVisibility = enable ? ScrollBarVisibility.Auto : ScrollBarVisibility.Disabled;
+            ContainerScrollViewer.HorizontalScrollBarVisibility = enable ? ScrollBarVisibility.Auto : ScrollBarVisibility.Disabled;
         }
 
     }
