@@ -37,8 +37,6 @@ namespace MdiExample
         public int ColumnSize { get; } = 5;
 
 
-
-
         private MdiContainerViewModel _selectedContainer;
         public MdiContainerViewModel SelectedContainer
         {

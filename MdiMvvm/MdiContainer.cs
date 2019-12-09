@@ -160,7 +160,7 @@ namespace MdiMvvm
         private void AddMinimizedWindow(MdiWindow window)
         {
             _minimizedWindowsCollection.Add(window);
-            RearrangeMinimizedWindows(_minimizedWindowsCollection.Count - 1);
+            //RearrangeMinimizedWindows(_minimizedWindowsCollection.Count - 1);
         }
 
         private void RemoveMinimizedWindow(MdiWindow window)
@@ -196,14 +196,14 @@ namespace MdiMvvm
         private void OnMdiWindowStateChanged(object sender, WindowStateChangedEventArgs e)
         {
             MdiWindow window = sender as MdiWindow;
-            if (e.NewValue == WindowState.Minimized)
-            {
-                AddMinimizedWindow(window);
-            }
-            else if (e.OldValue == WindowState.Minimized)
-            {
-                RemoveMinimizedWindow(window);
-            }
+            //if (e.NewValue == WindowState.Minimized)
+            //{
+            //    AddMinimizedWindow(window);
+            //}
+            //else if (e.OldValue == WindowState.Minimized)
+            //{
+            //    RemoveMinimizedWindow(window);
+            //}
 
             if (e.NewValue == WindowState.Maximized)
             {
@@ -269,40 +269,49 @@ namespace MdiMvvm
 
         #endregion
 
-        internal void InvalidateSize()
+        internal void InvalidateSize(MdiWindow currWindow = null)
         {
             if (ContainerCanvas == null || _maximizedWindow != null) return;
 
             Point largestPoint = new Point(ActualWidth - 5, ActualHeight - 5);
-            RearrangeMinimizedWindows();
-
-            if (_internalItemSource.Count > 0)
+            
+            if(currWindow != null)
             {
-                foreach (var item in Items)
+                double winRight = Canvas.GetLeft(currWindow) + currWindow.ActualWidth;
+                double winBottom = Canvas.GetTop(currWindow) + currWindow.ActualHeight;
+                largestPoint.X = largestPoint.X > winRight ? largestPoint.X : winRight;
+                largestPoint.Y = largestPoint.Y > winBottom ? largestPoint.Y : winBottom;
+            }
+            else
+            {
+                if (Items.Count > 0)
                 {
-                    MdiWindow window = ItemContainerGenerator.ContainerFromItem(item) as MdiWindow;
-
-                    Point farPosition = new Point(Canvas.GetLeft(window), Canvas.GetTop(window));
-
-                    if (window.WindowState == WindowState.Minimized)
+                    foreach (var item in Items)
                     {
-                        farPosition.X += MdiWindow.MINIMIZED_WINDOW_WIDTH;
-                        farPosition.Y += MdiWindow.MINIMIZED_WINDOW_HEIGHT;
-                    }
-                    else
-                    {
-                        farPosition.X += window.ActualWidth;
-                        farPosition.Y += window.ActualHeight;
-                    }
+                        MdiWindow window = ItemContainerGenerator.ContainerFromItem(item) as MdiWindow;
 
-                    if (farPosition.X > largestPoint.X)
-                        largestPoint.X = farPosition.X;
+                        Point farPosition = new Point(Canvas.GetLeft(window), Canvas.GetTop(window));
 
-                    if (farPosition.Y > largestPoint.Y)
-                        largestPoint.Y = farPosition.Y;
+                        if (window.WindowState == WindowState.Minimized)
+                        {
+                            farPosition.X += MdiWindow.MINIMIZED_WINDOW_WIDTH;
+                            farPosition.Y += MdiWindow.MINIMIZED_WINDOW_HEIGHT;
+                        }
+                        else
+                        {
+                            farPosition.X += window.ActualWidth;
+                            farPosition.Y += window.ActualHeight;
+                        }
+
+                        if (farPosition.X > largestPoint.X)
+                            largestPoint.X = farPosition.X;
+
+                        if (farPosition.Y > largestPoint.Y)
+                            largestPoint.Y = farPosition.Y;
+                    }
                 }
             }
-            
+
             if (ContainerCanvas.Width != largestPoint.X) ContainerCanvas.Width = largestPoint.X;
             if (ContainerCanvas.Height != largestPoint.Y) ContainerCanvas.Height = largestPoint.Y;
         }

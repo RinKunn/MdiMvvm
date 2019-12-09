@@ -23,8 +23,7 @@ namespace MdiMvvm.WindowControls
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
-            var window = VisualTreeExtension.FindMdiWindow(this);         
-
+            var window = VisualTreeExtension.FindMdiWindow(this);
             if (window != null)
             {
                 window.DoFocus(e);         
@@ -68,24 +67,14 @@ namespace MdiMvvm.WindowControls
                     window.Normalize();
                 }
 
-                if (window.WindowState != WindowState.Minimized)
-                {
-                    window.PreviousLeft = Canvas.GetLeft(window);
-                    window.PreviousTop = Canvas.GetTop(window);
+                double currentLeft = Canvas.GetLeft(window);
+                double currentTop = Canvas.GetTop(window);
 
-                    var candidateLeft =  window.PreviousLeft + e.HorizontalChange;
-                    var candidateTop = window.PreviousTop + e.VerticalChange;
+                Canvas.SetLeft(window, Math.Max(0, currentLeft + e.HorizontalChange));
+                Canvas.SetTop(window, Math.Max(0, currentTop + e.VerticalChange));
 
-                    double newLeft = Math.Min(Math.Max(0, candidateLeft), window.Container.ActualWidth - 25);
-                    double newTop = Math.Min(Math.Max(0, candidateTop), window.Container.ActualHeight - 25);
-
-                    Canvas.SetLeft(window, window.PreviousLeft + e.HorizontalChange);
-                    Canvas.SetTop(window, window.PreviousTop + e.VerticalChange);
-                }
                 window.Container.InvalidateSize();
             }
-
-
         }
     }
 }

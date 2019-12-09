@@ -11,6 +11,7 @@ using MdiMvvm.Extensions;
 using MdiMvvm.WindowControls;
 using System.IO;
 using System.Windows.Media;
+using MdiMvvm.ValueObjects;
 
 namespace MdiMvvm
 {
@@ -40,12 +41,15 @@ namespace MdiMvvm
         private AdornerLayer _myAdornerLayer;
         private Adorner _myAdorner;
 
+
+        internal double MinimizedLeft { get; set; }
+        internal double MinimizedTop { get; set; }
+
         internal double PreviousLeft { get; set; }
         internal double PreviousTop { get; set; }
         internal double PreviousWidth { get; set; }
         internal double PreviousHeight { get; set; }
         internal WindowState PreviousWindowState { get; set; }
-
         internal MdiContainer Container { get; private set; }
 
         public Image Tumblr { get; private set; }

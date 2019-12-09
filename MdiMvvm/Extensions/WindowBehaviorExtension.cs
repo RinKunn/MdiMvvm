@@ -10,21 +10,22 @@ namespace MdiMvvm.Extensions
     {
         private static int ANIMATED_MILLISECONDS_DURATION = 10;
 
+        #region Save/Load states
         /// <summary>
-        /// Save current state of <see cref="MdiWindow"/>
+        /// Save current <see cref="WindowState.Normal"/> state of <see cref="MdiWindow"/>
         /// </summary>
         /// <param name="window"></param>
         private static void SavePreviousPosition(this MdiWindow window)
         {
+
             window.PreviousLeft = Canvas.GetLeft(window);
             window.PreviousTop = Canvas.GetTop(window);
             window.PreviousWidth = window.ActualWidth;
             window.PreviousHeight = window.ActualHeight;
-            Console.WriteLine($"-- SavePreviousPosition -- {window.PreviousLeft}x{window.PreviousTop} | {window.PreviousWidth}x{window.PreviousHeight}");
         }
 
         /// <summary>
-        /// Load previous state of <see cref="MdiWindow"/>
+        /// Load previous <see cref="WindowState.Normal"/> state of <see cref="MdiWindow"/>
         /// </summary>
         /// <param name="window"></param>
         private static void LoadPreviousPosition(this MdiWindow window)
@@ -32,9 +33,30 @@ namespace MdiMvvm.Extensions
             Canvas.SetLeft(window, window.PreviousLeft);
             Canvas.SetTop(window, window.PreviousTop);
             AnimateResize(window, window.PreviousWidth, window.PreviousHeight, false);
-            Console.WriteLine($"-- LoadPreviousPosition -- {window.PreviousLeft}x{window.PreviousTop} | {window.PreviousWidth}x{window.PreviousHeight}");
         }
 
+
+
+        /// <summary>
+        /// Save current state of <see cref="MdiWindow"/>
+        /// </summary>
+        /// <param name="window"></param>
+        private static void SaveMinimizedPosition(this MdiWindow window)
+        {
+            window.MinimizedLeft = Canvas.GetLeft(window);
+            window.MinimizedTop = Canvas.GetTop(window);
+        }
+
+        /// <summary>
+        /// Load previous state of <see cref="MdiWindow"/>
+        /// </summary>
+        /// <param name="window"></param>
+        private static void LoadMinimizedPosition(this MdiWindow window)
+        {
+            Canvas.SetLeft(window, window.MinimizedLeft);
+            Canvas.SetTop(window, window.MinimizedTop);
+        } 
+        #endregion
 
 
         /// <summary>
@@ -45,8 +67,8 @@ namespace MdiMvvm.Extensions
         {
             if (window.IsResizable)
             {
-                if (window.WindowState == WindowState.Normal)
-                    window.SavePreviousPosition();
+                if (window.WindowState == WindowState.Normal) window.SavePreviousPosition();
+                else if (window.WindowState == WindowState.Minimized) window.SaveMinimizedPosition();
 
                 Canvas.SetTop(window, 0.0);
                 Canvas.SetLeft(window, 0.0);
@@ -65,12 +87,13 @@ namespace MdiMvvm.Extensions
         /// <param name="window"></param>
         public static void Normalize(this MdiWindow window)
         {
+            if (window.WindowState == WindowState.Minimized) window.SaveMinimizedPosition();
             window.LoadPreviousPosition();
+
             window.PreviousWindowState = window.WindowState;
             window.WindowState = WindowState.Normal;
             Panel.SetZIndex(window, 0);
         }
-
 
         /// <summary>
         /// Set WindowState of <see cref="MdiWindow"/> Minimized state
@@ -78,9 +101,9 @@ namespace MdiMvvm.Extensions
         /// <param name="window"></param>
         public static void Minimize(this MdiWindow window)
         {
-            if (window.WindowState == WindowState.Normal)
-                window.SavePreviousPosition();
-            
+            if (window.WindowState == WindowState.Normal) window.SavePreviousPosition();
+            window.LoadMinimizedPosition();
+
             window.Tumblr.Source = window.CreateSnapshot();
 
             RemoveWindowLock(window);
@@ -90,8 +113,6 @@ namespace MdiMvvm.Extensions
             window.WindowState = WindowState.Minimized;
             Panel.SetZIndex(window, 0);
         }
-
-
 
 
 
@@ -154,9 +175,4 @@ namespace MdiMvvm.Extensions
             window.BeginAnimation(FrameworkElement.HeightProperty, null);
         }
     }
-
-
-
-
-
 }

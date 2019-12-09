@@ -6,55 +6,56 @@ using MdiMvvm.Extensions;
 
 namespace MdiMvvm.WindowControls
 {
-   public sealed class ResizeThumb : Thumb
-   {
-      public ResizeThumb()
-      {         
-         DragDelta += OnResizing;
-      }
+    public sealed class ResizeThumb : Thumb
+    {
+        public ResizeThumb()
+        {         
+            DragDelta += OnResizing;
+        }
 
-      private void OnResizing(object sender, DragDeltaEventArgs e)
-      {
-         var window = VisualTreeExtension.FindMdiWindow(this);         
+        private void OnResizing(object sender, DragDeltaEventArgs e)
+        {
+            var window = VisualTreeExtension.FindMdiWindow(this);         
 
-         if (window != null)
-         {
-            if (window.IsFocused == false)
+            if (window != null)
             {
-               window.Focus();
+                if (window.IsFocused == false)
+                {
+                    window.Focus();
+                }
+
+                window.Height = window.ActualHeight;
+                window.Width = window.ActualWidth;
+
+                switch (VerticalAlignment)
+                {
+                    case VerticalAlignment.Bottom:
+                        var deltaVertical = Math.Min(-e.VerticalChange, window.ActualHeight - window.MinHeight);
+                        window.Height -= deltaVertical;
+                        break;
+                    case VerticalAlignment.Top:
+                        deltaVertical = Math.Min(e.VerticalChange, window.ActualHeight - window.MinHeight);
+                        Canvas.SetTop(window, Canvas.GetTop(window) + deltaVertical);
+                        window.Height -= deltaVertical;
+                        break;
+                }
+
+                switch (HorizontalAlignment)
+                {
+                    case HorizontalAlignment.Left:
+                        var deltaHorizontal = Math.Min(e.HorizontalChange, window.ActualWidth - window.MinWidth);
+                        Canvas.SetLeft(window, Canvas.GetLeft(window) + deltaHorizontal);
+                        window.Width -= deltaHorizontal;
+                        break;
+                    case HorizontalAlignment.Right:
+                        deltaHorizontal = Math.Min(-e.HorizontalChange, window.ActualWidth - window.MinWidth);
+                        window.Width -= deltaHorizontal;
+                        break;
+                }
+                window.Container.InvalidateSize();
             }
 
-            window.Height = window.ActualHeight;
-            window.Width = window.ActualWidth;
-
-            switch (VerticalAlignment)
-            {
-               case VerticalAlignment.Bottom:
-                  var deltaVertical = Math.Min(-e.VerticalChange, window.ActualHeight - window.MinHeight);
-                  window.Height -= deltaVertical;
-                  break;
-               case VerticalAlignment.Top:
-                  deltaVertical = Math.Min(e.VerticalChange, window.ActualHeight - window.MinHeight);
-                  Canvas.SetTop(window, Canvas.GetTop(window) + deltaVertical);
-                  window.Height -= deltaVertical;
-                  break;
-            }
-
-            switch (HorizontalAlignment)
-            {
-               case HorizontalAlignment.Left:
-                  var deltaHorizontal = Math.Min(e.HorizontalChange, window.ActualWidth - window.MinWidth);
-                  Canvas.SetLeft(window, Canvas.GetLeft(window) + deltaHorizontal);
-                  window.Width -= deltaHorizontal;
-                  break;
-               case HorizontalAlignment.Right:
-                  deltaHorizontal = Math.Min(-e.HorizontalChange, window.ActualWidth - window.MinWidth);
-                  window.Width -= deltaHorizontal;
-                  break;
-            }
-         }
-
-         e.Handled = true;
-      }
-   }
+            e.Handled = true;
+        }
+    }
 }
