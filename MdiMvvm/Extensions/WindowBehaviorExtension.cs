@@ -10,14 +10,13 @@ namespace MdiMvvm.Extensions
     {
         private static int ANIMATED_MILLISECONDS_DURATION = 10;
 
-        #region Save/Load states
+        
         /// <summary>
         /// Save current <see cref="WindowState.Normal"/> state of <see cref="MdiWindow"/>
         /// </summary>
         /// <param name="window"></param>
         private static void SavePreviousPosition(this MdiWindow window)
         {
-
             window.PreviousLeft = Canvas.GetLeft(window);
             window.PreviousTop = Canvas.GetTop(window);
             window.PreviousWidth = window.ActualWidth;
@@ -36,29 +35,6 @@ namespace MdiMvvm.Extensions
         }
 
 
-
-        /// <summary>
-        /// Save current state of <see cref="MdiWindow"/>
-        /// </summary>
-        /// <param name="window"></param>
-        private static void SaveMinimizedPosition(this MdiWindow window)
-        {
-            window.MinimizedLeft = Canvas.GetLeft(window);
-            window.MinimizedTop = Canvas.GetTop(window);
-        }
-
-        /// <summary>
-        /// Load previous state of <see cref="MdiWindow"/>
-        /// </summary>
-        /// <param name="window"></param>
-        private static void LoadMinimizedPosition(this MdiWindow window)
-        {
-            Canvas.SetLeft(window, window.MinimizedLeft);
-            Canvas.SetTop(window, window.MinimizedTop);
-        } 
-        #endregion
-
-
         /// <summary>
         /// Set WindowState of <see cref="MdiWindow"/> Maximized state
         /// </summary>
@@ -68,7 +44,6 @@ namespace MdiMvvm.Extensions
             if (window.IsResizable)
             {
                 if (window.WindowState == WindowState.Normal) window.SavePreviousPosition();
-                else if (window.WindowState == WindowState.Minimized) window.SaveMinimizedPosition();
 
                 Canvas.SetTop(window, 0.0);
                 Canvas.SetLeft(window, 0.0);
@@ -87,11 +62,12 @@ namespace MdiMvvm.Extensions
         /// <param name="window"></param>
         public static void Normalize(this MdiWindow window)
         {
-            if (window.WindowState == WindowState.Minimized) window.SaveMinimizedPosition();
-            window.LoadPreviousPosition();
-
             window.PreviousWindowState = window.WindowState;
             window.WindowState = WindowState.Normal;
+
+            window.LoadPreviousPosition();
+
+            
             Panel.SetZIndex(window, 0);
         }
 
@@ -102,7 +78,7 @@ namespace MdiMvvm.Extensions
         public static void Minimize(this MdiWindow window)
         {
             if (window.WindowState == WindowState.Normal) window.SavePreviousPosition();
-            window.LoadMinimizedPosition();
+            
 
             //window.Tumblr.Source = window.CreateSnapshot();
             window.ImageSource = window.CreateSnapshot();

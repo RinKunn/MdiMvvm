@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Collections.ObjectModel;
+using System.Windows.Media;
 
 namespace MdiMvvm
 {
@@ -14,17 +15,14 @@ namespace MdiMvvm
     [TemplatePart(Name = "PART_ContainerMinWin_ListBox", Type = typeof(ListBox))]
     public sealed class MdiContainer : Selector
     {
-        internal ScrollViewer ContainerScrollViewer;
-        internal ListBox ContainerMinWinListox;
+        private ScrollViewer ContainerScrollViewer;
+        private ListBox ContainerMinWinListox;
         private IList _internalItemSource;
-        internal Canvas ContainerCanvas;
-
-
+        private Canvas ContainerCanvas;
         private MdiWindow _maximizedWindow;
+
         internal ObservableCollection<MdiWindow> _minimizedWindowsCollection;
-        private readonly int _containerRowCapacity;
-
-
+        
         static MdiContainer()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(MdiContainer), new FrameworkPropertyMetadata(typeof(MdiContainer)));
@@ -38,8 +36,6 @@ namespace MdiMvvm
             this.Loaded += MdiContainer_Loaded;
             this.SelectionChanged += MdiContainer_SelectionChanged;
             this.SizeChanged += MdiContainer_SizeChanged;
-
-            _containerRowCapacity = (int)(SystemParameters.VirtualScreenWidth / MdiWindow.MINIMIZED_WINDOW_WIDTH);
         }
 
 
@@ -53,6 +49,7 @@ namespace MdiMvvm
             ContainerMinWinListox.ItemsSource = _minimizedWindowsCollection;
         }
 
+        
         protected override DependencyObject GetContainerForItemOverride()
         {
             return new MdiWindow();
@@ -125,21 +122,19 @@ namespace MdiMvvm
 
         private void MdiContainer_Loaded(object sender, RoutedEventArgs e)
         {
+
             ContainerCanvas = VisualTreeExtension.FindItemPresenterChild<Canvas>(this);
             InvalidateSize();
+            Console.WriteLine($"MdiContainer_Loaded:  ");
+            counter++;
+            if (counter == 1) ContainerCanvas.Background = Brushes.Gray;
+            else if (counter == 2) ContainerCanvas.Background = Brushes.Red;
+            else ContainerCanvas.Background = Brushes.Blue;
         }
-
-
+        private static int counter = 0;
         private void MdiContainer_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             InvalidateSize();
-
-            int newContainerRowCapacity = (int)(e.NewSize.Width / MdiWindow.MINIMIZED_WINDOW_WIDTH);
-            if (newContainerRowCapacity != _containerRowCapacity)
-            {
-                RearrangeMinimizedWindows();
-            }
-            RearrangeMinimizedWindows();
         }
 
         private void MdiContainer_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -160,64 +155,35 @@ namespace MdiMvvm
 
         #endregion
 
-        #region Minimized windows methods
-
-        private void AddMinimizedWindow(MdiWindow window)
-        {
-            _minimizedWindowsCollection.Add(window);
-            //RearrangeMinimizedWindows(_minimizedWindowsCollection.Count - 1);
-        }
-
-        private void RemoveMinimizedWindow(MdiWindow window)
-        {
-            _minimizedWindowsCollection.Remove(window);
-            //int index = _minimizedWindowsCollection.IndexOf(window);
-            //_minimizedWindowsCollection.Remove(window);
-            //// handle situation when removed item was last in collection
-            //if (index < _minimizedWindowsCollection.Count)
-            //    RearrangeMinimizedWindows(index);
-        }
-
-        /// <summary>
-        /// Render Collection of minimized windows
-        /// </summary>
-        /// <param name="startIndex"></param>
-        internal void RearrangeMinimizedWindows(int startIndex = 0)
-        {
-            //_containerRowCapacity = (int)(ActualWidth / MdiWindow.MINIMIZED_WINDOW_WIDTH);
-
-            for (int i = startIndex; i < _minimizedWindowsCollection.Count; i++)
-            {
-                int newWindowRowPlacemnt = (i / _containerRowCapacity) + 1;
-                int newWindowColumnPlacemnt = i % _containerRowCapacity;
-                Canvas.SetTop(_minimizedWindowsCollection[i], ActualHeight - newWindowRowPlacemnt * MdiWindow.MINIMIZED_WINDOW_HEIGHT);
-                Canvas.SetLeft(_minimizedWindowsCollection[i], newWindowColumnPlacemnt * MdiWindow.MINIMIZED_WINDOW_WIDTH);
-            }
-        }
-
-        #endregion
-
         #region MdiWindow Event Handles
 
         private void OnMdiWindowStateChanged(object sender, WindowStateChangedEventArgs e)
         {
             MdiWindow window = sender as MdiWindow;
+            if (window == null) throw new NullReferenceException($"Sender in OnMdiWindowStateChanged is not {typeof(MdiWindow).Name} ");
+
             if (e.NewValue == WindowState.Minimized)
             {
-                AddMinimizedWindow(window);
+                _minimizedWindowsCollection.Add(window);
+                ListBoxItem lbi = (ListBoxItem)ContainerMinWinListox.ItemContainerGenerator.ContainerFromItem(window);
+                lbi.MouseDoubleClick += MinimizedWindow_MouseDoubleClick;
             }
             else if (e.OldValue == WindowState.Minimized)
             {
-                RemoveMinimizedWindow(window);
+                ListBoxItem lbi = (ListBoxItem)ContainerMinWinListox.ItemContainerGenerator.ContainerFromItem(window);
+                lbi.MouseDoubleClick -= MinimizedWindow_MouseDoubleClick;
+                _minimizedWindowsCollection.Remove(window);
             }
 
             if (e.NewValue == WindowState.Maximized)
             {
                 EnableContainerScroll(false);
+                ContainerMinWinListox.Visibility = Visibility.Collapsed;
                 _maximizedWindow = window;
             }
             else if (e.OldValue == WindowState.Maximized)
             {
+                ContainerMinWinListox.Visibility = Visibility.Visible;
                 EnableContainerScroll();
                 _maximizedWindow = null;
             }
@@ -225,12 +191,15 @@ namespace MdiMvvm
 
         private void OnMdiWindowClosing(object sender, RoutedEventArgs e)
         {
-            //TODO: если состояние Minimized и index = не последний, то перерисовать минимум окна или при добавлении
             var window = sender as MdiWindow;
             if (window?.DataContext != null)
             {
-                if(window.WindowState == WindowState.Minimized) RemoveMinimizedWindow(window);
-                if(window.WindowState == WindowState.Maximized) EnableContainerScroll();
+                if(window.WindowState == WindowState.Maximized)
+                {
+                    ContainerMinWinListox.Visibility = Visibility.Visible;
+                    EnableContainerScroll();
+                    _maximizedWindow = null;
+                }
 
                 _internalItemSource?.Remove(window.DataContext);
                 if (Items.Count > 0)
@@ -273,6 +242,14 @@ namespace MdiMvvm
             }
         }
 
+        private void MinimizedWindow_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            MdiWindow window = (MdiWindow)(sender as ListBoxItem).DataContext;
+            if (window != null)
+            {
+                window.Normalize();
+            }
+        }
         #endregion
 
         internal void InvalidateSize(MdiWindow currWindow = null)
@@ -295,14 +272,12 @@ namespace MdiMvvm
                     foreach (var item in Items)
                     {
                         MdiWindow window = ItemContainerGenerator.ContainerFromItem(item) as MdiWindow;
+                        if (window == null) return;
 
                         Point farPosition = new Point(Canvas.GetLeft(window), Canvas.GetTop(window));
 
-                        if (window.WindowState == WindowState.Minimized)
-                        {
-                            farPosition.X += MdiWindow.MINIMIZED_WINDOW_WIDTH;
-                            farPosition.Y += MdiWindow.MINIMIZED_WINDOW_HEIGHT;
-                        }
+                        if (window.WindowState == WindowState.Minimized) 
+                            continue;
                         else
                         {
                             farPosition.X += window.ActualWidth;

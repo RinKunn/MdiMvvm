@@ -40,18 +40,15 @@ namespace MdiMvvm
 
         private AdornerLayer _myAdornerLayer;
         private Adorner _myAdorner;
-
-
-        internal double MinimizedLeft { get; set; }
-        internal double MinimizedTop { get; set; }
-
+        
         internal double PreviousLeft { get; set; }
         internal double PreviousTop { get; set; }
         internal double PreviousWidth { get; set; }
         internal double PreviousHeight { get; set; }
         internal WindowState PreviousWindowState { get; set; }
+
         internal MdiContainer Container { get; private set; }
-        internal ImageSource ImageSource { get; set; }
+        public ImageSource ImageSource { get; set; }
 
         public Image Tumblr { get; private set; }
 
@@ -173,7 +170,7 @@ namespace MdiMvvm
             DependencyProperty.Register("WindowState", typeof(WindowState), typeof(MdiWindow), new PropertyMetadata(WindowState.Normal, OnWindowStateChanged));
 
         public static readonly DependencyProperty IsSelectedProperty =
-            DependencyProperty.Register("IsSelected", typeof(bool), typeof(MdiWindow), new UIPropertyMetadata(false));
+            DependencyProperty.Register("IsSelected", typeof(bool), typeof(MdiWindow), new UIPropertyMetadata(false, OnIsSelectedChanged));
 
         public static readonly DependencyProperty IsModalProperty =
             DependencyProperty.Register("IsModal", typeof(bool?), typeof(MdiWindow), new UIPropertyMetadata(IsModalChangedCallback));
@@ -189,6 +186,20 @@ namespace MdiMvvm
 
         public static readonly DependencyProperty IsResizableProperty =
             DependencyProperty.Register("IsResizable", typeof(bool), typeof(MdiWindow), new UIPropertyMetadata(IsResizableChangedCallback));
+
+        //public static readonly DependencyProperty PreviousLeftProperty =
+        //    DependencyProperty.Register("PreviousLeft", typeof(double), typeof(MdiWindow), new FrameworkPropertyMetadata(0));
+        //public static readonly DependencyProperty PreviousTopProperty =
+        //    DependencyProperty.Register("PreviousTop", typeof(double), typeof(MdiWindow), new FrameworkPropertyMetadata(0));
+        //public static readonly DependencyProperty PreviousWidthProperty =
+        //    DependencyProperty.Register("PreviousWidth", typeof(double), typeof(MdiWindow), new FrameworkPropertyMetadata(100));
+        //public static readonly DependencyProperty PreviousHeightProperty =
+        //    DependencyProperty.Register("PreviousHeight", typeof(double), typeof(MdiWindow), new FrameworkPropertyMetadata(100));
+        //public static readonly DependencyProperty PreviousWindowStateProperty =
+        //    DependencyProperty.Register("PreviousWindowState", typeof(WindowState), typeof(MdiWindow), new FrameworkPropertyMetadata(System.Windows.WindowState.Normal));
+
+
+
         #endregion
 
         #region RoutedEvents
@@ -200,42 +211,6 @@ namespace MdiMvvm
 
         public static readonly RoutedEvent WindowStateChangedEvent = EventManager.RegisterRoutedEvent(
            "WindowStateChanged", RoutingStrategy.Bubble, typeof(WindowStateChangedRoutedEventHandler), typeof(MdiWindow));
-
-
-
-
-
-        public static readonly DependencyProperty CloseCommandProperty = 
-            DependencyProperty.Register("CloseWindowCommand", typeof(ICommand), typeof(MdiWindow));
-
-        public static readonly DependencyProperty NormilizeWindowProperty =
-            DependencyProperty.Register("NormilizeWindowCommand", typeof(ICommand), typeof(MdiWindow));
-
-        public ICommand CloseWindowCommand
-        {
-            get
-            {
-                return (ICommand)GetValue(CloseCommandProperty);
-            }
-
-            set
-            {
-                SetValue(CloseCommandProperty, value);
-            }
-        }
-
-        public ICommand NormilizeWindowCommand
-        {
-            get
-            {
-                return (ICommand)GetValue(NormilizeWindowProperty);
-            }
-
-            set
-            {
-                SetValue(NormilizeWindowProperty, value);
-            }
-        }
         #endregion
 
 
@@ -250,6 +225,34 @@ namespace MdiMvvm
             get { return (WindowState)GetValue(WindowStateProperty); }
             set { SetValue(WindowStateProperty, value); }
         }
+
+        //public double PreviousLeft
+        //{
+        //    get { return (double)GetValue(PreviousLeftProperty); }
+        //    set { SetValue(PreviousLeftProperty, value); }
+        //}
+        //public double PreviousTop
+        //{
+        //    get { return (double)GetValue(PreviousTopProperty); }
+        //    set { SetValue(PreviousTopProperty, value); }
+        //}
+        //public double PreviousWidth
+        //{
+        //    get { return (double)GetValue(PreviousWidthProperty); }
+        //    set { SetValue(PreviousWidthProperty, value); }
+        //}
+        //public double PreviousHeight
+        //{
+        //    get { return (double)GetValue(PreviousHeightProperty); }
+        //    set { SetValue(PreviousHeightProperty, value); }
+        //}
+        //public WindowState PreviousWindowState
+        //{
+        //    get { return (WindowState)GetValue(PreviousWindowStateProperty); }
+        //    set { SetValue(PreviousWindowStateProperty, value); }
+        //}
+
+
         public bool IsSelected
         {
             get { return (bool)GetValue(IsSelectedProperty); }
@@ -316,6 +319,25 @@ namespace MdiMvvm
         #endregion
 
 
+        private static void OnIsSelectedChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        {
+            Console.WriteLine($"OnIsSelectedChanged {obj.GetType().Name}");
+            var window = obj as MdiWindow;
+            if (window != null)
+            {
+                if(((bool)e.NewValue) == true)
+                {
+                    Panel.SetZIndex(window, 2);
+                    window.RaiseEvent(new RoutedEventArgs(FocusChangedEvent, window.DataContext));
+                    window.Focus();
+                }
+                else
+                {
+                    Panel.SetZIndex(window, 0);
+                }
+            }
+        }
+
         private static void OnWindowStateChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             var window = obj as MdiWindow;
@@ -347,8 +369,6 @@ namespace MdiMvvm
         }
 
 
-
-
         public delegate void WindowStateChangedRoutedEventHandler(object sender, WindowStateChangedEventArgs e);
 
         public event WindowStateChangedRoutedEventHandler WindowStateChanged
@@ -376,30 +396,30 @@ namespace MdiMvvm
            OnMouseLeftButtonDown(mouseButtonEventArgs);
         }
 
+
+        #region  Overrides
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
             IsSelected = true;
-            Panel.SetZIndex(this, 2);
-            RaiseEvent(new RoutedEventArgs(FocusChangedEvent, DataContext));
-            Focus();
+            //Panel.SetZIndex(this, 2);
+            //RaiseEvent(new RoutedEventArgs(FocusChangedEvent, DataContext));
+            //Focus();
         }
 
         protected override void OnLostKeyboardFocus(KeyboardFocusChangedEventArgs e)
         {
             base.OnLostKeyboardFocus(e);
-            FrameworkElement parent =  VisualTreeExtension.FindMdiWindow(e.NewFocus as FrameworkElement);
-            if ((e.NewFocus is MdiWindow && !Equals(e.NewFocus, this) )|| (parent  != null && !Equals(parent, this)))
+            FrameworkElement parent = VisualTreeExtension.FindMdiWindow(e.NewFocus as FrameworkElement);
+            if ((e.NewFocus is MdiWindow && !Equals(e.NewFocus, this)) || (parent != null && !Equals(parent, this)))
             {
                 IsSelected = false;
-                Panel.SetZIndex(this, 0);
                 var newWindow = (e.NewFocus is MdiWindow) ? (e.NewFocus as MdiWindow) : (parent as MdiWindow);
-                Container.SetValue(MdiContainer.SelectedItemProperty , newWindow.DataContext);
+                Container.SetValue(MdiContainer.SelectedItemProperty, newWindow.DataContext);
                 newWindow.IsSelected = true;
                 //RaiseEvent(new RoutedEventArgs(FocusChangedEvent, DataContext));
             }
         }
-
 
         protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
         {
@@ -409,7 +429,13 @@ namespace MdiMvvm
             Panel.SetZIndex(this, 2);
 
             RaiseEvent(new RoutedEventArgs(FocusChangedEvent, DataContext));
-        }
+        } 
+        #endregion
+
+
+
+
+
 
         private void ToggleMaximizeWindow(object sender, RoutedEventArgs e)
         {
@@ -422,8 +448,6 @@ namespace MdiMvvm
             Focus();
             this.ToggleMinimize();
         }
-
-
 
         private void CloseWindow(object sender, RoutedEventArgs e)
         {

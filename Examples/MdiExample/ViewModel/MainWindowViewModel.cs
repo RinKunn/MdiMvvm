@@ -47,7 +47,6 @@ namespace MdiExample
                 //    Console.WriteLine($"Pos: {_selectedContainer.ViewModelCollection[0].Left}");
                 _selectedContainer = value;
                 OnPropertyChanged(nameof(SelectedContainer));
-
                 //if (_selectedContainer.ViewModelCollection.Count > 0)
                 //    Console.WriteLine($"New Pos: {_selectedContainer.ViewModelCollection.FirstOrDefault()?.Left}");
             }

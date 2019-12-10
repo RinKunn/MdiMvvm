@@ -14,60 +14,7 @@
 
 
 
-    <Style x:Key="MinimizedListStyle" TargetType="{x:Type ListBox}">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="VerticalAlignment" Value="Bottom"/>
-        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
-        <Setter Property="ItemsPanel">
-            <Setter.Value>
-                <ItemsPanelTemplate>
-                    <WrapPanel Orientation="Horizontal" FlowDirection="RightToLeft" RenderTransformOrigin="0.5,0.5">
-                        <WrapPanel.RenderTransform>
-                            <RotateTransform Angle="180"/>
-                        </WrapPanel.RenderTransform>
-                    </WrapPanel>
-                </ItemsPanelTemplate>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="ItemTemplate">
-            <Setter.Value>
-                <DataTemplate>
-                    <Border x:Name="PART_ListBoxHeader" 
-                            Background="{StaticResource InactiveWindowColor}" Height="26" VerticalAlignment="Top" Width="170"
-                            ToolTipService.IsEnabled="False" ToolTipService.Placement="Top" ToolTipService.HasDropShadow="False"
-                            RenderTransformOrigin="0.5,0.5">
-
-                        <Border.RenderTransform>
-                            <RotateTransform Angle="180"/>
-                        </Border.RenderTransform>
-
-                        <Grid VerticalAlignment="Center">
-                            <TextBlock Text="{Binding Title}" Margin="2,2" IsHitTestVisible="False" />
-                            <!--<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="2,2,0,2" VerticalAlignment="Center">
-                                <windowControls:WindowButton x:Name="PART_ListBox_ButtonBar_MinimizeButton" Icon="{StaticResource MinimizeShape}" />
-                                <windowControls:WindowButton x:Name="PART_ListBox_ButtonBar_MaximizeButton" Icon="{StaticResource MaximizeShape}" IsEnabled="{Binding IsResizable}"/>
-                                <windowControls:WindowButton x:Name="PART_ListBox_ButtonBar_CloseButton" Icon="{StaticResource CloseShape}" IsEnabled="{Binding IsCloseButtonEnabled}" />
-                            </StackPanel>-->
-                        </Grid>
-                        <!--<Border.ToolTip>
-                            <ToolTip Style="{StaticResource TumblrStyle}">
-                                <Viewbox Width="180" Height="180" RenderOptions.BitmapScalingMode="HighQuality" Panel.ZIndex="100">
-                                    <Image x:Name="PART_ListBoxTumblr" Stretch="UniformToFill" />
-                                </Viewbox>
-                            </ToolTip>
-                        </Border.ToolTip>-->
-                    </Border>
-                    <DataTemplate.Triggers>
-                        <DataTrigger Binding="{Binding IsSelected}" Value="true">
-                            <Setter TargetName="PART_ListBoxHeader" Property="Background" Value="{StaticResource ActiveWindowColor}" />
-                            <Setter TargetName="PART_ListBoxHeader" Property="BorderBrush" Value="{StaticResource ActiveWindowColor}" />
-                        </DataTrigger>
-                    </DataTemplate.Triggers>
-                </DataTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
+   
     
     
     
@@ -79,15 +26,18 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:MdiContainer}">
-                    <Grid>
-                        <ScrollViewer x:Name="PART_ContainerScrollViewer" CanContentScroll="True" 
-                                      VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Style="{StaticResource FavsScrollViewer}">
-                            <Border x:Name="PART_ContainerBorder" BorderThickness="2" CornerRadius="1">
+                    <Border x:Name="PART_ContainerBorder" BorderThickness="2" CornerRadius="1" >
+                        <Grid>
+                            <ScrollViewer x:Name="PART_ContainerScrollViewer" CanContentScroll="True" 
+                                          VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                                        Style="{StaticResource FavsScrollViewer}">
                                 <ItemsPresenter />
-                            </Border>
-                        </ScrollViewer>
-                        <ListBox x:Name="PART_ContainerMinWin_ListBox" Style="{StaticResource MinimizedListStyle}" VerticalAlignment="Bottom" HorizontalAlignment="Stretch"/>
-                    </Grid>
+                            </ScrollViewer>
+                            <ListBox x:Name="PART_ContainerMinWin_ListBox" Style="{StaticResource MinimizedListStyle}"
+                                     VerticalAlignment="Bottom" HorizontalAlignment="Stretch"
+                                     BorderBrush="Transparent"/>
+                        </Grid>
+                    </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -122,26 +72,7 @@
         <Setter Property="Focusable" Value="False" />
     </Style>
 
-    <Style x:Key="TumblrStyle" TargetType="{x:Type ToolTip}">
-        <Setter Property="Background" Value="{StaticResource ToolTipBackgroundColor}"/>
-        <Setter Property="BorderBrush" Value="{StaticResource ToolTipBackgroundBorderColor}"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="RenderTransform">
-            <Setter.Value>
-                <ScaleTransform ScaleX="0.7" CenterX="90" />
-            </Setter.Value>
-        </Setter>
-        <Style.Triggers>
-            <EventTrigger RoutedEvent="ToolTip.Opened">
-                <BeginStoryboard HandoffBehavior="Compose">
-                    <Storyboard TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" RenderOptions.BitmapScalingMode="HighQuality" >
-                        <DoubleAnimation From="0.7" To="1" Duration="0:0:0.1" />
-                    </Storyboard>
-                </BeginStoryboard>
-            </EventTrigger>
-
-        </Style.Triggers>
-    </Style>
+    
 
     <Style TargetType="{x:Type Control}" x:Key="ResizeDecorator">
         <Setter Property="Focusable" Value="False" />
@@ -229,7 +160,6 @@
                             <!--Window Header-->
                             <Border x:Name="PART_Header" 
                                         Background="{StaticResource InactiveWindowColor}" Height="24" VerticalAlignment="Top" >
-                                <!--ToolTipService.IsEnabled="False" ToolTipService.Placement="Top" ToolTipService.HasDropShadow="False"-->
                                 <Grid VerticalAlignment="Top">
                                     <windowControls:MoveThumb x:Name="PART_MoverThumb"/>
                                     <TextBlock Text="{TemplateBinding Title}" Margin="2,2" IsHitTestVisible="False" />
@@ -239,13 +169,6 @@
                                         <windowControls:WindowButton x:Name="PART_ButtonBar_CloseButton" Icon="{StaticResource CloseShape}" IsEnabled="{TemplateBinding IsCloseButtonEnabled}" />
                                     </StackPanel>
                                 </Grid>
-                                <!--<Border.ToolTip>
-                                    <ToolTip Style="{StaticResource TumblrStyle}">
-                                        <Viewbox Width="180" Height="180" RenderOptions.BitmapScalingMode="HighQuality" Panel.ZIndex="100">
-                                            <Image x:Name="PART_Tumblr" Stretch="UniformToFill" />
-                                        </Viewbox>
-                                    </ToolTip>
-                                </Border.ToolTip>-->
                             </Border>
 
                             <Control x:Name="PART_ResizerThumb" Grid.Row="0" Grid.RowSpan="2" IsEnabled="{TemplateBinding IsResizable}" Style="{StaticResource ResizeDecorator}"/>
@@ -268,13 +191,16 @@
                             <Setter TargetName="PART_BorderGrid" Property="Margin" Value="0" />
                             <Setter TargetName="PART_BorderContent" Property="BorderThickness" Value="0" />
                         </Trigger>
+                        <Trigger Property="WindowState" Value="Minimized">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="WindowState" Value="Normal" />
                                 <Condition Property="HasDropShadow" Value="True" />
                             </MultiTrigger.Conditions>
                             <MultiTrigger.Setters>
-                                
                                 <Setter TargetName="PART_Border" Property="Effect">
                                     <Setter.Value>
                                         <DropShadowEffect Color="Black" Opacity="1" ShadowDepth="0" BlurRadius="20" RenderingBias="Performance" />
@@ -282,18 +208,7 @@
                                 </Setter>
                             </MultiTrigger.Setters>
                         </MultiTrigger>
-                        <Trigger Property="WindowState" Value="Minimized">
-                            <Setter Property="Visibility" Value="Collapsed" />
-                            <!--<Setter TargetName="PART_ResizerThumb" Property="IsEnabled" Value="False" />
-                            <Setter TargetName="PART_Header" Property="ToolTipService.IsEnabled" Value="True" />
-                            
-                            <Setter TargetName="PART_Content" Property="Visibility" Value="Collapsed" />
-                            <Setter TargetName="PART_BorderContent" Property="Visibility" Value="Collapsed" />
-                            <Setter TargetName="PART_BorderGrid" Property="VerticalAlignment" Value="Top" />
-                            <Setter TargetName="PART_Border" Property="VerticalAlignment" Value="Top" />
-                            <Setter TargetName="PART_Border" Property="BorderThickness" Value="2" />
-                            <Setter Property="MinHeight" Value="26" />-->
-                        </Trigger>
+                        
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

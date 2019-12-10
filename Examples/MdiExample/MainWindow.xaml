@@ -51,15 +51,24 @@
         <TabControl 
             Grid.Row="1"
             ItemsSource="{Binding Containers}"
-            SelectedItem="{Binding SelectedContainer}">
+            SelectedItem="{Binding SelectedContainer, UpdateSourceTrigger=PropertyChanged}">
 
             <TabControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type local:MdiContainerViewModel}">
                     <TextBlock Text="{Binding Title}"/>
                 </DataTemplate>
             </TabControl.ItemTemplate>
-
+            <TabControl.ContentTemplate>
+                <DataTemplate DataType="{x:Type local:MdiContainerViewModel}">
+                    <Grid>
+                        <control:MdiContainer
+                        ItemsSource="{Binding ViewModelCollection}"
+                        ItemContainerStyle="{StaticResource cp}"/>
+                    </Grid>
+                        </DataTemplate>
+            </TabControl.ContentTemplate>
         </TabControl>
+
 
         <!--<ListBox Grid.Row="1" Background="Transparent"
                   VerticalAlignment="Bottom" HorizontalAlignment="Stretch"
