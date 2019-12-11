@@ -49,7 +49,7 @@ namespace MdiExample
             _addCommand ??
             (_addCommand = new RelayCommand(() =>
             {
-                ViewModelCollection.Add(new Window1ViewModel() { IsModal = false, Text = "window_" + Title + count++ });
+                ViewModelCollection.Add(new Window1ViewModel() { IsModal = false, Title = "window_" + Title + count++ });
             }));
         private RelayCommand _addCommandModal;
 
@@ -67,7 +67,7 @@ namespace MdiExample
             (_addCommandModal = new RelayCommand(() =>
             {
 
-                ViewModelCollection.Add(new Window1ViewModel() { IsModal = true, Text = "window_" + Title });
+                ViewModelCollection.Add(new Window1ViewModel() { IsModal = true, Title = "window_" + Title });
 
             }));
 

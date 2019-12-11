@@ -62,16 +62,10 @@ namespace MdiMvvm.WindowControls
             var window = VisualTreeExtension.FindMdiWindow(this);
             if (window != null)
             {
-                if (window.WindowState == WindowState.Maximized)
-                {
-                    window.Normalize();
-                }
+                if (window.WindowState == WindowState.Maximized) return;
 
-                double currentLeft = Canvas.GetLeft(window);
-                double currentTop = Canvas.GetTop(window);
-
-                Canvas.SetLeft(window, Math.Max(0, currentLeft + e.HorizontalChange));
-                Canvas.SetTop(window, Math.Max(0, currentTop + e.VerticalChange));
+                Canvas.SetLeft(window, Math.Max(0, Canvas.GetLeft(window) + e.HorizontalChange));
+                Canvas.SetTop(window, Math.Max(0, Canvas.GetTop(window) + e.VerticalChange));
 
                 window.Container.InvalidateSize();
             }

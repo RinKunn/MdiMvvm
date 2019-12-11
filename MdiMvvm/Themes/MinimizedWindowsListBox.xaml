@@ -51,11 +51,10 @@
                         Height="Auto" Width="100" BorderThickness="1" CornerRadius="2"
                             Background="{StaticResource InactiveWindowColor}"
                             BorderBrush="{StaticResource InactiveWindowColor}">
-                        
+
                         <Grid VerticalAlignment="Center" HorizontalAlignment="Left">
                             <TextBlock Text="{Binding Title}" Margin="1,1" IsHitTestVisible="False" />
                         </Grid>
-                        
                     </Border>
                     <DataTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -88,7 +87,6 @@
                             <RotateTransform Angle="180"/>
                         </Setter.Value>
                     </Setter>
-
                     <Setter Property="Background" Value="Transparent"/>
                     <Setter Property="Focusable" Value="False"/>
                 </Style>

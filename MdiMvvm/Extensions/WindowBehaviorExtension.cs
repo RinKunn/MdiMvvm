@@ -8,7 +8,7 @@ namespace MdiMvvm.Extensions
 {
     internal static class WindowBehaviorExtension
     {
-        private static int ANIMATED_MILLISECONDS_DURATION = 10;
+        //private static int ANIMATED_MILLISECONDS_DURATION = 0;
 
         
         /// <summary>
@@ -43,12 +43,12 @@ namespace MdiMvvm.Extensions
         {
             if (window.IsResizable)
             {
-                if (window.WindowState == WindowState.Normal) window.SavePreviousPosition();
+                window.SavePreviousPosition();
 
                 Canvas.SetTop(window, 0.0);
                 Canvas.SetLeft(window, 0.0);
                 AnimateResize(window, window.Container.ActualWidth - 4, window.Container.ActualHeight - 4, true);
-                //Panel.SetZIndex(window, 10);
+                Panel.SetZIndex(window, 10);
                 
                 window.PreviousWindowState = window.WindowState;
                 window.WindowState = WindowState.Maximized;
@@ -62,12 +62,11 @@ namespace MdiMvvm.Extensions
         /// <param name="window"></param>
         public static void Normalize(this MdiWindow window)
         {
+            if(window.WindowState == WindowState.Maximized) window.LoadPreviousPosition();
+
             window.PreviousWindowState = window.WindowState;
             window.WindowState = WindowState.Normal;
 
-            window.LoadPreviousPosition();
-
-            
             Panel.SetZIndex(window, 0);
         }
 
@@ -77,37 +76,30 @@ namespace MdiMvvm.Extensions
         /// <param name="window"></param>
         public static void Minimize(this MdiWindow window)
         {
-            if (window.WindowState == WindowState.Normal) window.SavePreviousPosition();
-            
-
-            //window.Tumblr.Source = window.CreateSnapshot();
             window.ImageSource = window.CreateSnapshot();
-
-            RemoveWindowLock(window);
-            AnimateResize(window, MdiWindow.MINIMIZED_WINDOW_WIDTH, MdiWindow.MINIMIZED_WINDOW_HEIGHT, true);
 
             window.PreviousWindowState = window.WindowState;
             window.WindowState = WindowState.Minimized;
-            Panel.SetZIndex(window, 0);
+            //Panel.SetZIndex(window, 0);
         }
-
-
 
         internal static void AnimateResize(MdiWindow window, double newWidth, double newHeight, bool lockWindow)
         {
             window.LayoutTransform = new ScaleTransform();
-       
-            var widthAnimation = new DoubleAnimation(window.ActualWidth, newWidth, new Duration(TimeSpan.FromMilliseconds(ANIMATED_MILLISECONDS_DURATION)));         
-            var heightAnimation = new DoubleAnimation(window.ActualHeight, newHeight, new Duration(TimeSpan.FromMilliseconds(ANIMATED_MILLISECONDS_DURATION)));
 
-            if (lockWindow == false)
-            {
-                widthAnimation.Completed += (s, e) => window.BeginAnimation(FrameworkElement.WidthProperty, null);
-                heightAnimation.Completed += (s, e) => window.BeginAnimation(FrameworkElement.HeightProperty, null);
-            }
+            window.Height = newHeight;
+            window.Width = newWidth;
+            //var widthAnimation = new DoubleAnimation(window.ActualWidth, newWidth, new Duration(TimeSpan.FromMilliseconds(ANIMATED_MILLISECONDS_DURATION)));
+            //var heightAnimation = new DoubleAnimation(window.ActualHeight, newHeight, new Duration(TimeSpan.FromMilliseconds(ANIMATED_MILLISECONDS_DURATION)));
 
-            window.BeginAnimation(FrameworkElement.WidthProperty, widthAnimation, HandoffBehavior.Compose);
-            window.BeginAnimation(FrameworkElement.HeightProperty, heightAnimation, HandoffBehavior.Compose);
+            //if (lockWindow == false)
+            //{
+            //    widthAnimation.Completed += (s, e) => window.BeginAnimation(FrameworkElement.WidthProperty, new DoubleAnimation(window.Width, newWidth, new Duration(TimeSpan.FromMilliseconds(ANIMATED_MILLISECONDS_DURATION))));
+            //    heightAnimation.Completed += (s, e) => window.BeginAnimation(FrameworkElement.HeightProperty, new DoubleAnimation(window.Height, newHeight, new Duration(TimeSpan.FromMilliseconds(ANIMATED_MILLISECONDS_DURATION))));
+            //}
+
+            //window.BeginAnimation(FrameworkElement.WidthProperty, widthAnimation, HandoffBehavior.Compose);
+            //window.BeginAnimation(FrameworkElement.HeightProperty, heightAnimation, HandoffBehavior.Compose);
         }
 
 

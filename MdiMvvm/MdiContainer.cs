@@ -1,13 +1,12 @@
 ﻿using MdiMvvm.Events;
 using MdiMvvm.Extensions;
+using MdiMvvm.ValueObjects;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Collections.ObjectModel;
-using System.Windows.Media;
+using System.Windows.Input;
 
 namespace MdiMvvm
 {
@@ -17,22 +16,41 @@ namespace MdiMvvm
     {
         private ScrollViewer ContainerScrollViewer;
         private ListBox ContainerMinWinListox;
-        private IList _internalItemSource;
         private Canvas ContainerCanvas;
         private MdiWindow _maximizedWindow;
+        private IList _internalItemSource;
 
-        internal ObservableCollection<MdiWindow> _minimizedWindowsCollection;
+        private MdiWindow MaximizedWindow
+        {
+            get => _maximizedWindow;
+            set
+            {
+                if (object.ReferenceEquals(value, _maximizedWindow)) return;
+                var buf = _maximizedWindow;
+                _maximizedWindow = value;
+                if (value == null)
+                {
+                    EnableContainerScroll();
+                    ContainerMinWinListox.Visibility = Visibility.Visible;
+                    InvalidateSize(buf);
+                }
+                else if(buf == null)
+                {
+                    EnableContainerScroll(false);
+                    ContainerMinWinListox.Visibility = Visibility.Collapsed;
+                    _maximizedWindow.IsSelected=true;
+                }
+            }
+        }
+        private MinimizedWindowCollection MinimizedWindows;
         
         static MdiContainer()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(MdiContainer), new FrameworkPropertyMetadata(typeof(MdiContainer)));
-            
         }
 
         public MdiContainer() : base()
         {
-            _minimizedWindowsCollection = new ObservableCollection<MdiWindow>();
-            var r = this.ItemsSource;
             this.Loaded += MdiContainer_Loaded;
             this.SelectionChanged += MdiContainer_SelectionChanged;
             this.SizeChanged += MdiContainer_SizeChanged;
@@ -46,10 +64,10 @@ namespace MdiMvvm
             base.OnApplyTemplate();
             ContainerScrollViewer = GetTemplateChild("PART_ContainerScrollViewer") as ScrollViewer;
             ContainerMinWinListox = GetTemplateChild("PART_ContainerMinWin_ListBox") as ListBox;
-            ContainerMinWinListox.ItemsSource = _minimizedWindowsCollection;
+            MinimizedWindows = new MinimizedWindowCollection(ContainerMinWinListox);
+            ContainerMinWinListox.ItemsSource = MinimizedWindows;
         }
 
-        
         protected override DependencyObject GetContainerForItemOverride()
         {
             return new MdiWindow();
@@ -63,29 +81,44 @@ namespace MdiMvvm
                 window.FocusChanged += OnMdiWindowFocusChanged;
                 window.WindowStateChanged += OnMdiWindowStateChanged;
                 window.Closing += OnMdiWindowClosing;
+                window.Unloaded += OnMdiWindow_Unloaded;
 
                 window.Initialize(this);
-
                 window.InitPosition();
 
-                if (_maximizedWindow != null)
-                    _maximizedWindow.Normalize();
+                if (MaximizedWindow != null)
+                    MaximizedWindow.Normalize();
 
                 window.Focus();
             }
 
             base.PrepareContainerForItemOverride(element, item);
         }
-
+        
         protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
         {
             base.OnItemsSourceChanged(oldValue, newValue);
-
             if (newValue != null && newValue is IList)
             {
+                MdiWindow maxwin = null;
                 _internalItemSource = newValue as IList;
+                MinimizedWindows?.Clear();
+                foreach (var item in _internalItemSource)
+                {
+                    MdiWindow window = ItemContainerGenerator.ContainerFromItem(item) as MdiWindow;
+                    if (window.WindowState == WindowState.Minimized)
+                    {
+                        MinimizedWindows.Add(window);
+                    }
+                    else if(window.WindowState == WindowState.Maximized)
+                    {
+                        maxwin = window;
+                    }
+                }
                 InvalidateSize();
+                MaximizedWindow = maxwin;
             }
+            
         }
 
 
@@ -118,25 +151,17 @@ namespace MdiMvvm
 
         #endregion
 
-        #region Events handlers
+        #region MdiContainer Events Handles
 
         private void MdiContainer_Loaded(object sender, RoutedEventArgs e)
         {
-
             ContainerCanvas = VisualTreeExtension.FindItemPresenterChild<Canvas>(this);
             InvalidateSize();
-            Console.WriteLine($"MdiContainer_Loaded:  ");
-            counter++;
-            if (counter == 1) ContainerCanvas.Background = Brushes.Gray;
-            else if (counter == 2) ContainerCanvas.Background = Brushes.Red;
-            else ContainerCanvas.Background = Brushes.Blue;
         }
-        private static int counter = 0;
         private void MdiContainer_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             InvalidateSize();
         }
-
         private void MdiContainer_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.AddedItems.Count > 0)
@@ -164,43 +189,30 @@ namespace MdiMvvm
 
             if (e.NewValue == WindowState.Minimized)
             {
-                _minimizedWindowsCollection.Add(window);
-                ListBoxItem lbi = (ListBoxItem)ContainerMinWinListox.ItemContainerGenerator.ContainerFromItem(window);
-                lbi.MouseDoubleClick += MinimizedWindow_MouseDoubleClick;
+                MinimizedWindows.Add(window);
             }
             else if (e.OldValue == WindowState.Minimized)
             {
-                ListBoxItem lbi = (ListBoxItem)ContainerMinWinListox.ItemContainerGenerator.ContainerFromItem(window);
-                lbi.MouseDoubleClick -= MinimizedWindow_MouseDoubleClick;
-                _minimizedWindowsCollection.Remove(window);
+                MinimizedWindows.Remove(window);
             }
 
             if (e.NewValue == WindowState.Maximized)
             {
-                EnableContainerScroll(false);
-                ContainerMinWinListox.Visibility = Visibility.Collapsed;
-                _maximizedWindow = window;
+                MaximizedWindow = window;
             }
             else if (e.OldValue == WindowState.Maximized)
             {
-                ContainerMinWinListox.Visibility = Visibility.Visible;
-                EnableContainerScroll();
-                _maximizedWindow = null;
+                MaximizedWindow = null;
             }
         }
 
         private void OnMdiWindowClosing(object sender, RoutedEventArgs e)
         {
             var window = sender as MdiWindow;
+            if (window.WindowState == WindowState.Maximized)
+                MaximizedWindow = null;
             if (window?.DataContext != null)
             {
-                if(window.WindowState == WindowState.Maximized)
-                {
-                    ContainerMinWinListox.Visibility = Visibility.Visible;
-                    EnableContainerScroll();
-                    _maximizedWindow = null;
-                }
-
                 _internalItemSource?.Remove(window.DataContext);
                 if (Items.Count > 0)
                 {
@@ -216,8 +228,20 @@ namespace MdiMvvm
                 window.DataContext = null;
                 InvalidateSize();
             }
-        } 
-        
+        }
+
+        private void OnMdiWindow_Unloaded(object sender, RoutedEventArgs e)
+        {
+            var window = sender as MdiWindow;
+            if (window != null)
+            {
+                if (window.WindowState == WindowState.Maximized) MaximizedWindow = null;
+                window.FocusChanged -= OnMdiWindowFocusChanged;
+                window.Closing -= OnMdiWindowClosing;
+                window.WindowStateChanged -= OnMdiWindowStateChanged;
+                window.DataContext = null;
+            }
+        }
 
         private void OnMdiWindowFocusChanged(object sender, RoutedEventArgs e)
         {
@@ -242,7 +266,7 @@ namespace MdiMvvm
             }
         }
 
-        private void MinimizedWindow_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void OnMinimizedWindow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             MdiWindow window = (MdiWindow)(sender as ListBoxItem).DataContext;
             if (window != null)
@@ -256,14 +280,15 @@ namespace MdiMvvm
         {
             if (ContainerCanvas == null || _maximizedWindow != null) return;
 
-            Point largestPoint = new Point(ActualWidth - 5, ActualHeight - 5);
+            Point largestPoint = new Point(this.ActualWidth - 5, this.ActualHeight - 5);
             
             if(currWindow != null)
             {
-                double winRight = Canvas.GetLeft(currWindow) + currWindow.ActualWidth;
-                double winBottom = Canvas.GetTop(currWindow) + currWindow.ActualHeight;
+                double winRight = Canvas.GetLeft(currWindow) + currWindow.Width;
+                double winBottom = Canvas.GetTop(currWindow) + currWindow.Height;
                 largestPoint.X = largestPoint.X > winRight ? largestPoint.X : winRight;
                 largestPoint.Y = largestPoint.Y > winBottom ? largestPoint.Y : winBottom;
+                
             }
             else
             {
@@ -273,16 +298,9 @@ namespace MdiMvvm
                     {
                         MdiWindow window = ItemContainerGenerator.ContainerFromItem(item) as MdiWindow;
                         if (window == null) return;
-
-                        Point farPosition = new Point(Canvas.GetLeft(window), Canvas.GetTop(window));
-
-                        if (window.WindowState == WindowState.Minimized) 
-                            continue;
-                        else
-                        {
-                            farPosition.X += window.ActualWidth;
-                            farPosition.Y += window.ActualHeight;
-                        }
+                        if (window.WindowState == WindowState.Minimized) continue;
+                        
+                        Point farPosition = new Point(Canvas.GetLeft(window) + window.Width, Canvas.GetTop(window) + window.Height);
 
                         if (farPosition.X > largestPoint.X)
                             largestPoint.X = farPosition.X;
@@ -292,7 +310,7 @@ namespace MdiMvvm
                     }
                 }
             }
-
+            //Console.WriteLine($"InvalidateSize: container:[{ContainerCanvas.Width}, {ContainerCanvas.Height}] bifsize: [{largestPoint.X}, {largestPoint.Y}]");
             if (ContainerCanvas.Width != largestPoint.X) ContainerCanvas.Width = largestPoint.X;
             if (ContainerCanvas.Height != largestPoint.Y) ContainerCanvas.Height = largestPoint.Y;
         }

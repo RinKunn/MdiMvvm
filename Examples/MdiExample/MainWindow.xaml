@@ -11,15 +11,21 @@
 
     <Window.Resources>
 
-        <Style x:Key="cp"  TargetType="{x:Type control:MdiWindow}">
+        <Style x:Key="cp" TargetType="{x:Type control:MdiWindow}">
+            <Setter Property="Title" Value="{Binding Title, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Setter Property="IsModal" Value="{Binding IsModal, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"/>
+            <Setter Property="Width" Value="{Binding CurrentWidth, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
+            <Setter Property="Height" Value="{Binding CurrentHeight, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
+            <Setter Property="Canvas.Left" Value="{Binding CurrentLeft, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
+            <Setter Property="Canvas.Top" Value="{Binding CurrentTop, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
+            <Setter Property="WindowState" Value="{Binding WindowState, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
 
-            <Setter Property="Title" Value="{Binding Text, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
-            <Setter Property="IsModal" Value="{Binding IsModal, UpdateSourceTrigger=PropertyChanged}"/>
-            <Setter Property="Width" Value="{Binding Width, UpdateSourceTrigger=PropertyChanged}"/>
-            <Setter Property="Height" Value="{Binding Height, UpdateSourceTrigger=PropertyChanged}"/>
-            <Setter Property="WindowState" Value="{Binding State, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            <!--<Setter Property="PositionLeft" Value="{Binding PositionLeft, UpdateSourceTrigger=PropertyChanged}"/>
-            <Setter Property="PositionTop" Value="{Binding PositionTop, UpdateSourceTrigger=PropertyChanged}"/>-->
+            <Setter Property="PreviousWidth" Value="{Binding PreviousWidth, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
+            <Setter Property="PreviousHeight" Value="{Binding PreviousHeight, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
+            <Setter Property="PreviousLeft" Value="{Binding PreviousLeft, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
+            <Setter Property="PreviousTop" Value="{Binding PreviousTop, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
+            <Setter Property="PreviousWindowState" Value="{Binding PreviousState, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
+            
             <Setter Property="IsResizable" Value="True"/>
         </Style>
 
@@ -40,9 +46,6 @@
         <Menu>
             <MenuItem Header="+" Command="{Binding SelectedContainer.AddCommand}"/>
             <MenuItem Header="++" Command="{Binding SelectedContainer.AddCommandModal}"/>
-            <MenuItem Header="+but" Command="{Binding AddButtonCommand}"/>
-            <MenuItem Header="-but" Command="{Binding RemoveButtonCommand}"/>
-            <MenuItem Header="++" Command="{Binding GetInfo}" />
             <MenuItem Header="Save" Command="{Binding Path=SaveCommand}"/>
             <MenuItem Header="Load" Command="{Binding Path=LoadCommand}"/>
 
@@ -58,44 +61,7 @@
                     <TextBlock Text="{Binding Title}"/>
                 </DataTemplate>
             </TabControl.ItemTemplate>
-            <TabControl.ContentTemplate>
-                <DataTemplate DataType="{x:Type local:MdiContainerViewModel}">
-                    <Grid>
-                        <control:MdiContainer
-                        ItemsSource="{Binding ViewModelCollection}"
-                        ItemContainerStyle="{StaticResource cp}"/>
-                    </Grid>
-                        </DataTemplate>
-            </TabControl.ContentTemplate>
+
         </TabControl>
-
-
-        <!--<ListBox Grid.Row="1" Background="Transparent"
-                  VerticalAlignment="Bottom" HorizontalAlignment="Stretch"
-                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                  ItemsSource="{Binding ButtonList}">
-
-
-
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel Orientation="Horizontal" FlowDirection="RightToLeft" RenderTransformOrigin="0.5,0.5">
-                        <WrapPanel.RenderTransform>
-                            <RotateTransform Angle="180"/>
-                        </WrapPanel.RenderTransform>
-                    </WrapPanel>
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Border RenderTransformOrigin="0.5,0.5" BorderThickness="1" BorderBrush="Red" CornerRadius="2">
-                        <Border.RenderTransform>
-                            <RotateTransform Angle="180"/>
-                        </Border.RenderTransform>
-                        <TextBlock Text="{Binding Name}" Height="24" Width="100" Margin="2,0,2,0" Background="Gray"/>
-                    </Border>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>-->
     </Grid>
 </Window>

@@ -8,7 +8,8 @@
              Background="Yellow"
              VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
              MinHeight="230" MinWidth="150"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance Type=local:Window1ViewModel, IsDesignTimeCreatable=False}">
     
     
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
@@ -21,12 +22,25 @@
             <RowDefinition/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Text="{Binding Text}" FontSize="20"/>
-        <TextBlock Grid.Row="1" Text="{Binding PositionLeft, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}X: {0}}" FontSize="20" Foreground="Red"/>
-        <TextBlock Grid.Row="2" Text="{Binding PositionTop, Mode=OneWay}" FontSize="20" Foreground="Red"/>
-        <TextBlock Grid.Row="3" Text="{Binding Width, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}W: {0}}" FontSize="20" Foreground="Red"/>
-        <TextBlock Grid.Row="4" Text="{Binding Height, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, StringFormat={}H: {0}}" FontSize="20" Foreground="Red"/>
-        <TextBlock Grid.Row="5" Text="{Binding IsSelected, StringFormat={}IsSelected: {0}}" FontSize="20" Foreground="Red"/>
-        <TextBlock Grid.Row="6" Text="{Binding State, NotifyOnSourceUpdated=True, StringFormat={}State: {0}}" FontSize="20" Foreground="Red"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding Title}" FontSize="20"/>
+        <TextBlock Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding IsSelected, NotifyOnSourceUpdated=True, StringFormat={}IsSelected: {0}}" FontSize="20" Foreground="Red"/>
+        
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding WindowState, NotifyOnSourceUpdated=True, StringFormat={}State: {0}}" FontSize="20" Foreground="Red"/>
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="{Binding CurrentLeft, NotifyOnSourceUpdated=True, StringFormat={}X: {0}}" FontSize="20" Foreground="Red"/>
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="{Binding CurrentTop, NotifyOnSourceUpdated=True}" FontSize="20" Foreground="Red"/>
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="{Binding CurrentHeight, NotifyOnSourceUpdated=True, StringFormat={}W: {0}}" FontSize="20" Foreground="Red"/>
+        <TextBlock Grid.Row="6" Grid.Column="0" Text="{Binding CurrentWidth, NotifyOnSourceUpdated=True, StringFormat={}H: {0}}" FontSize="20" Foreground="Red"/>
+
+        <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding PreviousState, NotifyOnSourceUpdated=True, StringFormat={}State: {0}}" FontSize="20" Foreground="Red"/>
+        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding PreviousLeft, NotifyOnSourceUpdated=True, StringFormat={}X: {0}}" FontSize="20" Foreground="Red"/>
+        <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding PreviousTop, NotifyOnSourceUpdated=True}" FontSize="20" Foreground="Red"/>
+        <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding PreviousHeight, NotifyOnSourceUpdated=True, StringFormat={}W: {0}}" FontSize="20" Foreground="Red"/>
+        <TextBlock Grid.Row="6" Grid.Column="1" Text="{Binding PreviousWidth, NotifyOnSourceUpdated=True, StringFormat={}H: {0}}" FontSize="20" Foreground="Red"/>
+
     </Grid>
 </UserControl>

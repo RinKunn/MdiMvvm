@@ -15,7 +15,7 @@ namespace MdiMvvm.WindowControls
 
         private void OnResizing(object sender, DragDeltaEventArgs e)
         {
-            var window = VisualTreeExtension.FindMdiWindow(this);         
+            var window = VisualTreeExtension.FindMdiWindow(this);
 
             if (window != null)
             {

@@ -11,20 +11,41 @@ namespace MdiMvvm.ViewModels
     public abstract class MdiWindowViewModelBase : ViewModelBase
     {
         #region Members
+
+        private string _title;
+        private bool _isModal;
         private double _previousLeft;
         private double _previousTop;
         private double _previousWidth;
         private double _previousHeight;
         private WindowState _previousState;
 
-        private double _currentLeft;
-        private double _currentTop;
+        private double _currentLeft; // bind Canvas.Left
+        private double _currentTop; // bind Canvas.Top
         private double _currentWidth;
         private double _currentHeight;
-        private WindowState _windowState; 
+        private WindowState _windowState;
         #endregion
 
         #region Props
+        public string Title
+        {
+            get => _title;
+            set
+            {
+                _title = value;
+                RaisePropertyChanged(() => Title);
+            }
+        }
+        public bool IsModal
+        {
+            get => _isModal;
+            set
+            {
+                _isModal = value;
+                RaisePropertyChanged(() => IsModal);
+            }
+        }
         public double PreviousLeft
         {
             get => _previousLeft;
