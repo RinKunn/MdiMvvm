@@ -29,9 +29,8 @@ namespace MdiExample
         public Window1ViewModel()
         {
             Random r = new Random();
-            Title = "Window1ViewModel_" + r.Next(1, 1000);
-            Console.WriteLine($"Content '{Title}' Constructor: {IsSelected}");
+            Title = "DefaultTitle" + r.Next(1, 1000);
+            //Console.WriteLine($"Content '{Title}' Constructor: {IsSelected}");
         }
-
     }
 }

@@ -61,15 +61,10 @@ namespace MdiMvvm
             
         }
 
-        private static int counter = 0;
-
         public void InitPosition()
         {
-            if (this.WindowState == WindowState.Maximized || Canvas.GetLeft(this) != 0) return;
+            if (this.WindowState == WindowState.Maximized || (Width != 0 && Height != 0)) return;
             
-            
-
-
             var actualContainerHeight = Container.ActualHeight;
             var actualContainerWidth = Container.ActualWidth;
             UpdateLayout();
@@ -168,7 +163,7 @@ namespace MdiMvvm
             DependencyProperty.Register("WindowState", typeof(WindowState), typeof(MdiWindow), new PropertyMetadata(WindowState.Normal, IsWindowStateChangedCallBack));
 
         public static readonly DependencyProperty IsSelectedProperty =
-            DependencyProperty.Register("IsSelected", typeof(bool), typeof(MdiWindow), new UIPropertyMetadata(false, IsSelectedChangedCallback));
+            DependencyProperty.Register("IsSelected", typeof(bool), typeof(MdiWindow), new UIPropertyMetadata(false));
 
         public static readonly DependencyProperty IsModalProperty =
             DependencyProperty.Register("IsModal", typeof(bool?), typeof(MdiWindow), new UIPropertyMetadata(IsModalChangedCallback));
@@ -339,23 +334,24 @@ namespace MdiMvvm
             ((MdiWindow)d).IsResizable = (bool)e.NewValue;
         }
 
-        private static void IsSelectedChangedCallback(DependencyObject obj, DependencyPropertyChangedEventArgs e)
-        {
-            var window = obj as MdiWindow;
-            if (window != null)
-            {
-                if (((bool)e.NewValue) == true)
-                {
-                    Panel.SetZIndex(window, 2);
-                    window.RaiseEvent(new RoutedEventArgs(FocusChangedEvent, window.DataContext));
-                    window.Focus();
-                }
-                else
-                {
-                    Panel.SetZIndex(window, 0);
-                }
-            }
-        }
+        //private static void IsSelectedChangedCallback(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        //{
+        //    var window = obj as MdiWindow;
+        //    if (window != null)
+        //    {
+        //        if (((bool)e.NewValue) == true)
+        //        {
+        //            Panel.SetZIndex(window, 2);
+        //            window.RaiseEvent(new RoutedEventArgs(FocusChangedEvent, window.DataContext));
+        //            window.Focus();
+        //        }
+        //        else
+        //        {
+        //            Panel.SetZIndex(window, 0);
+        //            //window.RaiseEvent(new RoutedEventArgs(FocusChangedEvent, window.DataContext));
+        //        }
+        //    }
+        //}
         #endregion
 
         #endregion
@@ -367,8 +363,10 @@ namespace MdiMvvm
         {
             if (WindowState == WindowState.Maximized)
             {
-                Width += e.NewSize.Width - e.PreviousSize.Width;
-                Height += e.NewSize.Height - e.PreviousSize.Height;
+                //Width += e.NewSize.Width - e.PreviousSize.Width;
+                Width = e.NewSize.Width-2; 
+                Height = e.NewSize.Height-2;
+                //Height += e.NewSize.Height - e.PreviousSize.Height;
                 this.RemoveWindowLock();
             }
         }
@@ -393,6 +391,10 @@ namespace MdiMvvm
         {
             base.OnMouseLeftButtonDown(e);
             IsSelected = true;
+            Panel.SetZIndex(this, 2);
+            RaiseEvent(new RoutedEventArgs(FocusChangedEvent, DataContext));
+
+            Focus();
         }
 
         protected override void OnLostKeyboardFocus(KeyboardFocusChangedEventArgs e)
@@ -402,6 +404,7 @@ namespace MdiMvvm
             if ((e.NewFocus is MdiWindow && !Equals(e.NewFocus, this)) || (parent != null && !Equals(parent, this)))
             {
                 IsSelected = false;
+                Panel.SetZIndex(this, 0);
                 var newWindow = (e.NewFocus is MdiWindow) ? (e.NewFocus as MdiWindow) : (parent as MdiWindow);
                 Container.SetValue(MdiContainer.SelectedItemProperty, newWindow.DataContext);
                 newWindow.IsSelected = true;
@@ -411,12 +414,12 @@ namespace MdiMvvm
         protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
         {
             base.OnGotKeyboardFocus(e);
+
             IsSelected = true;
+            Panel.SetZIndex(this, 2);
+            RaiseEvent(new RoutedEventArgs(FocusChangedEvent, DataContext));
         } 
         
-
-
-
         private void ToggleMaximizeWindow(object sender, RoutedEventArgs e)
         {
             Focus();

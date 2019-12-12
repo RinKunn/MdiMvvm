@@ -6,13 +6,24 @@
         xmlns:local="clr-namespace:MdiExample"
         xmlns:control="clr-namespace:MdiMvvm;assembly=MdiMvvm"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel, IsDesignTimeCreatable=False}"
         Title="MainWindow" Height="450" Width="800">
 
 
+    
+    
     <Window.Resources>
 
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/MdiExample;component/LoadingSpinner.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        
+        
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        
         <Style x:Key="cp" TargetType="{x:Type control:MdiWindow}">
-            <Setter Property="Title" Value="{Binding Title, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Setter Property="Title" Value="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             <Setter Property="IsModal" Value="{Binding IsModal, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"/>
             <Setter Property="Width" Value="{Binding CurrentWidth, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
             <Setter Property="Height" Value="{Binding CurrentHeight, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
@@ -25,8 +36,10 @@
             <Setter Property="PreviousLeft" Value="{Binding PreviousLeft, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
             <Setter Property="PreviousTop" Value="{Binding PreviousTop, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
             <Setter Property="PreviousWindowState" Value="{Binding PreviousState, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
+            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
             
             <Setter Property="IsResizable" Value="True"/>
+            <Setter Property="HasDropShadow" Value="False"/>
         </Style>
 
         <DataTemplate DataType="{x:Type local:MdiContainerViewModel}">
@@ -35,6 +48,7 @@
                 ItemContainerStyle="{StaticResource cp}"/>
         </DataTemplate>
 
+        </ResourceDictionary>
     </Window.Resources>
 
     <Grid>
@@ -42,13 +56,12 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-
+        
         <Menu>
             <MenuItem Header="+" Command="{Binding SelectedContainer.AddCommand}"/>
             <MenuItem Header="++" Command="{Binding SelectedContainer.AddCommandModal}"/>
-            <MenuItem Header="Save" Command="{Binding Path=SaveCommand}"/>
-            <MenuItem Header="Load" Command="{Binding Path=LoadCommand}"/>
-
+            <MenuItem Header="Save" Command="{Binding SaveCommand}"/>
+            <MenuItem Header="Load" Command="{Binding LoadCommand}"/>
         </Menu>
 
         <TabControl 
@@ -63,5 +76,9 @@
             </TabControl.ItemTemplate>
 
         </TabControl>
+
+        <AdornerDecorator Grid.Row="1">
+            <Control Style="{StaticResource BusyAnimationStyle}" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        </AdornerDecorator>
     </Grid>
 </Window>

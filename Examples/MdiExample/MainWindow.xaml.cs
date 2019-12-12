@@ -23,7 +23,10 @@ namespace MdiExample
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel();
+            var context = new MainWindowViewModel();
+            context.Init();
+            DataContext = context;
+            this.Closing += (o, e) => context.SaveSettings().GetAwaiter().GetResult();
         }
     }
 }

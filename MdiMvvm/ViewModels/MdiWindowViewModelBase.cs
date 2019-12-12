@@ -14,6 +14,7 @@ namespace MdiMvvm.ViewModels
 
         private string _title;
         private bool _isModal;
+        private bool _isSelected;
         private double _previousLeft;
         private double _previousTop;
         private double _previousWidth;
@@ -44,6 +45,15 @@ namespace MdiMvvm.ViewModels
             {
                 _isModal = value;
                 RaisePropertyChanged(() => IsModal);
+            }
+        }
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set
+            {
+                _isSelected = value;
+                RaisePropertyChanged(() => IsSelected);
             }
         }
         public double PreviousLeft

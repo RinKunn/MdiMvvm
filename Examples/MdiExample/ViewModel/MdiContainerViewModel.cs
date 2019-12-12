@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using GalaSoft.MvvmLight.CommandWpf;
+using Newtonsoft.Json;
 
 namespace MdiExample
 {
@@ -32,26 +33,16 @@ namespace MdiExample
             }
         }
 
-        public ObservableCollection<Window1ViewModel> ViewModelCollection { get; }
+        public ObservableCollection<Window1ViewModel> ViewModelCollection { get; private set; }
 
+        protected MdiContainerViewModel()
+        { }
 
         public MdiContainerViewModel(string title)
         {
             Title = title;
             ViewModelCollection = new ObservableCollection<Window1ViewModel>();
         }
-
-
-
-        private int count = 1;
-        private RelayCommand _addCommand;
-        public RelayCommand AddCommand =>
-            _addCommand ??
-            (_addCommand = new RelayCommand(() =>
-            {
-                ViewModelCollection.Add(new Window1ViewModel() { IsModal = false, Title = "window_" + Title + count++ });
-            }));
-        private RelayCommand _addCommandModal;
 
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -62,6 +53,23 @@ namespace MdiExample
         }
 
 
+
+        private int count = 1;
+        private RelayCommand _addCommand;
+        private RelayCommand _addCommandModal;
+        private RelayCommand _saveCommand;
+        private RelayCommand _loadCommand;
+
+
+        [JsonIgnore]
+        public RelayCommand AddCommand =>
+            _addCommand ??
+            (_addCommand = new RelayCommand(() =>
+            {
+                ViewModelCollection.Add(new Window1ViewModel() { IsModal = false, Title = "window_" + Title + count++ });
+            }));
+        
+        [JsonIgnore]
         public RelayCommand AddCommandModal =>
             _addCommandModal ??
             (_addCommandModal = new RelayCommand(() =>
@@ -71,5 +79,30 @@ namespace MdiExample
 
             }));
 
+        [JsonIgnore]
+        public RelayCommand SaveCommand =>
+            _saveCommand ??
+            (_saveCommand = new RelayCommand(() =>
+            {
+                this.Save();
+            }));
+
+        [JsonIgnore]
+        public RelayCommand LoadCommand =>
+            _loadCommand ??
+            (_loadCommand = new RelayCommand(() =>
+            {
+                this.Load();
+            }));
+
+
+        private void Save()
+        {
+            
+        }
+        private void Load()
+        {
+           
+        }
     }
 }

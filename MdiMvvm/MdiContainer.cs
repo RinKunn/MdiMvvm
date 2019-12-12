@@ -39,7 +39,10 @@ namespace MdiMvvm
                     EnableContainerScroll(false);
                     ContainerMinWinListox.Visibility = Visibility.Collapsed;
                     _maximizedWindow.IsSelected=true;
+                    _maximizedWindow.Width = ActualWidth-2;
+                    _maximizedWindow.Height = ActualHeight-2;
                 }
+                
             }
         }
         private MinimizedWindowCollection MinimizedWindows;
@@ -106,6 +109,7 @@ namespace MdiMvvm
                 foreach (var item in _internalItemSource)
                 {
                     MdiWindow window = ItemContainerGenerator.ContainerFromItem(item) as MdiWindow;
+                    if (window == null) continue;
                     if (window.WindowState == WindowState.Minimized)
                     {
                         MinimizedWindows.Add(window);
@@ -120,7 +124,6 @@ namespace MdiMvvm
             }
             
         }
-
 
         #endregion
 
