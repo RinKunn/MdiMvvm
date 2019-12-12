@@ -7,6 +7,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
+using NLog;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace MdiMvvm
 {
@@ -14,6 +17,8 @@ namespace MdiMvvm
     [TemplatePart(Name = "PART_ContainerMinWin_ListBox", Type = typeof(ListBox))]
     public sealed class MdiContainer : Selector
     {
+        private Logger _logger = LogManager.GetCurrentClassLogger();
+
         private ScrollViewer ContainerScrollViewer;
         private ListBox ContainerMinWinListox;
         private Canvas ContainerCanvas;
@@ -38,11 +43,10 @@ namespace MdiMvvm
                 {
                     EnableContainerScroll(false);
                     ContainerMinWinListox.Visibility = Visibility.Collapsed;
-                    _maximizedWindow.IsSelected=true;
+                    _maximizedWindow.IsSelected = true;
                     _maximizedWindow.Width = ActualWidth-2;
                     _maximizedWindow.Height = ActualHeight-2;
                 }
-                
             }
         }
         private MinimizedWindowCollection MinimizedWindows;
@@ -57,6 +61,14 @@ namespace MdiMvvm
             this.Loaded += MdiContainer_Loaded;
             this.SelectionChanged += MdiContainer_SelectionChanged;
             this.SizeChanged += MdiContainer_SizeChanged;
+            ((INotifyCollectionChanged)Items).CollectionChanged += MdiContainer_CollectionChanged; ;
+        }
+
+        private void MdiContainer_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            
+            _logger.Trace($"MdiContainer_CollectionChanged: {e.Action}");
+            if (e.Action == NotifyCollectionChangedAction.Add && MaximizedWindow != null) MaximizedWindow.Normalize();
         }
 
 
@@ -81,6 +93,7 @@ namespace MdiMvvm
             var window = element as MdiWindow;
             if (window != null)
             {
+                _logger.Trace($"PrepareContainerForItemOverride: new MdiWindow added '{window.Title}' : {window.WindowState}");
                 window.FocusChanged += OnMdiWindowFocusChanged;
                 window.WindowStateChanged += OnMdiWindowStateChanged;
                 window.Closing += OnMdiWindowClosing;
@@ -89,40 +102,47 @@ namespace MdiMvvm
                 window.Initialize(this);
                 window.InitPosition();
 
-                if (MaximizedWindow != null)
-                    MaximizedWindow.Normalize();
-
                 window.Focus();
             }
-
             base.PrepareContainerForItemOverride(element, item);
         }
         
         protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
         {
+            _logger.Trace($"OnItemsSourceChanged: oldSouce = {(oldValue == null ? "null" : $"{(oldValue as IList).Count}")}, newSouce = {(newValue == null ? "null" : $"{(newValue as IList).Count}")}");
             base.OnItemsSourceChanged(oldValue, newValue);
             if (newValue != null && newValue is IList)
             {
-                MdiWindow maxwin = null;
                 _internalItemSource = newValue as IList;
-                MinimizedWindows?.Clear();
-                foreach (var item in _internalItemSource)
+                if(oldValue != null) RenderSourceItems();
+            }
+            
+        }
+
+        private void RenderSourceItems()
+        {
+            if (Items != null && Items.Count > 0)
+            {
+                MdiWindow maxwin = null;
+                MinimizedWindows.Clear();
+                foreach (var item in Items)
                 {
                     MdiWindow window = ItemContainerGenerator.ContainerFromItem(item) as MdiWindow;
-                    if (window == null) continue;
                     if (window.WindowState == WindowState.Minimized)
                     {
                         MinimizedWindows.Add(window);
                     }
-                    else if(window.WindowState == WindowState.Maximized)
+                    else if (window.WindowState == WindowState.Maximized)
                     {
                         maxwin = window;
                     }
                 }
+
+                _logger.Trace($"OnItemsSourceChanged: Max Window = {(maxwin == null ? "null" : $"{maxwin.Title}")}");
+                _logger.Trace($"OnItemsSourceChanged: Min Window = {MinimizedWindows.Count}");
                 InvalidateSize();
                 MaximizedWindow = maxwin;
             }
-            
         }
 
         #endregion
@@ -159,7 +179,7 @@ namespace MdiMvvm
         private void MdiContainer_Loaded(object sender, RoutedEventArgs e)
         {
             ContainerCanvas = VisualTreeExtension.FindItemPresenterChild<Canvas>(this);
-            InvalidateSize();
+            RenderSourceItems();
         }
         private void MdiContainer_SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -190,6 +210,7 @@ namespace MdiMvvm
             MdiWindow window = sender as MdiWindow;
             if (window == null) throw new NullReferenceException($"Sender in OnMdiWindowStateChanged is not {typeof(MdiWindow).Name} ");
 
+            _logger.Trace($"OnMdiWindowStateChanged: Window '{window.Title}' changed state from '{e.OldValue}' to '{e.NewValue}'");
             if (e.NewValue == WindowState.Minimized)
             {
                 MinimizedWindows.Add(window);
@@ -212,6 +233,7 @@ namespace MdiMvvm
         private void OnMdiWindowClosing(object sender, RoutedEventArgs e)
         {
             var window = sender as MdiWindow;
+            _logger.Trace($"OnMdiWindowClosing: Window '{window.Title}'");
             if (window.WindowState == WindowState.Maximized)
                 MaximizedWindow = null;
             if (window?.DataContext != null)
@@ -238,6 +260,7 @@ namespace MdiMvvm
             var window = sender as MdiWindow;
             if (window != null)
             {
+                _logger.Trace($"OnMdiWindow_Unloaded: Window '{window.Title}'");
                 if (window.WindowState == WindowState.Maximized) MaximizedWindow = null;
                 window.FocusChanged -= OnMdiWindowFocusChanged;
                 window.Closing -= OnMdiWindowClosing;

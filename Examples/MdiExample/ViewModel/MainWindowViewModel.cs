@@ -52,7 +52,7 @@ namespace MdiExample
 
         public async void Init() => await LoadSettings();
 
-
+        public string Text { get; set; }
         private RelayCommand _saveCommand;
         private RelayCommand _loadCommand;
 

@@ -18,11 +18,12 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/MdiExample;component/LoadingSpinner.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-        
-        
+
+            
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         
         <Style x:Key="cp" TargetType="{x:Type control:MdiWindow}">
+
             <Setter Property="Title" Value="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             <Setter Property="IsModal" Value="{Binding IsModal, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"/>
             <Setter Property="Width" Value="{Binding CurrentWidth, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
@@ -36,7 +37,7 @@
             <Setter Property="PreviousLeft" Value="{Binding PreviousLeft, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
             <Setter Property="PreviousTop" Value="{Binding PreviousTop, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
             <Setter Property="PreviousWindowState" Value="{Binding PreviousState, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
-            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
+                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
             
             <Setter Property="IsResizable" Value="True"/>
             <Setter Property="HasDropShadow" Value="False"/>
@@ -51,7 +52,7 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Grid>
+    <Grid x:Name="asdasd">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
@@ -74,7 +75,6 @@
                     <TextBlock Text="{Binding Title}"/>
                 </DataTemplate>
             </TabControl.ItemTemplate>
-
         </TabControl>
 
         <AdornerDecorator Grid.Row="1">

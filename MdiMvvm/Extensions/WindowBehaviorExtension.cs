@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -10,7 +11,7 @@ namespace MdiMvvm.Extensions
     {
         //private static int ANIMATED_MILLISECONDS_DURATION = 0;
 
-        
+        private static Logger _logger = LogManager.GetCurrentClassLogger();
         /// <summary>
         /// Save current <see cref="WindowState.Normal"/> state of <see cref="MdiWindow"/>
         /// </summary>
@@ -41,6 +42,7 @@ namespace MdiMvvm.Extensions
         /// <param name="window"></param>
         public static void Maximize(this MdiWindow window)
         {
+            _logger.Trace($"Maximize: '{window.Title} go to Maximized from {window.WindowState}");
             if (window.IsResizable)
             {
                 window.SavePreviousPosition();
@@ -62,12 +64,14 @@ namespace MdiMvvm.Extensions
         /// <param name="window"></param>
         public static void Normalize(this MdiWindow window)
         {
-            if(window.WindowState == WindowState.Maximized) window.LoadPreviousPosition();
+            _logger.Trace($"Normalize: '{window.Title} go to Normalize from {window.WindowState}");
+            if (window.WindowState == WindowState.Maximized) window.LoadPreviousPosition();
 
+            Panel.SetZIndex(window, 0);
             window.PreviousWindowState = window.WindowState;
             window.WindowState = WindowState.Normal;
 
-            Panel.SetZIndex(window, 0);
+            
         }
 
         /// <summary>

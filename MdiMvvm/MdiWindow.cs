@@ -12,6 +12,7 @@ using MdiMvvm.WindowControls;
 using System.IO;
 using System.Windows.Media;
 using MdiMvvm.ValueObjects;
+using NLog;
 
 namespace MdiMvvm
 {
@@ -31,6 +32,10 @@ namespace MdiMvvm
 
     public sealed class MdiWindow : ContentControl
     {
+        private Logger _logger = LogManager.GetCurrentClassLogger();
+
+
+
         private WindowButton _closeButton;
         private WindowButton _maximizeButton;
         private WindowButton _minimizeButton;
@@ -160,13 +165,13 @@ namespace MdiMvvm
            DependencyProperty.Register("Title", typeof(string), typeof(MdiWindow), new PropertyMetadata(string.Empty));
 
         public static readonly DependencyProperty WindowStateProperty =
-            DependencyProperty.Register("WindowState", typeof(WindowState), typeof(MdiWindow), new PropertyMetadata(WindowState.Normal, IsWindowStateChangedCallBack));
+            DependencyProperty.Register("WindowState", typeof(WindowState), typeof(MdiWindow), new UIPropertyMetadata(WindowState.Normal, IsWindowStateChangedCallBack));
 
         public static readonly DependencyProperty IsSelectedProperty =
             DependencyProperty.Register("IsSelected", typeof(bool), typeof(MdiWindow), new UIPropertyMetadata(false));
 
         public static readonly DependencyProperty IsModalProperty =
-            DependencyProperty.Register("IsModal", typeof(bool?), typeof(MdiWindow), new UIPropertyMetadata(IsModalChangedCallback));
+            DependencyProperty.Register("IsModal", typeof(bool?), typeof(MdiWindow), new UIPropertyMetadata(false, IsModalChangedCallback));
 
         public static readonly DependencyProperty IsCloseButtonEnabledProperty =
             DependencyProperty.Register("IsCloseButtonEnabled", typeof(bool), typeof(MdiWindow), new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.NotDataBindable));
@@ -309,6 +314,7 @@ namespace MdiMvvm
             var window = obj as MdiWindow;
             if (window != null)
             {
+                window._logger.Trace($"IsWindowStateChangedCallBack: {e.OldValue} to {e.NewValue}");
                 window.PreviousWindowState = (WindowState)e.OldValue;
 
                 var args = new WindowStateChangedEventArgs(WindowStateChangedEvent, (WindowState)e.OldValue, (WindowState)e.NewValue);
@@ -334,24 +340,26 @@ namespace MdiMvvm
             ((MdiWindow)d).IsResizable = (bool)e.NewValue;
         }
 
-        //private static void IsSelectedChangedCallback(DependencyObject obj, DependencyPropertyChangedEventArgs e)
-        //{
-        //    var window = obj as MdiWindow;
-        //    if (window != null)
-        //    {
-        //        if (((bool)e.NewValue) == true)
-        //        {
-        //            Panel.SetZIndex(window, 2);
-        //            window.RaiseEvent(new RoutedEventArgs(FocusChangedEvent, window.DataContext));
-        //            window.Focus();
-        //        }
-        //        else
-        //        {
-        //            Panel.SetZIndex(window, 0);
-        //            //window.RaiseEvent(new RoutedEventArgs(FocusChangedEvent, window.DataContext));
-        //        }
-        //    }
-        //}
+        private static void IsSelectedChangedCallback(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        {
+            var window = obj as MdiWindow;
+            if (window != null)
+            {
+                if ((bool)e.NewValue == (bool)e.OldValue) return;
+
+                if (((bool)e.NewValue) == true)
+                {
+                    Panel.SetZIndex(window, 2);
+                    window.RaiseEvent(new RoutedEventArgs(FocusChangedEvent, window.DataContext));
+                    if(!window.IsFocused) window.Focus();
+                }
+                else
+                {
+                    Panel.SetZIndex(window, 0);
+                    window.RaiseEvent(new RoutedEventArgs(FocusChangedEvent, window.DataContext));
+                }
+            }
+        }
         #endregion
 
         #endregion
@@ -390,10 +398,10 @@ namespace MdiMvvm
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
+
             IsSelected = true;
             Panel.SetZIndex(this, 2);
             RaiseEvent(new RoutedEventArgs(FocusChangedEvent, DataContext));
-
             Focus();
         }
 
