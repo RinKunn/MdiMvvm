@@ -154,11 +154,17 @@
                             
                             <!--Window Header-->
                             <Border x:Name="PART_Header" 
-                                        Background="{StaticResource InactiveWindowColor}" Height="24" VerticalAlignment="Top" >
+                                        Background="{StaticResource InactiveWindowColor}" Height="24" VerticalAlignment="Top" 
+                                    ToolTip="{Binding Title}">
                                 <Grid VerticalAlignment="Top">
-                                    <windowControls:MoveThumb x:Name="PART_MoverThumb"/>
-                                    <TextBlock Text="{TemplateBinding Title}" Margin="2,2" IsHitTestVisible="False" />
-                                    <StackPanel x:Name="PART_ButtonBar" Orientation="Horizontal" HorizontalAlignment="Right" Margin="2,2,0,2" VerticalAlignment="Center">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <windowControls:MoveThumb x:Name="PART_MoverThumb" Grid.ColumnSpan="2"/>
+                                    <TextBlock TextTrimming="CharacterEllipsis" Text="{TemplateBinding Title}" Margin="2,2" IsHitTestVisible="False" />
+                                    <StackPanel x:Name="PART_ButtonBar" Orientation="Horizontal" HorizontalAlignment="Right" Margin="2,2,0,2" VerticalAlignment="Center" Grid.Column="1">
                                         <windowControls:WindowButton x:Name="PART_ButtonBar_MinimizeButton" Icon="{StaticResource MinimizeShape}" />
                                         <windowControls:WindowButton x:Name="PART_ButtonBar_MaximizeButton" Icon="{StaticResource MaximizeShape}" IsEnabled="{TemplateBinding IsResizable}"/>
                                         <windowControls:WindowButton x:Name="PART_ButtonBar_CloseButton" Icon="{StaticResource CloseShape}" IsEnabled="{TemplateBinding IsCloseButtonEnabled}" />
@@ -188,6 +194,7 @@
                         </Trigger>
                         <Trigger Property="WindowState" Value="Minimized">
                             <Setter Property="Visibility" Value="Collapsed" />
+                            <Setter Property="Focusable" Value="False" />
                         </Trigger>
                         
                         <MultiTrigger>

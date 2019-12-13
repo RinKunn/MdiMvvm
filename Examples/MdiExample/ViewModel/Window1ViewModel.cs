@@ -15,17 +15,6 @@ namespace MdiExample
 
     public class Window1ViewModel : MdiWindowViewModelBase
     {
-        private double _isSelected;
-        public double IsSelected
-        {
-            get => _isSelected;
-            set
-            {
-                _isSelected = value;
-                RaisePropertyChanged("IsSelected");
-            }
-        }
-       
         public Window1ViewModel()
         {
             Random r = new Random();

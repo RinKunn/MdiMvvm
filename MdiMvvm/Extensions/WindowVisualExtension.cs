@@ -6,21 +6,26 @@ using System.Windows.Media.Imaging;
 namespace MdiMvvm.Extensions
 {
     public static class WindowVisualExtension
-   {
-      public static RenderTargetBitmap CreateSnapshot(this MdiWindow window)
-      {
-         var bitmap = new RenderTargetBitmap((int)Math.Round(window.ActualWidth), (int)Math.Round(window.ActualHeight), 96, 96, PixelFormats.Default);
-         var drawingVisual = new DrawingVisual();
-         using (var context = drawingVisual.RenderOpen())
-         {
-            var brush = new VisualBrush(window);
-            context.DrawRectangle(brush, null, new Rect(new Point(), new Size(window.ActualWidth, window.ActualHeight)));
-            context.Close();
-         }
+    {
+        public static RenderTargetBitmap CreateSnapshot(this MdiWindow window)
+        {
+            Visibility oldVisibility = window.Visibility;
 
-         bitmap.Render(drawingVisual);
+            if (window.Visibility != Visibility.Visible) window.Visibility = Visibility.Visible;
 
-         return bitmap;
-      }      
-   }
+            var bitmap = new RenderTargetBitmap((int)Math.Round(window.Width), (int)Math.Round(window.Height), 96, 96, PixelFormats.Default);
+            var drawingVisual = new DrawingVisual();
+            using (var context = drawingVisual.RenderOpen())
+            {
+                var brush = new VisualBrush(window);
+                context.DrawRectangle(brush, null, new Rect(new Point(), new Size(window.Width, window.Height)));
+                context.Close();
+            }
+
+            bitmap.Render(drawingVisual);
+
+            window.Visibility = oldVisibility;
+            return bitmap;
+        }      
+    }
 }

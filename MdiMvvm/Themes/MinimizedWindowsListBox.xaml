@@ -36,9 +36,12 @@
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <WrapPanel Orientation="Horizontal" FlowDirection="RightToLeft" RenderTransformOrigin="0.5,0.5">
+                    <WrapPanel Orientation="Horizontal" RenderTransformOrigin="0.5,0.5">
                         <WrapPanel.RenderTransform>
-                            <RotateTransform Angle="180"/>
+                            <TransformGroup>
+                                <RotateTransform Angle="180"/>
+                                <ScaleTransform ScaleX="-1" />
+                            </TransformGroup>
                         </WrapPanel.RenderTransform>
                     </WrapPanel>
                 </ItemsPanelTemplate>
@@ -49,11 +52,13 @@
                 <DataTemplate>
                     <Border x:Name="PART_ListBoxItem_Border"
                         Height="Auto" Width="100" BorderThickness="1" CornerRadius="2"
+                            
                             Background="{StaticResource InactiveWindowColor}"
                             BorderBrush="{StaticResource InactiveWindowColor}">
+                        
 
                         <Grid VerticalAlignment="Center" HorizontalAlignment="Left">
-                            <TextBlock Text="{Binding Title}" Margin="1,1" IsHitTestVisible="False" />
+                            <TextBlock Text="{Binding Title}" IsHitTestVisible="False" TextTrimming="CharacterEllipsis"  Margin="2,0"/>
                         </Grid>
                     </Border>
                     <DataTemplate.Triggers>
@@ -75,7 +80,14 @@
                         <Setter.Value>
                             <ToolTip Style="{StaticResource TumblrStyle}" >
                                 <Viewbox Width="180" Height="180" RenderOptions.BitmapScalingMode="HighQuality" Panel.ZIndex="100">
-                                    <Image x:Name="PART_ListBoxTumblr" Stretch="UniformToFill" Source="{Binding ImageSource}" />
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Text="{Binding Title}" FontWeight="Bold" TextWrapping="WrapWithOverflow"/>
+                                        <Image x:Name="PART_ListBoxTumblr" Stretch="UniformToFill" Source="{Binding ImageSource}" Grid.Row="1" />
+                                    </Grid>
                                 </Viewbox>
                             </ToolTip>
                         </Setter.Value>
@@ -84,7 +96,7 @@
                     <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
                     <Setter Property="RenderTransform">
                         <Setter.Value>
-                            <RotateTransform Angle="180"/>
+                            <ScaleTransform ScaleY="-1"/>
                         </Setter.Value>
                     </Setter>
                     <Setter Property="Background" Value="Transparent"/>

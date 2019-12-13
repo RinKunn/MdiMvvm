@@ -14,7 +14,7 @@ namespace MdiExample
         {
             if (string.IsNullOrEmpty(filename)) throw new ArgumentNullException($"ReadJsonFile filename is empty");
             var result = new TaskCompletionSource<T>();
-            Task.Run(async () =>
+            Task.Run(() =>
             {
                 try
                 {
@@ -36,7 +36,7 @@ namespace MdiExample
         {
             if (string.IsNullOrEmpty(filename)) throw new ArgumentNullException($"ReadJsonFile filename is empty");
             var result = new TaskCompletionSource<bool>();
-            Task.Run(async () =>
+            Task.Run(() =>
             {
                 try
                 {

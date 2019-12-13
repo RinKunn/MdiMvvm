@@ -54,7 +54,6 @@ namespace MdiExample
 
 
 
-        private int count;
         private RelayCommand _addCommand;
         private RelayCommand _addCommandModal;
         private RelayCommand _saveCommand;
@@ -66,7 +65,7 @@ namespace MdiExample
             _addCommand ??
             (_addCommand = new RelayCommand(() =>
             {
-                ViewModelCollection.Add(new Window1ViewModel() { IsModal = false, Title = "window_" + Title + (ViewModelCollection.Count + 1) });
+                ViewModelCollection.Add(new Window1ViewModel() { IsModal = false, Title = "window_DefaultTitleDefaultTitleDefaultTitle" + Title + (ViewModelCollection.Count + 1) });
             }));
         
         [JsonIgnore]

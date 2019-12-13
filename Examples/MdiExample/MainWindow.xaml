@@ -8,9 +8,6 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel, IsDesignTimeCreatable=False}"
         Title="MainWindow" Height="450" Width="800">
-
-
-    
     
     <Window.Resources>
 
@@ -80,5 +77,6 @@
         <AdornerDecorator Grid.Row="1">
             <Control Style="{StaticResource BusyAnimationStyle}" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         </AdornerDecorator>
+
     </Grid>
 </Window>

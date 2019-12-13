@@ -316,6 +316,7 @@ namespace MdiMvvm
             {
                 window._logger.Trace($"IsWindowStateChangedCallBack: {e.OldValue} to {e.NewValue}");
                 window.PreviousWindowState = (WindowState)e.OldValue;
+            //window.ImageSource = window.CreateSnapshot();
 
                 var args = new WindowStateChangedEventArgs(WindowStateChangedEvent, (WindowState)e.OldValue, (WindowState)e.NewValue);
                 window.RaiseEvent(args);
@@ -385,6 +386,7 @@ namespace MdiMvvm
 
         private void MdiWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            _logger.Trace($"MdiWindow_Loaded: {Title} - {WindowState}");
             var content = VisualTreeExtension.FindContent(this);
             if (content != null)
             {

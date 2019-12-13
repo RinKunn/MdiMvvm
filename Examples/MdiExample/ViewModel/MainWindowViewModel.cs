@@ -122,10 +122,12 @@ namespace MdiExample
             }
             else
             {
-                Containers = new ObservableCollection<MdiContainerViewModel>();
-                Containers.Add(new MdiContainerViewModel("item 1"));
-                Containers.Add(new MdiContainerViewModel("item 2"));
-                Containers.Add(new MdiContainerViewModel("item 3"));
+                Containers = new ObservableCollection<MdiContainerViewModel>
+                {
+                    new MdiContainerViewModel("item 1"),
+                    new MdiContainerViewModel("item 2"),
+                    new MdiContainerViewModel("item 3")
+                };
 
                 SelectedContainer = Containers.First();
             }
