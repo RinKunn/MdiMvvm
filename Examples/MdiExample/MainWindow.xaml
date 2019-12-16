@@ -34,7 +34,7 @@
             <Setter Property="PreviousLeft" Value="{Binding PreviousLeft, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
             <Setter Property="PreviousTop" Value="{Binding PreviousTop, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
             <Setter Property="PreviousWindowState" Value="{Binding PreviousState, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
-                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
+            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
             
             <Setter Property="IsResizable" Value="True"/>
             <Setter Property="HasDropShadow" Value="False"/>

@@ -27,7 +27,6 @@ namespace MdiMvvm
     [TemplatePart(Name = "PART_Content", Type = typeof(ContentPresenter))]
     [TemplatePart(Name = "PART_MoverThumb", Type = typeof(MoveThumb))]
     [TemplatePart(Name = "PART_ResizerThumb", Type = typeof(ResizeThumb))]
-    [TemplatePart(Name = "PART_Thumblr", Type = typeof(Image))]
     [DebuggerDisplay("{Title}")]
 
     public sealed class MdiWindow : ContentControl
@@ -50,6 +49,7 @@ namespace MdiMvvm
         public MdiWindow()
         {
             _myAdornerLayer = AdornerLayer.GetAdornerLayer(this);
+            
         }
 
         static MdiWindow()
@@ -186,6 +186,9 @@ namespace MdiMvvm
             DependencyProperty.Register("IsResizable", typeof(bool), typeof(MdiWindow), new UIPropertyMetadata(IsResizableChangedCallback));
 
 
+        public static readonly DependencyProperty ScreenShootProperty =
+           DependencyProperty.Register("ScreenShoot", typeof(ImageSource), typeof(MdiWindow), new PropertyMetadata(null));
+
         public static readonly DependencyProperty PreviousLeftProperty =
             DependencyProperty.Register("PreviousLeft", typeof(double), typeof(MdiWindow), new FrameworkPropertyMetadata(0D));
 
@@ -271,7 +274,11 @@ namespace MdiMvvm
                 SetValue(IsResizableProperty, value);
             }
         }
-
+        public ImageSource ScreenShoot
+        {
+            get { return (ImageSource)GetValue(ScreenShootProperty); }
+            set { SetValue(ScreenShootProperty, value); }
+        }
 
         [Bindable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -314,9 +321,8 @@ namespace MdiMvvm
             var window = obj as MdiWindow;
             if (window != null)
             {
-                window._logger.Trace($"IsWindowStateChangedCallBack: {e.OldValue} to {e.NewValue}");
+                //window._logger.Trace($"IsWindowStateChangedCallBack: {e.OldValue} to {e.NewValue}");
                 window.PreviousWindowState = (WindowState)e.OldValue;
-            //window.ImageSource = window.CreateSnapshot();
 
                 var args = new WindowStateChangedEventArgs(WindowStateChangedEvent, (WindowState)e.OldValue, (WindowState)e.NewValue);
                 window.RaiseEvent(args);

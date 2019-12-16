@@ -68,7 +68,7 @@ namespace MdiMvvm
         private void MdiContainer_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             
-            _logger.Trace($"MdiContainer_CollectionChanged: {e.Action}");
+            //_logger.Trace($"MdiContainer_CollectionChanged: {e.Action}");
             if (e.Action == NotifyCollectionChangedAction.Add && MaximizedWindow != null) MaximizedWindow.Normalize();
         }
 
@@ -93,7 +93,7 @@ namespace MdiMvvm
         {
             if (element is MdiWindow window)
             {
-                _logger.Trace($"PrepareContainerForItemOverride: new MdiWindow added '{window.Title}' : {window.WindowState}");
+                //_logger.Trace($"PrepareContainerForItemOverride: new MdiWindow added '{window.Title}' : {window.WindowState}");
                 window.FocusChanged += OnMdiWindowFocusChanged;
                 window.WindowStateChanged += OnMdiWindowStateChanged;
                 window.Closing += OnMdiWindowClosing;
@@ -120,32 +120,7 @@ namespace MdiMvvm
             
         }
 
-        private void RenderSourceItems()
-        {
-            if (Items != null && Items.Count > 0)
-            {
-                MdiWindow maxwin = null;
-                MinimizedWindows.Clear();
-                foreach (var item in Items)
-                {
-                    MdiWindow window = ItemContainerGenerator.ContainerFromItem(item) as MdiWindow;
-                    if (window.WindowState == WindowState.Minimized)
-                    {
-                        window.CreateSnapshot();
-                        MinimizedWindows.Add(window);
-                    }
-                    else if (window.WindowState == WindowState.Maximized)
-                    {
-                        maxwin = window;
-                    }
-                }
-
-                _logger.Trace($"OnItemsSourceChanged: Max Window = {(maxwin == null ? "null" : $"{maxwin.Title}")}");
-                _logger.Trace($"OnItemsSourceChanged: Min Window = {MinimizedWindows.Count}");
-                MaximizedWindow = maxwin;
-            }
-            InvalidateSize();
-        }
+        
 
         #endregion
 
@@ -295,6 +270,34 @@ namespace MdiMvvm
             }
         }
         #endregion
+
+        private void RenderSourceItems()
+        {
+            if (Items != null && Items.Count > 0)
+            {
+                MdiWindow maxwin = null;
+                MinimizedWindows.Clear();
+                foreach (var item in Items)
+                {
+                    MdiWindow window = ItemContainerGenerator.ContainerFromItem(item) as MdiWindow;
+                    if (window.WindowState == WindowState.Minimized)
+                    {
+                        MinimizedWindows.Add(window);
+                    }
+                    else if (window.WindowState == WindowState.Maximized)
+                    {
+                        maxwin = window;
+                    }
+                }
+
+                _logger.Trace($"OnItemsSourceChanged: Max Window = {(maxwin == null ? "null" : $"{maxwin.Title}")}");
+                _logger.Trace($"OnItemsSourceChanged: Min Window = {MinimizedWindows.Count}");
+                MaximizedWindow = maxwin;
+            }
+            foreach (var item in MinimizedWindows)
+                Console.WriteLine($"min win is null:  {(item.ImageSource == null)}");
+            InvalidateSize();
+        }
 
         internal void InvalidateSize(MdiWindow currWindow = null)
         {

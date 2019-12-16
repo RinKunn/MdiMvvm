@@ -25,13 +25,12 @@
                         <Grid>
                             <ScrollViewer x:Name="PART_ContainerScrollViewer" CanContentScroll="True" 
                                           VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
-                                          
                                           Style="{StaticResource FavsScrollViewer}">
                                 <ItemsPresenter />
                             </ScrollViewer>
                             <ListBox x:Name="PART_ContainerMinWin_ListBox" Style="{StaticResource MinimizedListStyle}"
                                      VerticalAlignment="Bottom" HorizontalAlignment="Stretch"
-                                     BorderBrush="Transparent">
+                                     BorderBrush="Transparent" Margin="0,0,0,11">
                             </ListBox>
                         </Grid>
                     </Border>

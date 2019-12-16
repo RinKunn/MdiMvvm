@@ -17,13 +17,15 @@
                             VerticalAlignment="Stretch"
                             Width="Auto"
                             Height="Auto"
-                            Margin="0,1,0,1"
+                            Margin="0,1"
                             Background="{TemplateBinding Background}" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="Tag" Value="Horizontal">
-                            <Setter TargetName="CornerScrollBarRectangle" Property="Width" Value="Auto" />
-                            <Setter TargetName="CornerScrollBarRectangle" Property="Height" Value="6" />
+                            <!--<Setter TargetName="CornerScrollBarRectangle" Property="Width" Value="Auto" />
+                            <Setter TargetName="CornerScrollBarRectangle" Property="Height" Value="8" />-->
+                            <Setter TargetName="CornerScrollBarRectangle" Property="Margin" Value="1,0" />
+                            
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -91,7 +93,7 @@
                                 </Setter.Value>
                             </Setter>
                             <Setter Property="Width" Value="Auto" />
-                            <Setter Property="Height" Value="8" />
+                            <Setter Property="Height" Value="7" />
                             <Setter TargetName="Thumb" Property="Tag" Value="Horizontal" />
                             <Setter TargetName="PageDown" Property="Command" Value="ScrollBar.PageLeftCommand" />
                             <Setter TargetName="PageUp" Property="Command" Value="ScrollBar.PageRightCommand" />
@@ -113,7 +115,7 @@
                         <ScrollContentPresenter/>
 
                         <ScrollBar Name="PART_VerticalScrollBar" Style="{StaticResource ScrollBarTypeStyle}"
-                                   HorizontalAlignment="Right" Margin="0,2,0,12"
+                                   HorizontalAlignment="Right" Margin="0,2,0,10"
                                    Value="{TemplateBinding VerticalOffset}"
                                    Maximum="{TemplateBinding ScrollableHeight}"
                                    ViewportSize="{TemplateBinding ViewportHeight}"
