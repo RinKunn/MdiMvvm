@@ -21,6 +21,7 @@
         
         <Style x:Key="cp" TargetType="{x:Type control:MdiWindow}">
 
+            <Setter Property="Uid" Value="{Binding Uid, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             <Setter Property="Title" Value="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             <Setter Property="IsModal" Value="{Binding IsModal, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"/>
             <Setter Property="Width" Value="{Binding CurrentWidth, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
@@ -28,6 +29,8 @@
             <Setter Property="Canvas.Left" Value="{Binding CurrentLeft, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
             <Setter Property="Canvas.Top" Value="{Binding CurrentTop, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
             <Setter Property="WindowState" Value="{Binding WindowState, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <!--<Setter Property="ScreenShot" Value="{Binding ScreenShot, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>-->
 
             <Setter Property="PreviousWidth" Value="{Binding PreviousWidth, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
             <Setter Property="PreviousHeight" Value="{Binding PreviousHeight, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>

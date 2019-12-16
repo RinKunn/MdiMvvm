@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using GalaSoft.MvvmLight;
 
 namespace MdiMvvm.ViewModels
@@ -12,6 +13,7 @@ namespace MdiMvvm.ViewModels
     {
         #region Members
 
+        private string _uid;
         private string _title;
         private bool _isModal;
         private bool _isSelected;
@@ -20,7 +22,7 @@ namespace MdiMvvm.ViewModels
         private double _previousWidth;
         private double _previousHeight;
         private WindowState _previousState;
-
+        
         private double _currentLeft; // bind Canvas.Left
         private double _currentTop; // bind Canvas.Top
         private double _currentWidth;
@@ -29,6 +31,15 @@ namespace MdiMvvm.ViewModels
         #endregion
 
         #region Props
+        public string Uid
+        {
+            get => _uid;
+            set
+            {
+                _uid = value;
+                RaisePropertyChanged(() => Uid);
+            }
+        }
         public string Title
         {
             get => _title;
@@ -101,6 +112,7 @@ namespace MdiMvvm.ViewModels
                 RaisePropertyChanged(() => PreviousState);
             }
         }
+
         public double CurrentLeft
         {
             get => _currentLeft;

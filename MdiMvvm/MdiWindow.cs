@@ -31,10 +31,10 @@ namespace MdiMvvm
 
     public sealed class MdiWindow : ContentControl
     {
+        internal static bool UseSnapshots = false;
+
         private Logger _logger = LogManager.GetCurrentClassLogger();
-
-
-
+        
         private WindowButton _closeButton;
         private WindowButton _maximizeButton;
         private WindowButton _minimizeButton;
@@ -49,7 +49,6 @@ namespace MdiMvvm
         public MdiWindow()
         {
             _myAdornerLayer = AdornerLayer.GetAdornerLayer(this);
-            
         }
 
         static MdiWindow()
@@ -63,7 +62,6 @@ namespace MdiMvvm
             Container = container;
             Container.SizeChanged += Container_SizeChanged;
             this.Loaded += MdiWindow_Loaded;
-            
         }
 
         public void InitPosition()
@@ -119,7 +117,6 @@ namespace MdiMvvm
         }
 
         #endregion
-
 
         #region RoutedEvents
 
@@ -185,10 +182,6 @@ namespace MdiMvvm
         public static readonly DependencyProperty IsResizableProperty =
             DependencyProperty.Register("IsResizable", typeof(bool), typeof(MdiWindow), new UIPropertyMetadata(IsResizableChangedCallback));
 
-
-        public static readonly DependencyProperty ScreenShootProperty =
-           DependencyProperty.Register("ScreenShoot", typeof(ImageSource), typeof(MdiWindow), new PropertyMetadata(null));
-
         public static readonly DependencyProperty PreviousLeftProperty =
             DependencyProperty.Register("PreviousLeft", typeof(double), typeof(MdiWindow), new FrameworkPropertyMetadata(0D));
 
@@ -205,7 +198,8 @@ namespace MdiMvvm
             DependencyProperty.Register("PreviousWindowState", typeof(WindowState), typeof(MdiWindow), new FrameworkPropertyMetadata(WindowState.Normal));
 
 
-
+        //public static readonly DependencyProperty ScreenshotProperty =
+        //    DependencyProperty.Register("Screenshot", typeof(byte[]), typeof(MdiWindow), new FrameworkPropertyMetadata(WindowState.Normal));
         #endregion
 
         #region Properties
@@ -274,12 +268,6 @@ namespace MdiMvvm
                 SetValue(IsResizableProperty, value);
             }
         }
-        public ImageSource ScreenShoot
-        {
-            get { return (ImageSource)GetValue(ScreenShootProperty); }
-            set { SetValue(ScreenShootProperty, value); }
-        }
-
         [Bindable(false)]
         [EditorBrowsable(EditorBrowsableState.Never)]
         public bool IsCloseButtonEnabled
@@ -313,6 +301,12 @@ namespace MdiMvvm
                 SetValue(IsModalProperty, value);
             }
         }
+
+        //public byte[] Screenshot
+        //{
+        //    get { return (byte[])GetValue(ScreenshotProperty); }
+        //    set { SetValue(ScreenshotProperty, value); }
+        //}
         #endregion
 
         #region Callbacks
@@ -371,7 +365,6 @@ namespace MdiMvvm
 
         #endregion
 
-
         #region Container Events Handlers
 
         private void Container_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -401,6 +394,7 @@ namespace MdiMvvm
                 this.Height = content.ActualHeight + 34;
                 this.Width = content.ActualWidth + 10;
             }
+            if(string.IsNullOrEmpty(Uid)) this.Uid = Guid.NewGuid().ToString();
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)

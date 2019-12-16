@@ -67,11 +67,11 @@ namespace MdiMvvm.Extensions
             _logger.Trace($"Normalize: '{window.Title} go to Normalize from {window.WindowState}");
             if (window.WindowState == WindowState.Maximized) window.LoadPreviousPosition();
 
+            window.DeleteSnapshot();
             Panel.SetZIndex(window, 0);
             window.PreviousWindowState = window.WindowState;
             window.WindowState = WindowState.Normal;
-
-            
+            window.DoFocus(null);
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace MdiMvvm.Extensions
         public static void Minimize(this MdiWindow window)
         {
             window.ImageSource = window.CreateSnapshot();
-
+            
             window.PreviousWindowState = window.WindowState;
             window.WindowState = WindowState.Minimized;
             //Panel.SetZIndex(window, 0);

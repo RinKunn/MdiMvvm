@@ -62,7 +62,7 @@ namespace MdiMvvm
             this.Loaded += MdiContainer_Loaded;
             this.SelectionChanged += MdiContainer_SelectionChanged;
             this.SizeChanged += MdiContainer_SizeChanged;
-            ((INotifyCollectionChanged)Items).CollectionChanged += MdiContainer_CollectionChanged; ;
+            ((INotifyCollectionChanged)Items).CollectionChanged += MdiContainer_CollectionChanged;
         }
 
         private void MdiContainer_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -117,7 +117,6 @@ namespace MdiMvvm
                 if (oldValue != null) RenderSourceItems();
                 else InvalidateSize();
             }
-            
         }
 
         
@@ -269,20 +268,23 @@ namespace MdiMvvm
                 window.Normalize();
             }
         }
+
         #endregion
 
         private void RenderSourceItems()
         {
+            MinimizedWindows?.Clear();
             if (Items != null && Items.Count > 0)
             {
                 MdiWindow maxwin = null;
-                MinimizedWindows.Clear();
                 foreach (var item in Items)
                 {
                     MdiWindow window = ItemContainerGenerator.ContainerFromItem(item) as MdiWindow;
                     if (window.WindowState == WindowState.Minimized)
                     {
                         MinimizedWindows.Add(window);
+                        var snap = window.LoadSnapshot();
+                        if (snap != null) window.ImageSource = snap;
                     }
                     else if (window.WindowState == WindowState.Maximized)
                     {
@@ -294,9 +296,13 @@ namespace MdiMvvm
                 _logger.Trace($"OnItemsSourceChanged: Min Window = {MinimizedWindows.Count}");
                 MaximizedWindow = maxwin;
             }
-            foreach (var item in MinimizedWindows)
-                Console.WriteLine($"min win is null:  {(item.ImageSource == null)}");
             InvalidateSize();
+            //for (int i = 0; i < MinimizedWindows.Count; i++)
+            //{
+            //    var item = MinimizedWindows[i];
+            //    var snap = item.LoadSnapshot();
+            //    if (snap != null) item.ImageSource = snap;
+            //}
         }
 
         internal void InvalidateSize(MdiWindow currWindow = null)
@@ -312,7 +318,6 @@ namespace MdiMvvm
                 double winBottom = Canvas.GetTop(currWindow) + currWindow.Height + windowMargin;
                 largestPoint.X = largestPoint.X > winRight ? largestPoint.X : winRight;
                 largestPoint.Y = largestPoint.Y > winBottom ? largestPoint.Y : winBottom;
-                
             }
             else
             {

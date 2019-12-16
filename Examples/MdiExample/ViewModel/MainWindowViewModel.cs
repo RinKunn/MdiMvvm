@@ -103,6 +103,10 @@ namespace MdiExample
                 IsBusy = true;
                 success = await SerialisationExtensions.GetObjectFromJsonFile<MainWindowViewModel>(settingsFileName).ConfigureAwait(false);
             }
+            catch(Exception e)
+            {
+                Console.WriteLine($" exper: {e.Message}");
+            }
             // ensure that no matter what, the busy state is cleared even if there were errors
             finally
             {
