@@ -1,10 +1,9 @@
 ﻿using System;
+
 using System.IO;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-
 
 namespace MdiMvvm.Extensions
 {
@@ -21,32 +20,28 @@ namespace MdiMvvm.Extensions
                 context.Close();
             }
             bitmap.Render(drawingVisual);
-
+            
             SaveBitmap(bitmap, window.Uid);
 
             return bitmap;
         }
 
-
-
         private static void SaveBitmap(RenderTargetBitmap bitmap, string uid)
         {
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "gb_mdi");
-            string filename = Path.Combine(path, $"snp_{uid}.snap");
-
+            string filename = GetSnapshotfilename(uid);
 
             JpegBitmapEncoder jpg = new JpegBitmapEncoder();
             jpg.Frames.Add(BitmapFrame.Create(bitmap));
-            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
             using (Stream stm = File.Create(filename))
             {
+
                 jpg.Save(stm);
             }
         }
 
         public static ImageSource LoadSnapshot(this MdiWindow window)
         {
-            string filename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "gb_mdi", $"snp_{window.Uid}.snap");
+            string filename = GetSnapshotfilename(window.Uid);
             if (!File.Exists(filename)) return null;
 
             BitmapImage bitmap = new BitmapImage();
@@ -61,10 +56,41 @@ namespace MdiMvvm.Extensions
         public static void DeleteSnapshot(this MdiWindow window)
         {
             window.ImageSource = null;
-            string filename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "gb_mdi", $"snp_{ window.Uid}.snap");
+            string filename = GetSnapshotfilename(window.Uid);
 
             if (File.Exists(filename)) File.Delete(filename);
         }
+
+
+        private static string GetSnapshotfilename(string uid)
+        {
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "gb_mdi", $"snp_{uid}.snap");
+        }
+
+        //public static Bitmap ResizeImage(Image image, int width, int height)
+        //{
+        //    var destRect = new Rectangle(0, 0, width, height);
+        //    var destImage = new Bitmap(width, height);
+
+        //    destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+        //    using (var graphics = Graphics.FromImage(destImage))
+        //    {
+        //        graphics.CompositingMode = CompositingMode.SourceCopy;
+        //        graphics.CompositingQuality = CompositingQuality.HighQuality;
+        //        graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+        //        graphics.SmoothingMode = SmoothingMode.HighQuality;
+        //        graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+        //        using (var wrapMode = new ImageAttributes())
+        //        {
+        //            wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+        //            graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
+        //        }
+        //    }
+
+        //    return destImage;
+        //}
 
     }
 }

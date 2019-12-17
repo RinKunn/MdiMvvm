@@ -10,6 +10,7 @@ using System.Windows.Input;
 using NLog;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.IO;
 
 namespace MdiMvvm
 {
@@ -24,6 +25,8 @@ namespace MdiMvvm
         private Canvas ContainerCanvas;
         private MdiWindow _maximizedWindow;
         private IList _internalItemSource;
+
+        internal int WindowsOffset = 5;
 
         private MdiWindow MaximizedWindow
         {
@@ -63,6 +66,9 @@ namespace MdiMvvm
             this.SelectionChanged += MdiContainer_SelectionChanged;
             this.SizeChanged += MdiContainer_SizeChanged;
             ((INotifyCollectionChanged)Items).CollectionChanged += MdiContainer_CollectionChanged;
+
+            string snapsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "gb_mdi");
+            if (!Directory.Exists(snapsPath)) Directory.CreateDirectory(snapsPath);
         }
 
         private void MdiContainer_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -111,6 +117,7 @@ namespace MdiMvvm
         {
             _logger.Trace($"OnItemsSourceChanged: oldSouce = {(oldValue == null ? "null" : $"{(oldValue as IList).Count}")}, newSouce = {(newValue == null ? "null" : $"{(newValue as IList).Count}")}");
             base.OnItemsSourceChanged(oldValue, newValue);
+            WindowsOffset = 5;
             if (newValue != null && newValue is IList)
             {
                 _internalItemSource = newValue as IList;

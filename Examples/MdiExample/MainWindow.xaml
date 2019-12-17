@@ -16,7 +16,6 @@
                 <ResourceDictionary Source="/MdiExample;component/LoadingSpinner.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
-            
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         
         <Style x:Key="cp" TargetType="{x:Type control:MdiWindow}">

@@ -34,6 +34,7 @@ namespace MdiMvvm
         internal static bool UseSnapshots = false;
 
         private Logger _logger = LogManager.GetCurrentClassLogger();
+        private const int WindowOffsetDiff = 25;
         
         private WindowButton _closeButton;
         private WindowButton _maximizeButton;
@@ -64,7 +65,8 @@ namespace MdiMvvm
             this.Loaded += MdiWindow_Loaded;
         }
 
-        public void InitPosition()
+        [Obsolete]
+        public void InitPositionn()
         {
             if (this.WindowState == WindowState.Maximized || (Width != 0 && Height != 0)) return;
             
@@ -88,6 +90,37 @@ namespace MdiMvvm
             PreviousTop = top;
 
             //Console.WriteLine($" - MdiWindow InitPosition: {PreviousLeft} - {PreviousTop} - {PreviousHeight} - {PreviousWidth}");
+        }
+
+        public void InitPosition()
+        {
+            if (this.WindowState == WindowState.Maximized || (Width != 0 && Height != 0)) return;
+
+            var actualContainerHeight = Container.ActualHeight;
+            var actualContainerWidth = Container.ActualWidth;
+
+            UpdateLayout();
+            InvalidateMeasure();
+            var actualWidth = ActualWidth;
+            var actualHeight = ActualHeight;
+
+            PreviousWidth = ActualWidth;
+            PreviousHeight = ActualHeight;
+
+            double left = Math.Max(0, Container.WindowsOffset);
+            double top = Math.Max(0, Container.WindowsOffset);
+
+            SetValue(Canvas.LeftProperty, left);
+            SetValue(Canvas.TopProperty, top);
+
+
+            PreviousLeft = left;
+            PreviousTop = top;
+
+            Container.WindowsOffset += WindowOffsetDiff;
+
+            if (Container.WindowsOffset + actualHeight > actualContainerHeight || Container.WindowsOffset + actualWidth > actualContainerWidth)
+                Container.WindowsOffset = 5;
         }
 
 
@@ -385,16 +418,19 @@ namespace MdiMvvm
 
         private void MdiWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            _logger.Trace($"MdiWindow_Loaded: {Title} - {WindowState}");
             var content = VisualTreeExtension.FindContent(this);
+            _logger.Trace($"MdiWindow_Loaded: {Title} - {WindowState}. content = {content?.GetType().Name}: {content?.ActualWidth}");
             if (content != null)
             {
                 this.MinHeight = content.MinHeight + 34;
                 this.MinWidth = content.MinWidth + 10;
-                this.Height = content.ActualHeight + 34;
-                this.Width = content.ActualWidth + 10;
+                //this.Height = content.ActualHeight + 34;
+                //this.Width = content.ActualWidth + 10;
+                this.Height = ActualHeight;
+                this.Width = ActualWidth;
             }
             if(string.IsNullOrEmpty(Uid)) this.Uid = Guid.NewGuid().ToString();
+            _logger.Trace($"MdiWindow_Loaded: {Title} - {WindowState}. content = {MinWidth}: {MinHeight}");
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
