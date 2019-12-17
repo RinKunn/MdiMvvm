@@ -10,12 +10,14 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace MdiExample
 {
     public class MainWindowViewModel : ViewModelBase
     {
-        private const string settingsFileName = "./example.json";
+        private string settingsFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "GalaxyBond", "winsettings.json");
+
         private MdiContainerViewModel _selectedContainer;
         private ObservableCollection<MdiContainerViewModel> _containers;
         private bool _busy;
@@ -48,6 +50,8 @@ namespace MdiExample
         public MainWindowViewModel()
         {   
             IsBusy = false;
+            string path = Path.GetDirectoryName(settingsFileName);
+            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
         }
 
         public async void Init() => await LoadSettings();
@@ -61,7 +65,16 @@ namespace MdiExample
         public RelayCommand SaveCommand =>
             _saveCommand ?? (_saveCommand = new RelayCommand(async () =>
             {
-                await SaveSettings();
+                string fname = null;
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                //saveFileDialog.DefaultExt = "gbvw";
+                saveFileDialog.FileName = "mygalaxyview.gbvw";
+                saveFileDialog.Filter = "Custom type files|*.gbvw|All files|*.*";
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    fname = saveFileDialog.FileName;
+                    await SaveSettings(fname);
+                }
                 SaveCommand.RaiseCanExecuteChanged();
             }, () => !_busy));
 
@@ -70,20 +83,27 @@ namespace MdiExample
         public RelayCommand LoadCommand =>
             _loadCommand ?? (_loadCommand = new RelayCommand(async () =>
             {
-                await LoadSettings();
+                string fname = null;
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.DefaultExt = "gbvw";
+                openFileDialog.Filter = "Custom type files|*.gbvw|All files|*.*";
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    fname = openFileDialog.FileName;
+                    await LoadSettings(fname);
+                }
                 LoadCommand.RaiseCanExecuteChanged();
             }, () => !_busy));
 
 
-
-
-        public async Task<bool> SaveSettings()
+        public async Task<bool> SaveSettings(string saveFilename = null)
         {
+            string filename = saveFilename ?? settingsFileName;
             bool success = false;
             try
             {
                 IsBusy = true;
-                success = await this.SaveObjectToJsonFile(settingsFileName).ConfigureAwait(false);
+                success = await this.SaveObjectToJsonFile(filename).ConfigureAwait(false);
             }
             finally
             {
@@ -95,13 +115,15 @@ namespace MdiExample
             return success;
         }
 
-        private async Task LoadSettings()
+        public async Task LoadSettings(string saveFilename = null)
         {
+            string filename = saveFilename ?? settingsFileName;
+
             MainWindowViewModel success = null;
             try
             {
                 IsBusy = true;
-                success = await SerialisationExtensions.GetObjectFromJsonFile<MainWindowViewModel>(settingsFileName).ConfigureAwait(false);
+                success = await SerialisationExtensions.GetObjectFromJsonFile<MainWindowViewModel>(filename).ConfigureAwait(false);
             }
             catch(Exception e)
             {
@@ -121,20 +143,26 @@ namespace MdiExample
             {
                 this.Containers = success.Containers;
                 this.SelectedContainer = Containers.FirstOrDefault(c => c.Selectedd == true);
-                if (SelectedContainer == null && Containers.Count > 0)
+                if (SelectedContainer == null)
                     SelectedContainer = Containers[0];
+                
             }
             else
             {
-                Containers = new ObservableCollection<MdiContainerViewModel>
+                InitDefault();
+            }
+        }
+
+        private void InitDefault()
+        {
+            Containers = new ObservableCollection<MdiContainerViewModel>
                 {
                     new MdiContainerViewModel("item 1"),
                     new MdiContainerViewModel("item 2"),
                     new MdiContainerViewModel("item 3")
                 };
 
-                SelectedContainer = Containers.First();
-            }
+            SelectedContainer = Containers.First();
         }
 
     }

@@ -22,7 +22,7 @@ namespace MdiMvvm.ValueObjects
         {
             if(e.Action == NotifyCollectionChangedAction.Add)
             {
-                Console.WriteLine($"minimized added: {e.NewItems.Count}");
+                
                 foreach(MdiWindow item in e.NewItems)
                 {
                     if (item.WindowState != WindowState.Minimized) continue;
@@ -61,7 +61,7 @@ namespace MdiMvvm.ValueObjects
             MdiWindow window = (MdiWindow)(sender as ContentControl).DataContext;
             if (window != null)
             {
-                window.Normalize();
+                window.ToggleMinimize();
             }
         }
     }

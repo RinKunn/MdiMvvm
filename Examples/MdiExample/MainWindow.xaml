@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:MdiExample"
         xmlns:control="clr-namespace:MdiMvvm;assembly=MdiMvvm"
         mc:Ignorable="d"
+        WindowState="Maximized"
         d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel, IsDesignTimeCreatable=False}"
         Title="MainWindow" Height="450" Width="800">
     
@@ -66,7 +67,7 @@
         <TabControl 
             Grid.Row="1"
             ItemsSource="{Binding Containers}"
-            SelectedItem="{Binding SelectedContainer, UpdateSourceTrigger=PropertyChanged}">
+            SelectedItem="{Binding SelectedContainer, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}">
 
             <TabControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type local:MdiContainerViewModel}">

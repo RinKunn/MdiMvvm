@@ -25,8 +25,8 @@ namespace MdiExample
             InitializeComponent();
             var context = new MainWindowViewModel();
             DataContext = context;
-            this.Loaded += (o,e) => context.Init();
-            //this.Closing += (o, e) => context.SaveSettings().GetAwaiter().GetResult();
+            this.Loaded += (o,e) => context.LoadSettings().GetAwaiter().GetResult();
+            this.Closing += (o, e) => context.SaveSettings().GetAwaiter().GetResult();
         }
     }
 }

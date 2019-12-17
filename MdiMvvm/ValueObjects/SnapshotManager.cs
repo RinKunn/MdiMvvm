@@ -20,30 +20,20 @@ namespace MdiMvvm.ValueObjects
             if (!Directory.Exists(snapsPath)) Directory.CreateDirectory(snapsPath);
         }
 
-        public ImageSource GetSnapshot(MdiWindow window)
+        internal ImageSource GetSnapshot(MdiWindow window)
         {
             if (window == null) throw new ArgumentNullException("GetSnapshot has null window");
-            string uid = window.Uid;
-            window.Closing += (o, e) => Window_Closing(uid);
-            window.WindowStateChanged += (o, e) => { if (e.NewValue != WindowState.Minimized) Window_Closing(uid); };
             var snapSource = LoadSnapshot(window.Uid) ?? CreateSnapshot(window);
             return snapSource;
         }
 
-        private void Window_Closing(string uid)
-        {
-            Console.WriteLine($"win: {uid}  is closing");
-            DeleteSnapshot(uid);
-        }
-
-        public bool HasSnapshot(MdiWindow window)
+        internal bool HasSnapshot(MdiWindow window)
         {
             return File.Exists(GetSnapshotfilename(window.Uid));
         }
 
-        private void DeleteSnapshot(string uid)
+        internal void DeleteSnapshot(string uid)
         {
-            //window.ImageSource = null;
             string filename = GetSnapshotfilename(uid);
             if (File.Exists(filename)) File.Delete(filename);
         }

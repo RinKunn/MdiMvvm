@@ -23,7 +23,7 @@ namespace MdiMvvm
     [TemplatePart(Name = "PART_ContainerMinWin_ListBox", Type = typeof(ListBox))]
     public sealed class MdiContainer : Selector
     {
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        //private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         private ScrollViewer ContainerScrollViewer;
         private ListBox ContainerMinWinListox;
@@ -132,7 +132,7 @@ namespace MdiMvvm
         
         protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
         {
-            _logger.Trace($"OnItemsSourceChanged: oldSouce = {(oldValue == null ? "null" : $"{(oldValue as IList).Count}")}, newSouce = {(newValue == null ? "null" : $"{(newValue as IList).Count}")}");
+            //_logger.Trace($"OnItemsSourceChanged: oldSouce = {(oldValue == null ? "null" : $"{(oldValue as IList).Count}")}, newSouce = {(newValue == null ? "null" : $"{(newValue as IList).Count}")}");
             base.OnItemsSourceChanged(oldValue, newValue);
             WindowsOffset = 5;
             if (newValue != null && newValue is IList)
@@ -205,7 +205,7 @@ namespace MdiMvvm
         {
             if (!(sender is MdiWindow window)) throw new NullReferenceException($"Sender in OnMdiWindowStateChanged is not {typeof(MdiWindow).Name} ");
 
-            _logger.Trace($"OnMdiWindowStateChanged: Window '{window.Title}' changed state from '{e.OldValue}' to '{e.NewValue}'");
+            //_logger.Trace($"OnMdiWindowStateChanged: Window '{window.Title}' changed state from '{e.OldValue}' to '{e.NewValue}'");
             if (e.NewValue == WindowState.Minimized)
             {
                 MinimizedWindows.Add(window);
@@ -228,7 +228,7 @@ namespace MdiMvvm
         private void OnMdiWindowClosing(object sender, RoutedEventArgs e)
         {
             var window = sender as MdiWindow;
-            _logger.Trace($"OnMdiWindowClosing: Window '{window.Title}'");
+            //_logger.Trace($"OnMdiWindowClosing: Window '{window.Title}'");
             if (window.WindowState == WindowState.Maximized) MaximizedWindow = null;
             if (window?.DataContext != null)
             {
@@ -252,7 +252,7 @@ namespace MdiMvvm
         {
             if (sender is MdiWindow window)
             {
-                _logger.Trace($"OnMdiWindow_Unloaded: Window '{window.Title}': {window.WindowState}");
+                //_logger.Trace($"OnMdiWindow_Unloaded: Window '{window.Title}': {window.WindowState}");
                 if (window.WindowState == WindowState.Maximized) MaximizedWindow = null;
                 window.FocusChanged -= OnMdiWindowFocusChanged;
                 window.Closing -= OnMdiWindowClosing;
@@ -313,8 +313,8 @@ namespace MdiMvvm
                         maxwin = window;
                     }
                 }
-                _logger.Trace($"OnItemsSourceChanged: Max Window = {(maxwin == null ? "null" : $"{maxwin.Title}")}");
-                _logger.Trace($"OnItemsSourceChanged: Min Window = {MinimizedWindows.Count}");
+                //_logger.Trace($"OnItemsSourceChanged: Max Window = {(maxwin == null ? "null" : $"{maxwin.Title}")}");
+                //_logger.Trace($"OnItemsSourceChanged: Min Window = {MinimizedWindows.Count}");
                 MaximizedWindow = maxwin;
             }
             InvalidateSize();
@@ -353,7 +353,6 @@ namespace MdiMvvm
                     }
                 }
             }
-            //Console.WriteLine($"InvalidateSize: container:[{ContainerCanvas.Width}, {ContainerCanvas.Height}] bifsize: [{largestPoint.X}, {largestPoint.Y}]");
             if (ContainerCanvas.Width != largestPoint.X) ContainerCanvas.Width = largestPoint.X;
             if (ContainerCanvas.Height != largestPoint.Y) ContainerCanvas.Height = largestPoint.Y;
         }

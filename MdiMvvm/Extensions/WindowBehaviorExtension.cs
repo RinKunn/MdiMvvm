@@ -11,7 +11,7 @@ namespace MdiMvvm.Extensions
     {
         //private static int ANIMATED_MILLISECONDS_DURATION = 0;
 
-        private static Logger _logger = LogManager.GetCurrentClassLogger();
+        //private static Logger _logger = LogManager.GetCurrentClassLogger();
         /// <summary>
         /// Save current <see cref="WindowState.Normal"/> state of <see cref="MdiWindow"/>
         /// </summary>
@@ -42,10 +42,10 @@ namespace MdiMvvm.Extensions
         /// <param name="window"></param>
         public static void Maximize(this MdiWindow window)
         {
-            _logger.Trace($"Maximize: '{window.Title} go to Maximized from {window.WindowState}");
+            //_logger.Trace($"Maximize: '{window.Title} go to Maximized from {window.WindowState}");
             if (window.IsResizable)
             {
-                window.SavePreviousPosition();
+                if(window.WindowState == WindowState.Normal) window.SavePreviousPosition();
 
                 Canvas.SetTop(window, 0.0);
                 Canvas.SetLeft(window, 0.0);
@@ -64,7 +64,7 @@ namespace MdiMvvm.Extensions
         /// <param name="window"></param>
         public static void Normalize(this MdiWindow window)
         {
-            _logger.Trace($"Normalize: '{window.Title} go to Normalize from {window.WindowState}");
+            //_logger.Trace($"Normalize: '{window.Title} go to Normalize from {window.WindowState}");
             if (window.WindowState == WindowState.Maximized) window.LoadPreviousPosition();
 
             //window.DeleteSnapshot();
@@ -80,12 +80,10 @@ namespace MdiMvvm.Extensions
         /// <param name="window"></param>
         public static void Minimize(this MdiWindow window)
         {
-            //window.ImageSource = window.CreateSnapshot();
             window.ImageSource = window.Container.SnapshotManager.GetSnapshot(window);
             
             window.PreviousWindowState = window.WindowState;
             window.WindowState = WindowState.Minimized;
-            //Panel.SetZIndex(window, 0);
         }
 
         internal static void AnimateResize(MdiWindow window, double newWidth, double newHeight, bool lockWindow)
@@ -94,17 +92,6 @@ namespace MdiMvvm.Extensions
 
             window.Height = newHeight;
             window.Width = newWidth;
-            //var widthAnimation = new DoubleAnimation(window.ActualWidth, newWidth, new Duration(TimeSpan.FromMilliseconds(ANIMATED_MILLISECONDS_DURATION)));
-            //var heightAnimation = new DoubleAnimation(window.ActualHeight, newHeight, new Duration(TimeSpan.FromMilliseconds(ANIMATED_MILLISECONDS_DURATION)));
-
-            //if (lockWindow == false)
-            //{
-            //    widthAnimation.Completed += (s, e) => window.BeginAnimation(FrameworkElement.WidthProperty, new DoubleAnimation(window.Width, newWidth, new Duration(TimeSpan.FromMilliseconds(ANIMATED_MILLISECONDS_DURATION))));
-            //    heightAnimation.Completed += (s, e) => window.BeginAnimation(FrameworkElement.HeightProperty, new DoubleAnimation(window.Height, newHeight, new Duration(TimeSpan.FromMilliseconds(ANIMATED_MILLISECONDS_DURATION))));
-            //}
-
-            //window.BeginAnimation(FrameworkElement.WidthProperty, widthAnimation, HandoffBehavior.Compose);
-            //window.BeginAnimation(FrameworkElement.HeightProperty, heightAnimation, HandoffBehavior.Compose);
         }
 
 
@@ -128,7 +115,9 @@ namespace MdiMvvm.Extensions
                 window.Minimize();
             }
             else
-            {            
+            {
+                window.Container.SnapshotManager.DeleteSnapshot(window.Uid);
+                window.ImageSource = null;
                 switch (window.PreviousWindowState)
                 {
                     case WindowState.Maximized:

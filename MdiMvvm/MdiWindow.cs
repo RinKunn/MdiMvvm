@@ -33,7 +33,6 @@ namespace MdiMvvm
     {
         internal static bool UseSnapshots = false;
 
-        private Logger _logger = LogManager.GetCurrentClassLogger();
         private const int WindowOffsetDiff = 25;
         
         private WindowButton _closeButton;
@@ -90,7 +89,6 @@ namespace MdiMvvm
             PreviousLeft = left;
             PreviousTop = top;
 
-            //Console.WriteLine($" - MdiWindow InitPosition: {PreviousLeft} - {PreviousTop} - {PreviousHeight} - {PreviousWidth}");
         }
 
         public void InitPosition()
@@ -420,13 +418,17 @@ namespace MdiMvvm
 
         private void MdiWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            var content = VisualTreeExtension.FindContent(this);
+            MdiWindow window = sender as MdiWindow;
+            var content = VisualTreeExtension.FindContent(window);
             if (content != null)
             {
-                this.MinHeight = content.MinHeight + 34;
-                this.MinWidth = content.MinWidth + 10;
-                this.Height = ActualHeight;
-                this.Width = ActualWidth;
+                window.MinHeight = content.MinHeight + 34;
+                window.MinWidth = content.MinWidth + 10;
+
+                window.Height = Math.Max(content.ActualHeight + 34, ActualHeight);
+                window.Width = Math.Max(content.ActualWidth + 10, ActualWidth);
+                window.PreviousHeight = window.Height;
+                window.PreviousWidth = window.Width;
             }
         }
 
