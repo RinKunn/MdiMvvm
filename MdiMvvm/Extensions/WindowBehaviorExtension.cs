@@ -67,7 +67,7 @@ namespace MdiMvvm.Extensions
             _logger.Trace($"Normalize: '{window.Title} go to Normalize from {window.WindowState}");
             if (window.WindowState == WindowState.Maximized) window.LoadPreviousPosition();
 
-            window.DeleteSnapshot();
+            //window.DeleteSnapshot();
             Panel.SetZIndex(window, 0);
             window.PreviousWindowState = window.WindowState;
             window.WindowState = WindowState.Normal;
@@ -80,7 +80,8 @@ namespace MdiMvvm.Extensions
         /// <param name="window"></param>
         public static void Minimize(this MdiWindow window)
         {
-            window.ImageSource = window.CreateSnapshot();
+            //window.ImageSource = window.CreateSnapshot();
+            window.ImageSource = window.Container.SnapshotManager.GetSnapshot(window);
             
             window.PreviousWindowState = window.WindowState;
             window.WindowState = WindowState.Minimized;

@@ -17,10 +17,9 @@
             </ResourceDictionary.MergedDictionaries>
 
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        
-        <Style x:Key="cp" TargetType="{x:Type control:MdiWindow}">
 
-            <Setter Property="Uid" Value="{Binding Uid, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <Style x:Key="cp" TargetType="{x:Type control:MdiWindow}">
+                <Setter Property="Uid" Value="{Binding Uid, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             <Setter Property="Title" Value="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             <Setter Property="IsModal" Value="{Binding IsModal, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"/>
             <Setter Property="Width" Value="{Binding CurrentWidth, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>

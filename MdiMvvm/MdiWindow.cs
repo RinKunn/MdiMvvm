@@ -63,6 +63,7 @@ namespace MdiMvvm
             Container = container;
             Container.SizeChanged += Container_SizeChanged;
             this.Loaded += MdiWindow_Loaded;
+            if (string.IsNullOrEmpty(Uid)) this.Uid = Guid.NewGuid().ToString();
         }
 
         [Obsolete]
@@ -123,6 +124,7 @@ namespace MdiMvvm
                 Container.WindowsOffset = 5;
         }
 
+        
 
         #region Overrides
 
@@ -419,18 +421,13 @@ namespace MdiMvvm
         private void MdiWindow_Loaded(object sender, RoutedEventArgs e)
         {
             var content = VisualTreeExtension.FindContent(this);
-            _logger.Trace($"MdiWindow_Loaded: {Title} - {WindowState}. content = {content?.GetType().Name}: {content?.ActualWidth}");
             if (content != null)
             {
                 this.MinHeight = content.MinHeight + 34;
                 this.MinWidth = content.MinWidth + 10;
-                //this.Height = content.ActualHeight + 34;
-                //this.Width = content.ActualWidth + 10;
                 this.Height = ActualHeight;
                 this.Width = ActualWidth;
             }
-            if(string.IsNullOrEmpty(Uid)) this.Uid = Guid.NewGuid().ToString();
-            _logger.Trace($"MdiWindow_Loaded: {Title} - {WindowState}. content = {MinWidth}: {MinHeight}");
         }
 
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)

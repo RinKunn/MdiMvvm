@@ -11,6 +11,11 @@ using NLog;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
+using System.Windows.Threading;
+using System.Windows.Media;
+using System.Linq;
+using System.Collections.Generic;
+using MdiMvvm.ViewModels;
 
 namespace MdiMvvm
 {
@@ -27,7 +32,7 @@ namespace MdiMvvm
         private IList _internalItemSource;
 
         internal int WindowsOffset = 5;
-
+        internal SnapshotManager SnapshotManager;
         private MdiWindow MaximizedWindow
         {
             get => _maximizedWindow;
@@ -65,16 +70,15 @@ namespace MdiMvvm
             this.Loaded += MdiContainer_Loaded;
             this.SelectionChanged += MdiContainer_SelectionChanged;
             this.SizeChanged += MdiContainer_SizeChanged;
+            
             ((INotifyCollectionChanged)Items).CollectionChanged += MdiContainer_CollectionChanged;
-
-            string snapsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "gb_mdi");
-            if (!Directory.Exists(snapsPath)) Directory.CreateDirectory(snapsPath);
+            
+            SnapshotManager = new SnapshotManager();
         }
+
 
         private void MdiContainer_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            
-            //_logger.Trace($"MdiContainer_CollectionChanged: {e.Action}");
             if (e.Action == NotifyCollectionChangedAction.Add && MaximizedWindow != null) MaximizedWindow.Normalize();
         }
 
@@ -99,7 +103,6 @@ namespace MdiMvvm
         {
             if (element is MdiWindow window)
             {
-                //_logger.Trace($"PrepareContainerForItemOverride: new MdiWindow added '{window.Title}' : {window.WindowState}");
                 window.FocusChanged += OnMdiWindowFocusChanged;
                 window.WindowStateChanged += OnMdiWindowStateChanged;
                 window.Closing += OnMdiWindowClosing;
@@ -108,6 +111,20 @@ namespace MdiMvvm
                 window.Initialize(this);
                 window.InitPosition();
 
+                if (window.WindowState == WindowState.Minimized)
+                {
+                    if (!SnapshotManager.HasSnapshot(window))
+                    {
+                        window.WindowState = WindowState.Normal;
+                        Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            window.ImageSource = SnapshotManager.CreateSnapshot(window);
+                            window.WindowState = WindowState.Minimized;
+                        }), DispatcherPriority.ContextIdle, null);
+                    }
+                    else
+                        window.ImageSource = SnapshotManager.GetSnapshot(window);
+                }
                 window.Focus();
             }
             base.PrepareContainerForItemOverride(element, item);
@@ -125,8 +142,6 @@ namespace MdiMvvm
                 else InvalidateSize();
             }
         }
-
-        
 
         #endregion
 
@@ -214,8 +229,7 @@ namespace MdiMvvm
         {
             var window = sender as MdiWindow;
             _logger.Trace($"OnMdiWindowClosing: Window '{window.Title}'");
-            if (window.WindowState == WindowState.Maximized)
-                MaximizedWindow = null;
+            if (window.WindowState == WindowState.Maximized) MaximizedWindow = null;
             if (window?.DataContext != null)
             {
                 _internalItemSource?.Remove(window.DataContext);
@@ -284,32 +298,26 @@ namespace MdiMvvm
             if (Items != null && Items.Count > 0)
             {
                 MdiWindow maxwin = null;
-                foreach (var item in Items)
+
+                foreach (var item in _internalItemSource)
                 {
                     MdiWindow window = ItemContainerGenerator.ContainerFromItem(item) as MdiWindow;
                     if (window.WindowState == WindowState.Minimized)
                     {
                         MinimizedWindows.Add(window);
-                        var snap = window.LoadSnapshot();
-                        if (snap != null) window.ImageSource = snap;
+                        //var snap = window.LoadSnapshot();
+                        //if (snap != null) window.ImageSource = snap;
                     }
                     else if (window.WindowState == WindowState.Maximized)
                     {
                         maxwin = window;
                     }
                 }
-
                 _logger.Trace($"OnItemsSourceChanged: Max Window = {(maxwin == null ? "null" : $"{maxwin.Title}")}");
                 _logger.Trace($"OnItemsSourceChanged: Min Window = {MinimizedWindows.Count}");
                 MaximizedWindow = maxwin;
             }
             InvalidateSize();
-            //for (int i = 0; i < MinimizedWindows.Count; i++)
-            //{
-            //    var item = MinimizedWindows[i];
-            //    var snap = item.LoadSnapshot();
-            //    if (snap != null) item.ImageSource = snap;
-            //}
         }
 
         internal void InvalidateSize(MdiWindow currWindow = null)

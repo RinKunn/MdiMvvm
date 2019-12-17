@@ -29,6 +29,7 @@ namespace MdiMvvm.ValueObjects
                     base.OnCollectionChanged(e);
                     ContentControl lbi = (ContentControl)_itemsControl.ItemContainerGenerator.ContainerFromItem(item);
                     lbi.MouseDoubleClick += Lbi_MouseDoubleClick;
+                    
                 }
                 return;
             }
@@ -38,6 +39,7 @@ namespace MdiMvvm.ValueObjects
                 {
                     ContentControl lbi = (ContentControl)_itemsControl.ItemContainerGenerator.ContainerFromItem(item);
                     lbi.MouseDoubleClick -= Lbi_MouseDoubleClick;
+                    
                 }
                 base.OnCollectionChanged(e);
                 return;
