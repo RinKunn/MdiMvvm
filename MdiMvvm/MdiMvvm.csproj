@@ -90,7 +90,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="ValueObjects\MdiWindowPosition.cs" />
     <Compile Include="ValueObjects\MinimizedWindowCollection.cs" />
     <Compile Include="ValueObjects\SnapshotManager.cs" />
     <Compile Include="ViewModels\MdiWindowViewModelBase.cs" />

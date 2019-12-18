@@ -22,8 +22,6 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="Tag" Value="Horizontal">
-                            <!--<Setter TargetName="CornerScrollBarRectangle" Property="Width" Value="Auto" />
-                            <Setter TargetName="CornerScrollBarRectangle" Property="Height" Value="8" />-->
                             <Setter TargetName="CornerScrollBarRectangle" Property="Margin" Value="1,0" />
                             
                         </Trigger>
