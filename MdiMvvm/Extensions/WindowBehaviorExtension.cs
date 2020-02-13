@@ -1,9 +1,7 @@
-﻿using NLog;
-using System;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 
 namespace MdiMvvm.Extensions
 {
@@ -45,13 +43,13 @@ namespace MdiMvvm.Extensions
             //_logger.Trace($"Maximize: '{window.Title} go to Maximized from {window.WindowState}");
             if (window.IsResizable)
             {
-                if(window.WindowState == WindowState.Normal) window.SavePreviousPosition();
+                if (window.WindowState == WindowState.Normal) window.SavePreviousPosition();
 
                 Canvas.SetTop(window, 0.0);
                 Canvas.SetLeft(window, 0.0);
                 AnimateResize(window, window.Container.ActualWidth - 4, window.Container.ActualHeight - 4, true);
                 Panel.SetZIndex(window, 10);
-                
+
                 window.PreviousWindowState = window.WindowState;
                 window.WindowState = WindowState.Maximized;
             }
@@ -81,7 +79,7 @@ namespace MdiMvvm.Extensions
         public static void Minimize(this MdiWindow window)
         {
             window.ImageSource = window.Container.SnapshotManager.GetSnapshot(window);
-            
+
             window.PreviousWindowState = window.WindowState;
             window.WindowState = WindowState.Minimized;
         }
@@ -97,7 +95,7 @@ namespace MdiMvvm.Extensions
 
 
         public static void ToggleMaximize(this MdiWindow window)
-        {         
+        {
             if (window.WindowState == WindowState.Maximized)
             {
                 window.Normalize();
@@ -106,7 +104,7 @@ namespace MdiMvvm.Extensions
             {
                 window.Maximize();
             }
-        }      
+        }
 
         public static void ToggleMinimize(this MdiWindow window)
         {

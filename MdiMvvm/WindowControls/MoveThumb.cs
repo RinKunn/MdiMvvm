@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -26,7 +25,7 @@ namespace MdiMvvm.WindowControls
             var window = VisualTreeExtension.FindMdiWindow(this);
             if (window != null)
             {
-                window.DoFocus(e);         
+                window.DoFocus(e);
             }
 
             base.OnMouseDown(e);
@@ -34,12 +33,12 @@ namespace MdiMvvm.WindowControls
 
         protected override void OnMouseDoubleClick(MouseButtonEventArgs e)
         {
-            var window = VisualTreeExtension.FindMdiWindow(this);         
+            var window = VisualTreeExtension.FindMdiWindow(this);
 
             if (window != null && window.Container != null)
             {
                 switch (window.WindowState)
-                { 
+                {
                     case WindowState.Maximized:
                         window.Normalize();
                         break;
@@ -50,7 +49,7 @@ namespace MdiMvvm.WindowControls
                         window.Normalize();
                         break;
                     default:
-                    throw new InvalidOperationException("Unsupported WindowsState mode");
+                        throw new InvalidOperationException("Unsupported WindowsState mode");
                 }
             }
 

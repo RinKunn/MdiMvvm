@@ -1,16 +1,13 @@
-﻿using GalaSoft.MvvmLight.CommandWpf;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Threading;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.Serialization.Formatters.Binary;
-using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.CommandWpf;
+using GalaSoft.MvvmLight.Threading;
+using Newtonsoft.Json;
 
 namespace MdiExample
 {
@@ -21,7 +18,7 @@ namespace MdiExample
         private MdiContainerViewModel _selectedContainer;
         private ObservableCollection<MdiContainerViewModel> _containers;
         private bool _busy;
-        
+
         [JsonIgnore]
         public bool IsBusy
         {
@@ -40,15 +37,15 @@ namespace MdiExample
             get => _selectedContainer;
             set
             {
-                if(_selectedContainer != null) _selectedContainer.Selectedd = false;
+                if (_selectedContainer != null) _selectedContainer.IsSelected = false;
                 Set(ref _selectedContainer, value);
-                if (_selectedContainer != null) _selectedContainer.Selectedd = true;
+                if (_selectedContainer != null) _selectedContainer.IsSelected = true;
             }
         }
 
 
         public MainWindowViewModel()
-        {   
+        {
             IsBusy = false;
             string path = Path.GetDirectoryName(settingsFileName);
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
@@ -125,7 +122,7 @@ namespace MdiExample
                 IsBusy = true;
                 success = await SerialisationExtensions.GetObjectFromJsonFile<MainWindowViewModel>(filename).ConfigureAwait(false);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine($" exper: {e.Message}");
             }
@@ -142,10 +139,10 @@ namespace MdiExample
             if (success != null)
             {
                 this.Containers = success.Containers;
-                this.SelectedContainer = Containers.FirstOrDefault(c => c.Selectedd == true);
+                this.SelectedContainer = Containers.FirstOrDefault(c => c.IsSelected == true);
                 if (SelectedContainer == null)
                     SelectedContainer = Containers[0];
-                
+
             }
             else
             {

@@ -44,7 +44,7 @@
 
         <DataTemplate DataType="{x:Type local:MdiContainerViewModel}">
             <control:MdiContainer
-                ItemsSource="{Binding ViewModelCollection}"
+                ItemsSource="{Binding WindowsCollection}"
                 ItemContainerStyle="{StaticResource cp}"/>
         </DataTemplate>
 
@@ -62,6 +62,7 @@
             <MenuItem Header="++" Command="{Binding SelectedContainer.AddCommandModal}"/>
             <MenuItem Header="Save" Command="{Binding SaveCommand}"/>
             <MenuItem Header="Load" Command="{Binding LoadCommand}"/>
+            <TextBlock Text="{Binding SelectedContainer.WindowsCount, StringFormat={}Окон: {0}}" Foreground="Blue"/>
         </Menu>
 
         <TabControl 

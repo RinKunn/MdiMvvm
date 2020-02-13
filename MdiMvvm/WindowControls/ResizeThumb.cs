@@ -9,7 +9,7 @@ namespace MdiMvvm.WindowControls
     public sealed class ResizeThumb : Thumb
     {
         public ResizeThumb()
-        {         
+        {
             DragDelta += OnResizing;
         }
 

@@ -1,21 +1,14 @@
-﻿using MdiMvvm.Events;
-using MdiMvvm.Extensions;
-using MdiMvvm.ValueObjects;
-using System;
+﻿using System;
 using System.Collections;
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
-using NLog;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.IO;
 using System.Windows.Threading;
-using System.Windows.Media;
-using System.Linq;
-using System.Collections.Generic;
-using MdiMvvm.ViewModels;
+using MdiMvvm.Events;
+using MdiMvvm.Extensions;
+using MdiMvvm.ValueObjects;
 
 namespace MdiMvvm
 {
@@ -47,19 +40,19 @@ namespace MdiMvvm
                     ContainerMinWinListox.Visibility = Visibility.Visible;
                     InvalidateSize(buf);
                 }
-                else if(buf == null)
+                else if (buf == null)
                 {
                     EnableContainerScroll(false);
                     ContainerMinWinListox.Visibility = Visibility.Collapsed;
                     _maximizedWindow.IsSelected = true;
-                    _maximizedWindow.Width = ActualWidth-2;
-                    _maximizedWindow.Height = ActualHeight-2;
+                    _maximizedWindow.Width = ActualWidth - 2;
+                    _maximizedWindow.Height = ActualHeight - 2;
                     _maximizedWindow.DoFocus(null);
                 }
             }
         }
         private MinimizedWindowCollection MinimizedWindows;
-        
+
         static MdiContainer()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(MdiContainer), new FrameworkPropertyMetadata(typeof(MdiContainer)));
@@ -70,9 +63,9 @@ namespace MdiMvvm
             this.Loaded += MdiContainer_Loaded;
             this.SelectionChanged += MdiContainer_SelectionChanged;
             this.SizeChanged += MdiContainer_SizeChanged;
-            
+
             ((INotifyCollectionChanged)Items).CollectionChanged += MdiContainer_CollectionChanged;
-            
+
             SnapshotManager = new SnapshotManager();
         }
 
@@ -129,7 +122,7 @@ namespace MdiMvvm
             }
             base.PrepareContainerForItemOverride(element, item);
         }
-        
+
         protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
         {
             //_logger.Trace($"OnItemsSourceChanged: oldSouce = {(oldValue == null ? "null" : $"{(oldValue as IList).Count}")}, newSouce = {(newValue == null ? "null" : $"{(newValue as IList).Count}")}");
@@ -326,8 +319,8 @@ namespace MdiMvvm
             if (ContainerCanvas == null || _maximizedWindow != null) return;
 
             Point largestPoint = new Point(this.ActualWidth - 5, this.ActualHeight - 5);
-            
-            if(currWindow != null)
+
+            if (currWindow != null)
             {
                 double winRight = Canvas.GetLeft(currWindow) + currWindow.Width + windowMargin;
                 double winBottom = Canvas.GetTop(currWindow) + currWindow.Height + windowMargin;
@@ -342,8 +335,8 @@ namespace MdiMvvm
                     {
                         if (!(ItemContainerGenerator.ContainerFromItem(item) is MdiWindow window)) return;
                         if (window.WindowState == WindowState.Minimized) continue;
-                        
-                        Point farPosition = new Point(Canvas.GetLeft(window) + window.Width+ windowMargin, Canvas.GetTop(window) + window.Height+ windowMargin);
+
+                        Point farPosition = new Point(Canvas.GetLeft(window) + window.Width + windowMargin, Canvas.GetTop(window) + window.Height + windowMargin);
 
                         if (farPosition.X > largestPoint.X)
                             largestPoint.X = farPosition.X;

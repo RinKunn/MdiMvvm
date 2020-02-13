@@ -1,37 +1,36 @@
 ﻿using System.Windows;
-using System.Windows.Media;
-using System.Windows.Controls.Primitives;
 using System.Windows.Controls;
-using System;
+using System.Windows.Controls.Primitives;
+using System.Windows.Media;
 
 namespace MdiMvvm.Extensions
 {
-   internal static class VisualTreeExtension
-   {
+    internal static class VisualTreeExtension
+    {
         public static TParent FindSpecificParent<TParent>(FrameworkElement sender)
          where TParent : FrameworkElement
-      {
-         var current = sender;
-          if (current == null) return null;
-         var p = VisualTreeHelper.GetParent(current) as FrameworkElement;
+        {
+            var current = sender;
+            if (current == null) return null;
+            var p = VisualTreeHelper.GetParent(current) as FrameworkElement;
 
-         if (p != null && p.GetType() != typeof(TParent))
-         {
-            p = FindSpecificParent<TParent>(p);
-         }
+            if (p != null && p.GetType() != typeof(TParent))
+            {
+                p = FindSpecificParent<TParent>(p);
+            }
 
-          if (p == null && current.Parent is Popup)
-          {
-              var grandpa = ((Popup) current.Parent).Parent as FrameworkElement;
-              if (grandpa != null)
-              {
-                  p = FindSpecificParent<TParent>(grandpa);
-              }
-              
-          }
-          
-         return p as TParent;
-      }
+            if (p == null && current.Parent is Popup)
+            {
+                var grandpa = ((Popup)current.Parent).Parent as FrameworkElement;
+                if (grandpa != null)
+                {
+                    p = FindSpecificParent<TParent>(grandpa);
+                }
+
+            }
+
+            return p as TParent;
+        }
 
         public static T FindItemPresenterChild<T>(Visual visual) where T : Visual
         {
@@ -81,5 +80,5 @@ namespace MdiMvvm.Extensions
         {
             return FindSpecificParent<MdiWindow>(sender);
         }
-   }
+    }
 }

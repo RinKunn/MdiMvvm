@@ -1,9 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using GalaSoft.MvvmLight.Threading;
+using MdiMvvm.Exceptions;
+using MdiMvvm.ViewModels;
 using Newtonsoft.Json;
 
-namespace MdiExample
+namespace MdiMvvm.Extensions
 {
     public static class SerialisationExtensions
     {
@@ -17,7 +20,6 @@ namespace MdiExample
                 {
                     var json = File.ReadAllText(filename);
                     T readResult = JsonConvert.DeserializeObject<T>(json);
-                    //await Task.Delay(3000).ConfigureAwait(false);
                     result.SetResult(readResult);
                 }
                 catch
@@ -49,6 +51,44 @@ namespace MdiExample
             }).ConfigureAwait(false);
 
             return result.Task;
+        }
+
+        public static async Task<bool> SaveContainerStateToFileAsync<TContainer>(this TContainer container, string filename) where TContainer : MdiContainerViewModelBase
+        {
+            if (container == null) throw new ArgumentNullException(nameof(container));
+            if (string.IsNullOrEmpty(filename)) throw new ArgumentNullException(nameof(filename));
+
+            bool success = false;
+            try
+            {
+                container.IsBusy = true;
+                success = await container.SaveObjectToJsonFile(filename).ConfigureAwait(false);
+            }
+            finally
+            {
+                DispatcherHelper.CheckBeginInvokeOnUI(() =>
+                {
+                    container.IsBusy = false;
+                });
+            }
+            return success;
+        }
+
+        public static async Task<TContainer> LoadContainerStateFromFileAsync<TContainer>(string filename) where TContainer : MdiContainerViewModelBase
+        {
+            TContainer loadedContainer = null;
+            try
+            {
+                loadedContainer = await GetObjectFromJsonFile<TContainer>(filename).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                throw new MdiContainerLoadingException(e.Message);
+            }
+
+            if(loadedContainer == null) 
+                throw new MdiContainerLoadingException($"Cannot load container from file: {filename}");
+            return loadedContainer;
         }
     }
 }

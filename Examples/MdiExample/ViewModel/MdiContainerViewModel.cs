@@ -1,107 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization;
-using GalaSoft.MvvmLight.CommandWpf;
+﻿using GalaSoft.MvvmLight.CommandWpf;
+using MdiMvvm.ViewModels;
 using Newtonsoft.Json;
 
 namespace MdiExample
 {
-    public class MdiContainerViewModel : INotifyPropertyChanged
+    public class MdiContainerViewModel : MdiContainerViewModelBase
     {
-        private string _title;
-        public string Title
-        {
-            get => _title;
-            set
-            {
-                _title = value;
-                OnPropertyChanged(nameof(Title));
-            }
-        }
-        private bool _selected;
-        public bool Selectedd
-        {
-            get => _selected;
-            set
-            {
-                _selected = value;
-                OnPropertyChanged(nameof(Selectedd));
-            }
-        }
+        public int WindowsCount => this.WindowsCollection.Count;
+        protected MdiContainerViewModel() { }
 
-        public ObservableCollection<Window1ViewModel> ViewModelCollection { get; private set; }
-
-        protected MdiContainerViewModel()
-        { }
-
-        public MdiContainerViewModel(string title)
+        public MdiContainerViewModel(string title) : base()
         {
             Title = title;
-            ViewModelCollection = new ObservableCollection<Window1ViewModel>();
+            this.WindowsCollection.CollectionChanged += (o, e) => RaisePropertyChanged(() => WindowsCount);
         }
-
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void OnPropertyChanged(string name)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-        }
-
-
 
         private RelayCommand _addCommand;
         private RelayCommand _addCommandModal;
-        private RelayCommand _saveCommand;
-        private RelayCommand _loadCommand;
-
 
         [JsonIgnore]
         public RelayCommand AddCommand =>
             _addCommand ??
-            (_addCommand = new RelayCommand(() =>
-            {
-                ViewModelCollection.Add(new Window1ViewModel() { IsModal = false, Title = "window_DefaultTitleDefaultTitleDefaultTitle" + Title + (ViewModelCollection.Count + 1) });
-            }));
-        
+            (_addCommand = new RelayCommand(() => this.AddMdiWindow(new Window1ViewModel() { IsModal = false, Title = "Default title aga" })));
+
         [JsonIgnore]
         public RelayCommand AddCommandModal =>
             _addCommandModal ??
-            (_addCommandModal = new RelayCommand(() =>
-            {
-
-                ViewModelCollection.Add(new Window1ViewModel() { IsModal = true, Title = "window_" + Title });
-
-            }));
-
-        [JsonIgnore]
-        public RelayCommand SaveCommand =>
-            _saveCommand ??
-            (_saveCommand = new RelayCommand(() =>
-            {
-                this.Save();
-            }));
-
-        [JsonIgnore]
-        public RelayCommand LoadCommand =>
-            _loadCommand ??
-            (_loadCommand = new RelayCommand(() =>
-            {
-                this.Load();
-            }));
+            (_addCommandModal = new RelayCommand(() => this.AddMdiWindow(new Window1ViewModel() { IsModal = true, Title = "Default modal title aga" })));
 
 
-        private void Save()
-        {
-            
-        }
-        private void Load()
-        {
-           
-        }
     }
 }

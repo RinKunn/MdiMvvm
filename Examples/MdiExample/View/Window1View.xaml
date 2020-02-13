@@ -13,6 +13,11 @@
     
     
     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Открыть 2 окно" Command="{Binding OpenWin2Command}"/>
+            </ContextMenu>
+        </Grid.ContextMenu>
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition/>

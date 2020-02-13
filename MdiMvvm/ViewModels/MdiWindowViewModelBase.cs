@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
 using GalaSoft.MvvmLight;
+using Newtonsoft.Json;
 
 namespace MdiMvvm.ViewModels
 {
@@ -13,7 +9,7 @@ namespace MdiMvvm.ViewModels
     {
         #region Members
 
-        private string _uid;
+        private Guid _uid;
         private string _title;
         private bool _isModal;
         private bool _isSelected;
@@ -22,152 +18,145 @@ namespace MdiMvvm.ViewModels
         private double _previousWidth;
         private double _previousHeight;
         private WindowState _previousState;
-        
+
         private double _currentLeft; // bind Canvas.Left
         private double _currentTop; // bind Canvas.Top
         private double _currentWidth;
         private double _currentHeight;
         private WindowState _windowState;
+        
+        [JsonIgnore]
+        public MdiContainerViewModelBase Container;
         #endregion
 
         #region Props
-        public string Uid
-        {
-            get => _uid;
-            set
-            {
-                _uid = value;
-                RaisePropertyChanged(() => Uid);
-            }
-        }
+        /// <summary>
+        /// GUID of window
+        /// </summary>
+        public Guid Guid => _uid;
+
+        /// <summary>
+        /// Title
+        /// </summary>
         public string Title
         {
             get => _title;
-            set
-            {
-                _title = value;
-                RaisePropertyChanged(() => Title);
-            }
+            set => Set(() => Title, ref _title, value);
         }
+
+        /// <summary>
+        /// Is window modal
+        /// </summary>
         public bool IsModal
         {
             get => _isModal;
-            set
-            {
-                _isModal = value;
-                RaisePropertyChanged(() => IsModal);
-            }
+            set => Set(() => IsModal, ref _isModal, value);
         }
+
+        /// <summary>
+        /// Is window selected at <see cref="MdiContainer"/>
+        /// </summary>
         public bool IsSelected
         {
             get => _isSelected;
-            set
-            {
-                _isSelected = value;
-                RaisePropertyChanged(() => IsSelected);
-            }
+            set => Set(() => IsSelected, ref _isSelected, value);
         }
+
+        /// <summary>
+        /// Previous position's left
+        /// </summary>
         public double PreviousLeft
         {
             get => _previousLeft;
-            set
-            {
-                _previousLeft = value;
-                RaisePropertyChanged(() => PreviousLeft);
-            }
+            set => Set(() => PreviousLeft, ref _previousLeft, value);
         }
+
+        /// <summary>
+        /// Previous position's top
+        /// </summary>
         public double PreviousTop
         {
             get => _previousTop;
-            set
-            {
-                _previousTop = value;
-                RaisePropertyChanged(() => PreviousTop);
-            }
+            set => Set(() => PreviousTop, ref _previousTop, value);
         }
+
+        /// <summary>
+        /// Previous position's width
+        /// </summary>
         public double PreviousWidth
         {
             get => _previousWidth;
-            set
-            {
-                _previousWidth = value;
-                RaisePropertyChanged(() => PreviousWidth);
-            }
+            set => Set(() => PreviousWidth, ref _previousWidth, value);
         }
+
+        /// <summary>
+        /// Previous position's height
+        /// </summary>
         public double PreviousHeight
         {
             get => _previousHeight;
-            set
-            {
-                _previousHeight = value;
-                RaisePropertyChanged(() => PreviousHeight);
-            }
+            set => Set(() => PreviousHeight, ref _previousHeight, value);
         }
+
+        /// <summary>
+        /// Previous position's window state
+        /// </summary>
         public WindowState PreviousState
         {
             get => _previousState;
-            set
-            {
-                _previousState = value;
-                RaisePropertyChanged(() => PreviousState);
-            }
+            set => Set(() => PreviousState, ref _previousState, value);
         }
 
+        /// <summary>
+        /// Current position's left
+        /// </summary>
         public double CurrentLeft
         {
             get => _currentLeft;
-            set
-            {
-                _currentLeft = value;
-                RaisePropertyChanged(() => CurrentLeft);
-            }
+            set => Set(() => CurrentLeft, ref _currentLeft, value);
         }
+
+        /// <summary>
+        /// Current position's top
+        /// </summary>
         public double CurrentTop
         {
             get => _currentTop;
-            set
-            {
-                _currentTop = value;
-                RaisePropertyChanged(() => CurrentTop);
-            }
+            set => Set(() => CurrentTop, ref _currentTop, value);
         }
+
+        /// <summary>
+        /// Current position's width
+        /// </summary>
         public double CurrentWidth
         {
             get => _currentWidth;
-            set
-            {
-                _currentWidth = value;
-                RaisePropertyChanged(() => CurrentWidth);
-            }
+            set => Set(() => CurrentWidth, ref _currentWidth, value);
         }
+
+        /// <summary>
+        /// Current position's height
+        /// </summary>
         public double CurrentHeight
         {
             get => _currentHeight;
-            set
-            {
-                _currentHeight = value;
-                RaisePropertyChanged(() => CurrentHeight);
-            }
+            set => Set(() => CurrentHeight, ref _currentHeight, value);
         }
+
+        /// <summary>
+        /// Current position's window state
+        /// </summary>
         public WindowState WindowState
         {
             get => _windowState;
-            set
-            {
-                _windowState = value;
-                RaisePropertyChanged(() => WindowState);
-            }
-        } 
+            set => Set(() => WindowState, ref _windowState, value);   
+        }
+
         #endregion
 
         public MdiWindowViewModelBase()
         {
-
-        }
-
-        public virtual string Retuddrn()
-        {
-            return null;
+            _uid = Guid.NewGuid();
         }
     }
 }

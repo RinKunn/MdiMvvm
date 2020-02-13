@@ -1,10 +1,8 @@
-﻿using MdiMvvm.Extensions;
-using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
-using System.Collections;
-using System.Collections.Specialized;
+using MdiMvvm.Extensions;
 
 namespace MdiMvvm.ValueObjects
 {
@@ -20,31 +18,31 @@ namespace MdiMvvm.ValueObjects
 
         protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            if(e.Action == NotifyCollectionChangedAction.Add)
+            if (e.Action == NotifyCollectionChangedAction.Add)
             {
-                
-                foreach(MdiWindow item in e.NewItems)
+
+                foreach (MdiWindow item in e.NewItems)
                 {
                     if (item.WindowState != WindowState.Minimized) continue;
                     base.OnCollectionChanged(e);
                     ContentControl lbi = (ContentControl)_itemsControl.ItemContainerGenerator.ContainerFromItem(item);
                     lbi.MouseDoubleClick += Lbi_MouseDoubleClick;
-                    
+
                 }
                 return;
             }
-            else if(e.Action == NotifyCollectionChangedAction.Remove)
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
                 foreach (MdiWindow item in e.OldItems)
                 {
                     ContentControl lbi = (ContentControl)_itemsControl.ItemContainerGenerator.ContainerFromItem(item);
                     lbi.MouseDoubleClick -= Lbi_MouseDoubleClick;
-                    
+
                 }
                 base.OnCollectionChanged(e);
                 return;
             }
-            else if(e.Action == NotifyCollectionChangedAction.Reset)
+            else if (e.Action == NotifyCollectionChangedAction.Reset)
             {
                 foreach (MdiWindow item in base.Items)
                 {

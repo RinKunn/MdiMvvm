@@ -14,7 +14,7 @@ namespace MdiMvvm.WindowControls
         public HollowRectangleAdorner(UIElement adornedElement)
             : base(adornedElement)
         {
-            
+
         }
         protected override Size MeasureOverride(Size constraint)
         {
@@ -27,7 +27,7 @@ namespace MdiMvvm.WindowControls
         // method, which is called by the layout system as part of a rendering pass.
         protected override void OnRender(DrawingContext drawingContext)
         {
-            if ((AdornedElement as MdiWindow)?.Container==null) return;
+            if ((AdornedElement as MdiWindow)?.Container == null) return;
 
 
             // Some arbitrary drawing implements.
@@ -46,7 +46,7 @@ namespace MdiMvvm.WindowControls
             var yPlush = Math.Min(hh, y + h);
 
 
-            var pointA = new Point(0,0);
+            var pointA = new Point(0, 0);
             var pointB = new Point(xPlusw, 0);
             var pointD = new Point(0, y);
             var pointF = new Point(xPlusw, y);
@@ -64,7 +64,7 @@ namespace MdiMvvm.WindowControls
 
             drawingContext.PushTransform(new TranslateTransform(-Canvas.GetLeft(AdornedElement), -Canvas.GetTop(AdornedElement)));
             drawingContext.DrawRectangle(renderBrush, renderPen, rectangle1);
-            drawingContext.DrawRectangle(renderBrush, renderPen, rectangle2);     
+            drawingContext.DrawRectangle(renderBrush, renderPen, rectangle2);
             drawingContext.DrawRectangle(renderBrush, renderPen, rectangle3);
             drawingContext.DrawRectangle(renderBrush, renderPen, rectangle4);
 

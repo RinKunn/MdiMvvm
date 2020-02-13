@@ -6,13 +6,10 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 using MdiMvvm.Events;
 using MdiMvvm.Extensions;
 using MdiMvvm.WindowControls;
-using System.IO;
-using System.Windows.Media;
-using MdiMvvm.ValueObjects;
-using NLog;
 
 namespace MdiMvvm
 {
@@ -34,7 +31,7 @@ namespace MdiMvvm
         internal static bool UseSnapshots = false;
 
         private const int WindowOffsetDiff = 25;
-        
+
         private WindowButton _closeButton;
         private WindowButton _maximizeButton;
         private WindowButton _minimizeButton;
@@ -45,7 +42,7 @@ namespace MdiMvvm
         internal MdiContainer Container { get; private set; }
         public ImageSource ImageSource { get; set; }
         public Image Tumblr { get; private set; }
-        
+
         public MdiWindow()
         {
             _myAdornerLayer = AdornerLayer.GetAdornerLayer(this);
@@ -69,7 +66,7 @@ namespace MdiMvvm
         public void InitPositionn()
         {
             if (this.WindowState == WindowState.Maximized || (Width != 0 && Height != 0)) return;
-            
+
             var actualContainerHeight = Container.ActualHeight;
             var actualContainerWidth = Container.ActualWidth;
             UpdateLayout();
@@ -122,7 +119,7 @@ namespace MdiMvvm
                 Container.WindowsOffset = 5;
         }
 
-        
+
 
         #region Overrides
 
@@ -385,7 +382,7 @@ namespace MdiMvvm
                 {
                     Panel.SetZIndex(window, 2);
                     window.RaiseEvent(new RoutedEventArgs(FocusChangedEvent, window.DataContext));
-                    if(!window.IsFocused) window.Focus();
+                    if (!window.IsFocused) window.Focus();
                 }
                 else
                 {
@@ -405,8 +402,8 @@ namespace MdiMvvm
             if (WindowState == WindowState.Maximized)
             {
                 //Width += e.NewSize.Width - e.PreviousSize.Width;
-                Width = e.NewSize.Width-2; 
-                Height = e.NewSize.Height-2;
+                Width = e.NewSize.Width - 2;
+                Height = e.NewSize.Height - 2;
                 //Height += e.NewSize.Height - e.PreviousSize.Height;
                 this.RemoveWindowLock();
             }
@@ -463,8 +460,8 @@ namespace MdiMvvm
             IsSelected = true;
             Panel.SetZIndex(this, 2);
             RaiseEvent(new RoutedEventArgs(FocusChangedEvent, DataContext));
-        } 
-        
+        }
+
         private void ToggleMaximizeWindow(object sender, RoutedEventArgs e)
         {
             Focus();
