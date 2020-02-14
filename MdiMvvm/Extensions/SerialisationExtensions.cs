@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using GalaSoft.MvvmLight.Threading;
 using MdiMvvm.Exceptions;
 using MdiMvvm.ViewModels;
 using Newtonsoft.Json;
@@ -61,15 +60,11 @@ namespace MdiMvvm.Extensions
             bool success = false;
             try
             {
-                container.IsBusy = true;
                 success = await container.SaveObjectToJsonFile(filename).ConfigureAwait(false);
             }
-            finally
+            catch
             {
-                DispatcherHelper.CheckBeginInvokeOnUI(() =>
-                {
-                    container.IsBusy = false;
-                });
+                success = false;
             }
             return success;
         }

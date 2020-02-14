@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight.CommandWpf;
+﻿using System.Collections.Specialized;
+using GalaSoft.MvvmLight.CommandWpf;
 using MdiMvvm.ViewModels;
 using Newtonsoft.Json;
 
@@ -6,13 +7,18 @@ namespace MdiExample
 {
     public class MdiContainerViewModel : MdiContainerViewModelBase
     {
+        [JsonIgnore]
         public int WindowsCount => this.WindowsCollection.Count;
-        protected MdiContainerViewModel() { }
 
-        public MdiContainerViewModel(string title) : base()
+        protected MdiContainerViewModel() : base()
+        {
+            this.WindowsCollection.CollectionChanged += (o, e) => RaisePropertyChanged(nameof(WindowsCount));
+        }
+
+        public MdiContainerViewModel(string title) : this()
         {
             Title = title;
-            this.WindowsCollection.CollectionChanged += (o, e) => RaisePropertyChanged(() => WindowsCount);
+            
         }
 
         private RelayCommand _addCommand;
@@ -28,6 +34,10 @@ namespace MdiExample
             _addCommandModal ??
             (_addCommandModal = new RelayCommand(() => this.AddMdiWindow(new Window1ViewModel() { IsModal = true, Title = "Default modal title aga" })));
 
+        protected override void WindowsCollection_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            base.WindowsCollection_CollectionChanged(sender, e);
 
+        }
     }
 }

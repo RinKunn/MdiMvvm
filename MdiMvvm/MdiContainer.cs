@@ -16,8 +16,6 @@ namespace MdiMvvm
     [TemplatePart(Name = "PART_ContainerMinWin_ListBox", Type = typeof(ListBox))]
     public sealed class MdiContainer : Selector
     {
-        //private readonly Logger _logger = LogManager.GetCurrentClassLogger();
-
         private ScrollViewer ContainerScrollViewer;
         private ListBox ContainerMinWinListox;
         private Canvas ContainerCanvas;

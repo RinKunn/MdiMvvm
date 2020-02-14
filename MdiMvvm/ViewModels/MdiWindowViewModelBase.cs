@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using GalaSoft.MvvmLight;
 using Newtonsoft.Json;
 
 namespace MdiMvvm.ViewModels
@@ -33,6 +32,7 @@ namespace MdiMvvm.ViewModels
         /// <summary>
         /// GUID of window
         /// </summary>
+        [JsonIgnore]
         public Guid Guid => _uid;
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace MdiMvvm.ViewModels
         public string Title
         {
             get => _title;
-            set => Set(() => Title, ref _title, value);
+            set => Set(ref _title, value);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace MdiMvvm.ViewModels
         public bool IsModal
         {
             get => _isModal;
-            set => Set(() => IsModal, ref _isModal, value);
+            set => Set(ref _isModal, value);
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace MdiMvvm.ViewModels
         public bool IsSelected
         {
             get => _isSelected;
-            set => Set(() => IsSelected, ref _isSelected, value);
+            set => Set(ref _isSelected, value);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace MdiMvvm.ViewModels
         public double PreviousLeft
         {
             get => _previousLeft;
-            set => Set(() => PreviousLeft, ref _previousLeft, value);
+            set => Set(ref _previousLeft, value);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace MdiMvvm.ViewModels
         public double PreviousTop
         {
             get => _previousTop;
-            set => Set(() => PreviousTop, ref _previousTop, value);
+            set => Set(ref _previousTop, value);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace MdiMvvm.ViewModels
         public double PreviousWidth
         {
             get => _previousWidth;
-            set => Set(() => PreviousWidth, ref _previousWidth, value);
+            set => Set(ref _previousWidth, value);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace MdiMvvm.ViewModels
         public double PreviousHeight
         {
             get => _previousHeight;
-            set => Set(() => PreviousHeight, ref _previousHeight, value);
+            set => Set(ref _previousHeight, value);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace MdiMvvm.ViewModels
         public WindowState PreviousState
         {
             get => _previousState;
-            set => Set(() => PreviousState, ref _previousState, value);
+            set => Set(ref _previousState, value);
         }
 
         /// <summary>
@@ -113,7 +113,7 @@ namespace MdiMvvm.ViewModels
         public double CurrentLeft
         {
             get => _currentLeft;
-            set => Set(() => CurrentLeft, ref _currentLeft, value);
+            set => Set(ref _currentLeft, value);
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace MdiMvvm.ViewModels
         public double CurrentTop
         {
             get => _currentTop;
-            set => Set(() => CurrentTop, ref _currentTop, value);
+            set => Set(ref _currentTop, value);
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace MdiMvvm.ViewModels
         public double CurrentWidth
         {
             get => _currentWidth;
-            set => Set(() => CurrentWidth, ref _currentWidth, value);
+            set => Set(ref _currentWidth, value);
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace MdiMvvm.ViewModels
         public double CurrentHeight
         {
             get => _currentHeight;
-            set => Set(() => CurrentHeight, ref _currentHeight, value);
+            set => Set(ref _currentHeight, value);
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace MdiMvvm.ViewModels
         public WindowState WindowState
         {
             get => _windowState;
-            set => Set(() => WindowState, ref _windowState, value);   
+            set => Set(ref _windowState, value);   
         }
 
         #endregion

@@ -102,6 +102,10 @@ namespace MdiExample
                 IsBusy = true;
                 success = await this.SaveObjectToJsonFile(filename).ConfigureAwait(false);
             }
+            catch
+            {
+                success = false;
+            }
             finally
             {
                 DispatcherHelper.CheckBeginInvokeOnUI(() =>
@@ -122,9 +126,9 @@ namespace MdiExample
                 IsBusy = true;
                 success = await SerialisationExtensions.GetObjectFromJsonFile<MainWindowViewModel>(filename).ConfigureAwait(false);
             }
-            catch (Exception e)
+            catch(JsonSerializationException exc)
             {
-                Console.WriteLine($" exper: {e.Message}");
+                throw new Exception($"ddd: {exc.InnerException}");
             }
             // ensure that no matter what, the busy state is cleared even if there were errors
             finally
@@ -139,10 +143,9 @@ namespace MdiExample
             if (success != null)
             {
                 this.Containers = success.Containers;
-                this.SelectedContainer = Containers.FirstOrDefault(c => c.IsSelected == true);
-                if (SelectedContainer == null)
-                    SelectedContainer = Containers[0];
-
+                this.SelectedContainer = success.Containers.FirstOrDefault(c => c.IsSelected == true);
+                //if (SelectedContainer == null)
+                //    SelectedContainer = Containers[0];
             }
             else
             {

@@ -9,6 +9,10 @@ namespace MdiExample
     {
         public static Task<T> GetObjectFromJsonFile<T>(string filename) where T : class
         {
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            };
             if (string.IsNullOrEmpty(filename)) throw new ArgumentNullException($"ReadJsonFile filename is empty");
             var result = new TaskCompletionSource<T>();
             Task.Run(() =>
@@ -16,7 +20,7 @@ namespace MdiExample
                 try
                 {
                     var json = File.ReadAllText(filename);
-                    T readResult = JsonConvert.DeserializeObject<T>(json);
+                    T readResult = JsonConvert.DeserializeObject<T>(json, settings);
                     //await Task.Delay(3000).ConfigureAwait(false);
                     result.SetResult(readResult);
                 }
@@ -31,13 +35,17 @@ namespace MdiExample
 
         public static Task<bool> SaveObjectToJsonFile<T>(this T obj, string filename) where T : class
         {
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            };
             if (string.IsNullOrEmpty(filename)) throw new ArgumentNullException($"ReadJsonFile filename is empty");
             var result = new TaskCompletionSource<bool>();
             Task.Run(() =>
             {
                 try
                 {
-                    var json = JsonConvert.SerializeObject(obj);
+                    var json = JsonConvert.SerializeObject(obj, settings);
                     File.WriteAllText(filename, json);
                     //await Task.Delay(3000).ConfigureAwait(false);
                     result.SetResult(true);

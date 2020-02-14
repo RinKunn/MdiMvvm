@@ -1,6 +1,7 @@
 ﻿using System;
 using MdiMvvm.ViewModels;
 using GalaSoft.MvvmLight.Command;
+using Newtonsoft.Json;
 
 namespace MdiExample
 {
@@ -14,6 +15,7 @@ namespace MdiExample
         }
 
         private RelayCommand _openWin2Command;
+        [JsonIgnore]
         public RelayCommand OpenWin2Command => _openWin2Command ?? (_openWin2Command = new RelayCommand(OpenWind2));
 
         private void OpenWind2()

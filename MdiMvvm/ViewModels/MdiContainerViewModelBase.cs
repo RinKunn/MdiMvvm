@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using GalaSoft.MvvmLight;
 using MdiMvvm.Exceptions;
 
 namespace MdiMvvm.ViewModels
@@ -28,7 +27,7 @@ namespace MdiMvvm.ViewModels
         public string Title
         {
             get => _title;
-            set => Set(() => Title, ref _title, value);
+            set => Set(ref _title, value);
         }
 
         /// <summary>
@@ -37,7 +36,7 @@ namespace MdiMvvm.ViewModels
         public bool IsSelected
         {
             get => _isSelected;
-            set => Set(() => IsSelected, ref _isSelected, value);
+            set => Set(ref _isSelected, value);
         }
 
         /// <summary>
@@ -46,7 +45,7 @@ namespace MdiMvvm.ViewModels
         public bool IsBusy
         {
             get => _isBusy;
-            set => Set(() => IsBusy, ref _isBusy, value);
+            set => Set(ref _isBusy, value);
         }
 
         /// <summary>
@@ -59,13 +58,18 @@ namespace MdiMvvm.ViewModels
             {
                 if(_windowsCollection != null) 
                     _windowsCollection.CollectionChanged -= WindowsCollection_CollectionChanged;
-                Set(() => WindowsCollection, ref _windowsCollection, value);
+                Set(ref _windowsCollection, value);
                 if(value != null)
+                {
                     _windowsCollection.CollectionChanged += WindowsCollection_CollectionChanged;
+                    foreach (MdiWindowViewModelBase win in value)
+                        win.Container = this;
+                }
+
             }
         }
 
-        private void WindowsCollection_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        protected virtual void WindowsCollection_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             if(e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
             {
