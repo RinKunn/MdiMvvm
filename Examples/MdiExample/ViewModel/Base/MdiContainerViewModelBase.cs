@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
+using System.Threading.Tasks;
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Threading;
+using MdiExample.Services.WindowsServices.Store;
 using MdiMvvm.Exceptions;
 using MdiMvvm.Interfaces;
 
-namespace MdiMvvm.ViewModels
+namespace MdiExample.ViewModel.Base
 {
-    [Obsolete("Create custom ViewModelBase, that implement IMdiContainerViewModel", true)]
-    public abstract class MdiContainerViewModelBase : ObservableObject, IMdiContainerViewModel
+    public abstract class MdiContainerViewModelBase : ViewModelBase, IMdiContainerViewModel, IStorable<ContainersStoreContext>, IBusy
     {
         #region Members
         private Guid _guid;
@@ -21,7 +25,11 @@ namespace MdiMvvm.ViewModels
         /// <summary>
         /// GUID of Container
         /// </summary>
-        public Guid Guid => _guid;
+        public Guid Guid
+        {
+            get => _guid;
+            set => Set(ref _guid, value);
+        }
 
         /// <summary>
         /// Title of container
@@ -51,41 +59,27 @@ namespace MdiMvvm.ViewModels
         }
 
         /// <summary>
-        /// <see cref="MdiWindowViewModelBase" />'s collection
+        /// <see cref="IMdiWindowViewModel" />'s collection
         /// </summary>
         public ObservableCollection<IMdiWindowViewModel> WindowsCollection
         {
             get => _windowsCollection;
             set
             {
-                if (_windowsCollection != null)
+                if(_windowsCollection != null)
                 {
-                    _windowsCollection.CollectionChanged -= WindowsCollection_CollectionChanged;
+                    _windowsCollection.CollectionChanged -= WindowsCollectionChanged;
                 }
                 Set(ref _windowsCollection, value);
-                if (value != null)
+                if(value != null)
                 {
-                    _windowsCollection.CollectionChanged += WindowsCollection_CollectionChanged;
+                    _windowsCollection.CollectionChanged += WindowsCollectionChanged;
                     foreach (IMdiWindowViewModel win in value)
                         win.Container = this;
                 }
-
             }
         }
 
-        protected virtual void WindowsCollection_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
-            {
-                foreach (MdiWindowViewModelBase win in e.NewItems)
-                    win.Container = this;
-            }
-            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
-            {
-                foreach (MdiWindowViewModelBase win in e.OldItems)
-                    win.Container = null;
-            }
-        }
         #endregion
 
         public MdiContainerViewModelBase()
@@ -123,9 +117,59 @@ namespace MdiMvvm.ViewModels
             _windowsCollection.Remove(window);
         }
 
-        public IMdiWindowViewModel GetWindow(Guid guid)
+        protected virtual void WindowsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            return _windowsCollection.FirstOrDefault(w => w.Guid == guid);
+            if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                foreach (MdiWindowViewModelBase win in e.NewItems)
+                    win.Container = this;
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                foreach (MdiWindowViewModelBase win in e.OldItems)
+                    win.Container = null;
+            }
         }
+
+        public async Task<ContainersStoreContext> OnLoading(ContainersStoreContext context)
+        {
+            IsBusy = true;
+
+            this.Guid = context.Guid;
+            this.IsSelected = context.IsSelected;
+            this.Title = context.Title;
+
+            await OnContainerLoading(context.ViewModelContext);
+
+            DispatcherHelper.CheckBeginInvokeOnUI(() => { IsBusy = false; });
+            return context;
+        }
+
+        public async Task<ContainersStoreContext> OnKeeping(ContainersStoreContext context)
+        {
+            IsBusy = true;
+
+            context.Guid = this.Guid;
+            context.IsSelected = this.IsSelected;
+            context.Title = this.Title;
+            context.ViewModelType = this.GetType();
+
+            var collection = WindowsCollection.Where(w => w is IStorable<WindowsStoreContext>).Select(w => (IStorable<WindowsStoreContext>)w);
+            foreach (var wind in collection)
+            {
+                var windowsStoreContext = new WindowsStoreContext();
+                await windowsStoreContext.LoadContextFromEntity(wind);
+                context.WindowsContextCollection.Add(windowsStoreContext);
+            }
+
+            await OnContainerKeeping(context.ViewModelContext);
+
+            DispatcherHelper.CheckBeginInvokeOnUI(() => { IsBusy = false; });
+
+            return context;
+        }
+
+        public abstract Task OnContainerLoading(ViewModelContext context);
+        public abstract Task OnContainerKeeping(ViewModelContext context);
     }
 }

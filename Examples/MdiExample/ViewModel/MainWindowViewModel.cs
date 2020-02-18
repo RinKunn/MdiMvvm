@@ -1,70 +1,69 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Threading;
-using Newtonsoft.Json;
+using MdiExample.Services.WindowsServices.WindowsManager;
+using MdiExample.Services.WindowsServices.Store;
+using MdiExample.ViewModel.Base;
+using MdiMvvm.Interfaces;
 
 namespace MdiExample
 {
-    public class MainWindowViewModel : ViewModelBase
+    public class MainWindowViewModel : ViewModelBase, IBusy
     {
-        private string settingsFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "GalaxyBond", "winsettings.json");
+        private readonly IWindowsManagerService _manager;
+        private readonly IWindowStoreService _storeService;
+        private readonly IWindowLoaderService _loaderService;
 
-        private MdiContainerViewModel _selectedContainer;
-        private ObservableCollection<MdiContainerViewModel> _containers;
+        private ObservableCollection<IMdiContainerViewModel> _containers;
+        private IMdiContainerViewModel _selectedContainer;
         private bool _busy;
 
-        [JsonIgnore]
         public bool IsBusy
         {
             get => _busy;
             set => Set(ref _busy, value);
         }
-
-        public ObservableCollection<MdiContainerViewModel> Containers
+        public ObservableCollection<IMdiContainerViewModel> Containers
         {
             get => _containers;
-            set => Set(ref _containers, value);
+            private set => Set(ref _containers, value);
         }
-        [JsonIgnore]
-        public MdiContainerViewModel SelectedContainer
+        public IMdiContainerViewModel SelectedContainer
         {
             get => _selectedContainer;
             set
             {
-                if (_selectedContainer != null) _selectedContainer.IsSelected = false;
                 Set(ref _selectedContainer, value);
-                if (_selectedContainer != null) _selectedContainer.IsSelected = true;
+                if(value != null)
+                    _manager.ActivateContainer(value);
             }
         }
 
-
-        public MainWindowViewModel()
+        public MainWindowViewModel(IWindowsManagerService manager, IWindowStoreService storeService,
+            IWindowLoaderService loaderService)
         {
             IsBusy = false;
-            string path = Path.GetDirectoryName(settingsFileName);
-            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+            _manager = manager ?? throw new ArgumentNullException(nameof(manager));
+            _storeService = storeService ?? throw new ArgumentNullException(nameof(storeService));
+            _loaderService = loaderService ?? throw new ArgumentNullException(nameof(loaderService));
+
+            _manager.ContainerCollectionChanged += (o, e) =>
+            {
+                Containers = _manager.Containers;
+                SelectedContainer = _manager.ActiveContainer;
+            };
         }
 
-        public async void Init() => await LoadSettings();
-
-        public string Text { get; set; }
         private RelayCommand _saveCommand;
-        private RelayCommand _loadCommand;
-
-
-        [JsonIgnore]
         public RelayCommand SaveCommand =>
             _saveCommand ?? (_saveCommand = new RelayCommand(async () =>
             {
                 string fname = null;
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
-                //saveFileDialog.DefaultExt = "gbvw";
                 saveFileDialog.FileName = "mygalaxyview.gbvw";
                 saveFileDialog.Filter = "Custom type files|*.gbvw|All files|*.*";
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
@@ -76,7 +75,7 @@ namespace MdiExample
             }, () => !_busy));
 
 
-        [JsonIgnore]
+        private RelayCommand _loadCommand;
         public RelayCommand LoadCommand =>
             _loadCommand ?? (_loadCommand = new RelayCommand(async () =>
             {
@@ -93,19 +92,15 @@ namespace MdiExample
             }, () => !_busy));
 
 
-        public async Task<bool> SaveSettings(string saveFilename = null)
-        {
-            string filename = saveFilename ?? settingsFileName;
-            bool success = false;
+        public async Task SaveSettings(string saveFilename = null)
+        {   
             try
             {
                 IsBusy = true;
-                success = await this.SaveObjectToJsonFile(filename).ConfigureAwait(false);
+                await _storeService.Keep(saveFilename);
+                await Task.Delay(3000);
             }
-            catch
-            {
-                success = false;
-            }
+            catch { }
             finally
             {
                 DispatcherHelper.CheckBeginInvokeOnUI(() =>
@@ -113,57 +108,23 @@ namespace MdiExample
                     IsBusy = false;
                 });
             }
-            return success;
         }
 
-        public async Task LoadSettings(string saveFilename = null)
+        public async Task LoadSettings(string loadingFilename = null)
         {
-            string filename = saveFilename ?? settingsFileName;
-
-            MainWindowViewModel success = null;
             try
             {
                 IsBusy = true;
-                success = await SerialisationExtensions.GetObjectFromJsonFile<MainWindowViewModel>(filename).ConfigureAwait(false);
+                await _loaderService.Load(loadingFilename);
             }
-            catch(JsonSerializationException exc)
-            {
-                throw new Exception($"ddd: {exc.InnerException}");
-            }
-            // ensure that no matter what, the busy state is cleared even if there were errors
+            catch { }
             finally
             {
-                // make sure we're on the UI thread...
                 DispatcherHelper.CheckBeginInvokeOnUI(() =>
                 {
                     IsBusy = false;
                 });
             }
-
-            if (success != null)
-            {
-                this.Containers = success.Containers;
-                this.SelectedContainer = success.Containers.FirstOrDefault(c => c.IsSelected == true);
-                //if (SelectedContainer == null)
-                //    SelectedContainer = Containers[0];
-            }
-            else
-            {
-                InitDefault();
-            }
         }
-
-        private void InitDefault()
-        {
-            Containers = new ObservableCollection<MdiContainerViewModel>
-                {
-                    new MdiContainerViewModel("item 1"),
-                    new MdiContainerViewModel("item 2"),
-                    new MdiContainerViewModel("item 3")
-                };
-
-            SelectedContainer = Containers.First();
-        }
-
     }
 }

@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Threading;
+using MdiExample.Services.WindowsServices.Store;
 using MdiMvvm.Interfaces;
-using Newtonsoft.Json;
 
-namespace MdiMvvm.ViewModels
+namespace MdiExample.ViewModel.Base
 {
-    [Obsolete("Create custom ViewModelBase, that implement IMdiWindowViewModel", true)]
-    public abstract class MdiWindowViewModelBase : ObservableObject, IMdiWindowViewModel
+    public abstract class MdiWindowViewModelBase : ViewModelBase, IMdiWindowViewModel, IStorable<WindowsStoreContext>, IBusy
     {
         #region Members
 
@@ -19,29 +21,24 @@ namespace MdiMvvm.ViewModels
         private double _previousWidth;
         private double _previousHeight;
         private WindowState _previousState;
-
-        private double _currentLeft; // bind Canvas.Left
-        private double _currentTop; // bind Canvas.Top
+        private double _currentLeft;
+        private double _currentTop; 
         private double _currentWidth;
         private double _currentHeight;
         private WindowState _windowState;
-
         private IMdiContainerViewModel _container;
-
-        [JsonIgnore]
-        public IMdiContainerViewModel Container
-        {
-            get => _container;
-            set => Set(ref _container, value);
-        }
+        private bool _isBusy;
         #endregion
 
         #region Props
         /// <summary>
         /// GUID of window
         /// </summary>
-        [JsonIgnore]
-        public Guid Guid => _uid;
+        public Guid Guid
+        {
+            get => _uid;
+            set => Set(ref _uid, value);
+        }
 
         /// <summary>
         /// Title
@@ -157,19 +154,96 @@ namespace MdiMvvm.ViewModels
         public WindowState WindowState
         {
             get => _windowState;
-            set => Set(ref _windowState, value);
+            set => Set(ref _windowState, value);   
         }
 
+        /// <summary>
+        /// Контейнер
+        /// </summary>
+        public IMdiContainerViewModel Container
+        {
+            get => _container;
+            set => Set(ref _container, value);
+        }
+
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set => Set(ref _isBusy, value);
+        }
         #endregion
 
         public MdiWindowViewModelBase()
         {
             _uid = Guid.NewGuid();
         }
-
+        
         protected void Close()
         {
-            this.Container.RemoveMdiWindow(this);
+            this.Container?.RemoveMdiWindow(this);
         }
+
+        public async Task<WindowsStoreContext> OnLoading(WindowsStoreContext context)
+        {
+            IsBusy = true;
+
+            this.Guid = context.Guid;
+            this.Title = context.Title;
+
+            this.PreviousHeight = context.PreviousHeight;
+            this.PreviousLeft = context.PreviousLeft;
+            this.PreviousTop = context.PreviousTop;
+            this.PreviousWidth = context.PreviousWidth;
+            this.PreviousState = context.PreviousState;
+
+            this.CurrentHeight = context.CurrentHeight;
+            this.CurrentLeft = context.CurrentLeft;
+            this.CurrentTop = context.CurrentTop;
+            this.CurrentWidth = context.CurrentWidth;
+            this.WindowState = context.WindowState;
+
+            this.IsModal = context.IsModal;
+            this.IsSelected = context.IsSelected;
+
+            await OnWindowLoading(context.ViewModelContext);
+
+            DispatcherHelper.CheckBeginInvokeOnUI(() => { IsBusy = false; });
+
+            return context;
+        }
+
+        public async Task<WindowsStoreContext> OnKeeping(WindowsStoreContext context)
+        {
+            IsBusy = true;
+
+            context.Guid = this.Guid;
+            context.Title = this.Title;
+            context.ViewModelType = this.GetType();
+
+            context.PreviousHeight = this.PreviousHeight;
+            context.PreviousLeft = this.PreviousLeft;
+            context.PreviousTop = this.PreviousTop;
+            context.PreviousWidth = this.PreviousWidth;
+            context.PreviousState = this.PreviousState;
+
+            context.CurrentHeight = this.CurrentHeight;
+            context.CurrentLeft = this.CurrentLeft;
+            context.CurrentTop = this.CurrentTop;
+            context.CurrentWidth = this.CurrentWidth;
+            context.WindowState = this.WindowState;
+
+            context.IsModal = this.IsModal;
+            context.IsSelected = this.IsSelected;
+            context.ContainerGuid = this.Container.Guid;
+
+            await OnWindowKeepeng(context.ViewModelContext);
+
+            DispatcherHelper.CheckBeginInvokeOnUI(() => { IsBusy = false; });
+
+            return context;
+        }
+
+        protected abstract Task OnWindowLoading(ViewModelContext context);
+        protected abstract Task OnWindowKeepeng(ViewModelContext context);
     }
 }

@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 
 namespace MdiMvvm.Extensions
 {
+    [Obsolete("Don't use this", true)]
     public static class SerialisationExtensions
     {
         public static Task<T> GetObjectFromJsonFile<T>(string filename) where T : class
@@ -81,7 +82,7 @@ namespace MdiMvvm.Extensions
                 throw new MdiContainerLoadingException(e.Message);
             }
 
-            if(loadedContainer == null) 
+            if (loadedContainer == null)
                 throw new MdiContainerLoadingException($"Cannot load container from file: {filename}");
             return loadedContainer;
         }

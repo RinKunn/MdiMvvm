@@ -1,0 +1,98 @@
+﻿using System;
+using System.Linq;
+using MdiExample.Services.WindowsServices.Factory;
+using MdiExample.Services.WindowsServices.Navigation;
+using MdiExample.Services.WindowsServices.WindowsManager;
+using MdiExample.ViewModel.Base;
+using MdiExampleCoreTest.Services.Mocks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace MdiExampleCoreTest.Services
+{
+    [TestClass]
+    public class NavigationServiceTests
+    {
+        private readonly WindowsSamples samples;
+        private IWindowsManagerService managerService;
+        private IWindowsFactory factoryService;
+        private INavigationService navigationService;
+        
+        public NavigationServiceTests()
+        {
+            managerService = new WindowsManagerService();
+            samples = new WindowsSamples(managerService);
+
+            factoryService = new WindowsFactoryMock();
+            navigationService = new NavigationService(managerService, factoryService);
+        }
+
+        [TestMethod]
+        public void NavigateToExists_AtActiveContainer_ActiveContainerNotChanged()
+        {
+            Guid winGuid = samples.Guids[0].Value[0];
+            ViewModelContext viewModelContext = new ViewModelContext();
+            viewModelContext.AddValue<string>("Title", "New title");
+            NavigateParameters navigateParameters = new NavigateParameters(viewModelContext, windowGuid: winGuid);
+
+            navigationService.NavigateTo<MdiWindowMock>(navigateParameters);
+
+            var aimWindow = managerService.Containers[0].WindowsCollection[0];
+            Assert.AreEqual("Title1", managerService.ActiveContainer.Title);
+            Assert.AreEqual(3, managerService.ActiveContainer.WindowsCollection.Count);
+            Assert.AreEqual(winGuid, aimWindow.Guid);
+            Assert.AreEqual("New title", aimWindow.Title);
+            Assert.IsTrue(aimWindow.IsSelected);
+        }
+
+        [TestMethod]
+        public void NavigateToExists_AtNotActiveContainer_ActiveContainerChanged()
+        {
+            Guid winGuid = samples.Guids[1].Value[0];
+            ViewModelContext viewModelContext = new ViewModelContext();
+            viewModelContext.AddValue<string>("Title", "New title");
+            NavigateParameters navigateParameters = new NavigateParameters(viewModelContext, windowGuid: winGuid);
+
+            navigationService.NavigateTo<MdiWindowMock>(navigateParameters);
+
+            var aimWindow = managerService.Containers[1].WindowsCollection[0];
+            Assert.AreEqual("Title2", managerService.ActiveContainer.Title);
+            Assert.AreEqual(2, managerService.ActiveContainer.WindowsCollection.Count);
+            Assert.AreEqual(winGuid, aimWindow.Guid);
+            Assert.AreEqual("New title", aimWindow.Title);
+            Assert.IsTrue(aimWindow.IsSelected);
+        }
+
+        [TestMethod]
+        public void NavigateToNotExists_AtActiveContainer_ActiveContainerNotChangedAndCreatedNewWindow()
+        {
+            ViewModelContext viewModelContext = new ViewModelContext();
+            viewModelContext.AddValue<string>("Title", "New title");
+            NavigateParameters navigateParameters = new NavigateParameters(viewModelContext);
+
+            navigationService.NavigateTo<MdiWindowMock>(navigateParameters);
+
+            var aimWindow = managerService.Containers[0].WindowsCollection.Last();
+            Assert.AreEqual("Title1", managerService.ActiveContainer.Title);
+            Assert.AreEqual(4, managerService.ActiveContainer.WindowsCollection.Count);
+            Assert.AreEqual("New title", aimWindow.Title);
+            Assert.IsTrue(aimWindow.IsSelected);
+        }
+
+        [TestMethod]
+        public void NavigateToNotExists_AtNotActiveContainer_ActiveContainerChangedAndCreatedNewWindow()
+        {
+            Guid contGuid = samples.Guids[1].Key;
+            ViewModelContext viewModelContext = new ViewModelContext();
+            viewModelContext.AddValue<string>("Title", "New title");
+            NavigateParameters navigateParameters = new NavigateParameters(viewModelContext, containerGuid: contGuid);
+
+            navigationService.NavigateTo<MdiWindowMock>(navigateParameters);
+
+            var aimWindow = managerService.Containers[1].WindowsCollection.Last();
+            Assert.AreEqual("Title2", managerService.ActiveContainer.Title);
+            Assert.AreEqual(3, managerService.ActiveContainer.WindowsCollection.Count);
+            Assert.AreEqual("New title", aimWindow.Title);
+            Assert.IsTrue(aimWindow.IsSelected);
+        }
+    }
+}

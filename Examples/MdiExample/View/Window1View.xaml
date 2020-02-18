@@ -16,6 +16,7 @@
         <Grid.ContextMenu>
             <ContextMenu>
                 <MenuItem Header="Открыть 2 окно" Command="{Binding OpenWin2Command}"/>
+                <MenuItem Header="Закрыть" Command="{Binding CloseCommand}"/>
             </ContextMenu>
         </Grid.ContextMenu>
         <Grid.RowDefinitions>

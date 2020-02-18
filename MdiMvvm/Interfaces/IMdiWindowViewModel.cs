@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Windows;
 
-namespace MdiMvvm.ViewModels
+namespace MdiMvvm.Interfaces
 {
     public interface IMdiWindowViewModel
     {
         IMdiContainerViewModel Container { get; set; }
-        
-        
+
         /// <summary>
         /// GUID of window
         /// </summary>

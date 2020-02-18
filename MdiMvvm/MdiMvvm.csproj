@@ -84,11 +84,12 @@
     </Compile>
     <Compile Include="ValueObjects\MinimizedWindowCollection.cs" />
     <Compile Include="ValueObjects\SnapshotManager.cs" />
-    <Compile Include="ViewModels\IMdiContainerViewModel.cs" />
+    <Compile Include="Interfaces\IMdiContainerViewModel.cs" />
+    <Compile Include="ViewModels\MdiContainerCollectionViewModelBase.cs" />
     <Compile Include="ViewModels\MdiContainerViewModelBase.cs" />
-    <Compile Include="ViewModels\IMdiWindowViewModel.cs" />
+    <Compile Include="Interfaces\IMdiWindowViewModel.cs" />
     <Compile Include="ViewModels\MdiWindowViewModelBase.cs" />
-    <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="ViewModels\ObservableObject.cs" />
     <Compile Include="WindowControls\HollowRectangleAdorner.cs" />
     <Compile Include="WindowControls\MoveThumb.cs" />
     <Compile Include="WindowControls\ResizeThumb.cs" />

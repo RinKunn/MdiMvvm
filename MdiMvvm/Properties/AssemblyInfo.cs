@@ -6,11 +6,11 @@ using System.Windows;
 // атрибутов. Отредактируйте значения этих атрибутов, чтобы изменить
 // связанные с этой сборкой.
 [assembly: AssemblyTitle("MdiMvvm")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Mdi with MVVM Pathern")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("IT Organization")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("MdiMvvm")]
-[assembly: AssemblyCopyright("Copyright © IT Organization 2019")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -49,5 +49,5 @@ using System.Windows;
 // Можно задать все значения или принять номера сборки и редакции по умолчанию 
 // используя "*", как показано ниже:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.3.1")]
+[assembly: AssemblyFileVersion("1.0.3.1")]

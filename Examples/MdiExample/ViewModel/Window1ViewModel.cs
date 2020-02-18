@@ -1,27 +1,51 @@
 ﻿using System;
-using MdiMvvm.ViewModels;
+using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Command;
-using Newtonsoft.Json;
+using MdiExample.Services.WindowsServices.Navigation;
+using MdiExample.ViewModel.Base;
 
 namespace MdiExample
 {
 
-    public class Window1ViewModel : MdiWindowViewModelBase
+    public class Window1ViewModel : MdiWindowViewModelBase, INavigateAware
     {
-        public Window1ViewModel() : base()
+        private readonly INavigationService _navigation;
+
+        public Window1ViewModel(INavigationService navigation) : base()
         {
             Random r = new Random();
             Title = $"Window {r.Next(1, 1000)}";
+            _navigation = navigation ?? throw new ArgumentNullException(nameof(navigation));
         }
 
         private RelayCommand _openWin2Command;
-        [JsonIgnore]
+        private RelayCommand _closeCommand;
+        
+        
         public RelayCommand OpenWin2Command => _openWin2Command ?? (_openWin2Command = new RelayCommand(OpenWind2));
+        public RelayCommand CloseCommand => _closeCommand ?? (_closeCommand = new RelayCommand(() => this.Container.RemoveMdiWindow(this)));
 
         private void OpenWind2()
         {
-            Window2ViewModel wind = new Window2ViewModel();
-            this.Container.AddMdiWindow(wind);
+            var context = new ViewModelContext();
+            context.AddValue("Title", "hello from Window1ViewModel");
+
+            _navigation.NavigateTo<Window2ViewModel>(new NavigateParameters(context));
+        }
+
+        public void NavigatedTo(ViewModelContext context)
+        {
+            Title = context.GetValue<string>("Title");
+        }
+
+        protected override Task OnWindowLoading(ViewModelContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        protected override Task OnWindowKeepeng(ViewModelContext context)
+        {
+            return Task.CompletedTask;
         }
     }
 }

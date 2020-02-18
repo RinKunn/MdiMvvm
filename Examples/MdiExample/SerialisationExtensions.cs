@@ -7,13 +7,19 @@ namespace MdiExample
 {
     public static class SerialisationExtensions
     {
-        public static Task<T> GetObjectFromJsonFile<T>(string filename) where T : class
+        public static Task<T> GetObjectFromJsonFile<T>(this string filename) where T : class
         {
+            if (string.IsNullOrEmpty(filename))
+                throw new ArgumentNullException(nameof(filename));
+
+            if (!File.Exists(filename))
+                throw new FileNotFoundException("File not found", filename);
+
             JsonSerializerSettings settings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All
             };
-            if (string.IsNullOrEmpty(filename)) throw new ArgumentNullException($"ReadJsonFile filename is empty");
+            
             var result = new TaskCompletionSource<T>();
             Task.Run(() =>
             {
@@ -21,7 +27,6 @@ namespace MdiExample
                 {
                     var json = File.ReadAllText(filename);
                     T readResult = JsonConvert.DeserializeObject<T>(json, settings);
-                    //await Task.Delay(3000).ConfigureAwait(false);
                     result.SetResult(readResult);
                 }
                 catch
@@ -35,11 +40,17 @@ namespace MdiExample
 
         public static Task<bool> SaveObjectToJsonFile<T>(this T obj, string filename) where T : class
         {
+            if (string.IsNullOrEmpty(filename))
+                throw new ArgumentNullException(nameof(filename));
+
+            if (!Directory.Exists(Path.GetDirectoryName(filename)))
+                Directory.CreateDirectory(Path.GetDirectoryName(filename));
+
             JsonSerializerSettings settings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All
             };
-            if (string.IsNullOrEmpty(filename)) throw new ArgumentNullException($"ReadJsonFile filename is empty");
+
             var result = new TaskCompletionSource<bool>();
             Task.Run(() =>
             {
@@ -47,7 +58,6 @@ namespace MdiExample
                 {
                     var json = JsonConvert.SerializeObject(obj, settings);
                     File.WriteAllText(filename, json);
-                    //await Task.Delay(3000).ConfigureAwait(false);
                     result.SetResult(true);
                 }
                 catch

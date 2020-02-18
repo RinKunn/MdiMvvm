@@ -1,17 +1,14 @@
-﻿using System;
+﻿using System.Threading.Tasks;
 using MdiExample.ViewModel.Base;
 using MdiExample.Services.WindowsServices.Navigation;
-using System.Threading.Tasks;
 
-namespace MdiExample
+namespace MdiExampleCoreTest.Services.Mocks
 {
-    public class Window2ViewModel : MdiWindowViewModelBase, INavigateAware
+    public class MdiWindowMock : MdiWindowViewModelBase, INavigateAware
     {
-        public Window2ViewModel() : base()
-        {
-            Random r = new Random();
-            Title = $"Window {r.Next(1, 1000)}";
-        }
+        public string InternalText { get; set; }
+
+        public MdiWindowMock() : base() { }
 
         public void NavigatedTo(ViewModelContext context)
         {
@@ -20,11 +17,13 @@ namespace MdiExample
 
         protected override Task OnWindowKeepeng(ViewModelContext context)
         {
+            context.AddValue("InternalText", InternalText);
             return Task.CompletedTask;
         }
 
         protected override Task OnWindowLoading(ViewModelContext context)
         {
+            InternalText = context.GetValue<string>("InternalText");
             return Task.CompletedTask;
         }
     }
