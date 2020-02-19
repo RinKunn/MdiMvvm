@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using GalaSoft.MvvmLight;
@@ -9,39 +10,51 @@ namespace MdiExample.Services.WindowsServices.WindowsManager
     public class WindowsManagerService : ViewModelBase, IWindowsManagerService
     {
         private IMdiContainerViewModel _activeContainer;
+        private ObservableCollection<IMdiContainerViewModel> _containers;
+        private ReadOnlyObservableCollection<IMdiContainerViewModel> _containersReadOnly;
+
         public IMdiContainerViewModel ActiveContainer
         {
             get => _activeContainer;
             private set
             {
-                if (_activeContainer != null && _activeContainer == value) return;
-
+                if (object.ReferenceEquals(_activeContainer, value)) return;
+                
+                var oldContainer = _activeContainer;
                 if (_activeContainer != null) _activeContainer.IsSelected = false;
                 Set(ref _activeContainer, value);
                 if (_activeContainer != null) _activeContainer.IsSelected = true;
+                ActiveContainerChanged?.Invoke(new ActiveContainerChangedArgs(oldContainer, value));
             }
         }
+        public ReadOnlyObservableCollection<IMdiContainerViewModel> Containers => _containersReadOnly;
 
-        public event EventHandler ContainerCollectionChanged;
- 
-        private ObservableCollection<IMdiContainerViewModel> _containers;
-        public ObservableCollection<IMdiContainerViewModel> Containers
-        {
-            get => _containers;
-            set
-            {
-                Set(ref _containers, value);
-                ActiveContainer = _containers?.FirstOrDefault(c => c.IsSelected);
-                ContainerCollectionChanged?.Invoke(this, new EventArgs());
-            }
-        }
+        public event ContainersCollectionChangedHandler ContainerCollectionChanged;
+        public event ActiveContainerChangedHandler ActiveContainerChanged;
+
 
         public WindowsManagerService()
         {
             _containers = new ObservableCollection<IMdiContainerViewModel>();
+            _containersReadOnly = new ReadOnlyObservableCollection<IMdiContainerViewModel>(_containers);
         }
 
-        public TViewModel AppendWindow<TViewModel>(TViewModel viewModel, Guid containerGuid) 
+        #region COllection behaviour
+        public void LoadContainers(IEnumerable<IMdiContainerViewModel> collection)
+        {
+            if (object.ReferenceEquals(_containers, collection)) return;
+
+            _containers = collection.ToObservableCollection();
+            _containersReadOnly = new ReadOnlyObservableCollection<IMdiContainerViewModel>(_containers);
+            ContainerCollectionChanged?.Invoke(new ContainersCollectionChangedArgs());
+
+            ActiveContainer = _containers?.FirstOrDefault(c => c.IsSelected);
+        } 
+        #endregion
+
+        #region Mdi-windows behaviour
+
+        public TViewModel AppendWindowToContainer<TViewModel>(TViewModel viewModel, Guid containerGuid)
             where TViewModel : IMdiWindowViewModel
         {
             if (viewModel == null) throw new ArgumentNullException(nameof(viewModel));
@@ -60,7 +73,7 @@ namespace MdiExample.Services.WindowsServices.WindowsManager
             return viewModel;
         }
 
-        public object AppendWindow(object viewModel, Guid containerGuid)
+        public object AppendWindowToContainer(object viewModel, Guid containerGuid)
         {
             if (viewModel == null) throw new ArgumentNullException(nameof(viewModel));
             if (!(viewModel is IMdiWindowViewModel mdiWindow))
@@ -75,6 +88,32 @@ namespace MdiExample.Services.WindowsServices.WindowsManager
             mdiContainer.AddMdiWindow(mdiWindow);
             return mdiWindow;
         }
+
+        public TViewModel FindWindow<TViewModel>(Guid windowGuid) where TViewModel : class, IMdiWindowViewModel
+        {
+            //TODO create internal dictionary with windows for fast searching
+            TViewModel window = null;
+            foreach (var cont in _containers)
+            {
+                var findedWin = cont.WindowsCollection.FirstOrDefault(w => w.Guid == windowGuid);
+                if (findedWin != null && findedWin is TViewModel res)
+                {
+                    window = res;
+                    break;
+                }
+            }
+            return window;
+        }
+
+        public void ActivateWindow<TViewModel>(TViewModel window) where TViewModel : class, IMdiWindowViewModel
+        {
+            if (window == null) throw new ArgumentNullException(nameof(window));
+            ActivateContainer(window.Container);
+            window.IsSelected = true;
+        }
+        #endregion
+
+        #region Mdi-containers behaviour
 
         public TContainerViewModel AppendContainer<TContainerViewModel>(TContainerViewModel viewModel)
             where TContainerViewModel : IMdiContainerViewModel
@@ -95,31 +134,11 @@ namespace MdiExample.Services.WindowsServices.WindowsManager
             return mdiContainer;
         }
 
-        //=====================================
-        //TODO create internal dictionoary of windows for fast searching
-
-        public TViewModel FindWindow<TViewModel>(Guid windowGuid) where TViewModel : class, IMdiWindowViewModel
-        {
-            TViewModel window = null;
-            foreach (var cont in _containers)
-            {
-                var findedWin = cont.WindowsCollection.FirstOrDefault(w => w.Guid == windowGuid);
-                if (findedWin != null && findedWin is TViewModel res)
-                {
-                    window = res;
-                    break;
-                }
-            }
-            return window;
-        }
-
-        //=====================================
-
         public void ActivateContainer(Guid guid)
         {
             if (guid == Guid.Empty) throw new ArgumentNullException(nameof(guid));
             var newContainer = _containers.FirstOrDefault(c => c.Guid == guid);
-            if(newContainer == null) throw new ArgumentNullException(nameof(newContainer));
+            if (newContainer == null) throw new ArgumentNullException(nameof(newContainer));
             ActiveContainer = newContainer;
         }
 
@@ -128,13 +147,7 @@ namespace MdiExample.Services.WindowsServices.WindowsManager
         {
             if (containerViewModel == null) throw new ArgumentNullException(nameof(containerViewModel));
             ActiveContainer = containerViewModel;
-        }
-
-        public void ActivateWindow<TViewModel>(TViewModel window) where TViewModel : class, IMdiWindowViewModel
-        {
-            if (window == null) throw new ArgumentNullException(nameof(window));
-            ActivateContainer(window.Container);
-            window.IsSelected = true;
-        }
+        } 
+        #endregion
     }
 }

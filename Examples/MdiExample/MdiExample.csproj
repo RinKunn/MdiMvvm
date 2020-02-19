@@ -99,9 +99,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Extensions\FileExtensions.cs" />
     <Compile Include="IoC\IoCApplication.cs" />
     <Compile Include="IoC\UnityServiceLocatorAdapter.cs" />
-    <Compile Include="SerialisationExtensions.cs" />
+    <Compile Include="Services\WindowsServices\Store\Extensions\SerialisationExtensions.cs" />
     <Compile Include="Services\WindowsServices\Factory\IWindowsFactory.cs" />
     <Compile Include="Services\WindowsServices\Factory\WindowsFactory.cs" />
     <Compile Include="Services\WindowsServices\Store\Interfaces\IStoreContext.cs" />
@@ -110,6 +111,8 @@
     <Compile Include="Services\WindowsServices\Store\JsonWindowLoaderService.cs" />
     <Compile Include="Services\WindowsServices\Store\JsonWindowStoreService.cs" />
     <Compile Include="Services\WindowsServices\Navigation\NavigateParameters.cs" />
+    <Compile Include="Services\WindowsServices\WindowsManager\Events.cs" />
+    <Compile Include="Services\WindowsServices\WindowsManager\IEnumerableExtensions.cs" />
     <Compile Include="ViewModel\Base\ViewModelContext.cs" />
     <Compile Include="Services\WindowsServices\WindowsManager\IWindowsManagerService.cs" />
     <Compile Include="Services\WindowsServices\Navigation\INavigateAware.cs" />
@@ -125,8 +128,12 @@
     <Compile Include="ViewModel\Base\MdiWindowViewModelBase.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\MdiContainerViewModel.cs" />
+    <Compile Include="ViewModel\SplashScreenViewModel.cs" />
     <Compile Include="ViewModel\Window1ViewModel.cs" />
     <Compile Include="ViewModel\Window2ViewModel.cs" />
+    <Compile Include="View\SplashScreenView.xaml.cs">
+      <DependentUpon>SplashScreenView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Window1View.xaml.cs">
       <DependentUpon>Window1View.xaml</DependentUpon>
     </Compile>
@@ -149,6 +156,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\SplashScreenView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Window1View.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -172,6 +183,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <SplashScreen Include="Resources\splashscreen.jpg" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

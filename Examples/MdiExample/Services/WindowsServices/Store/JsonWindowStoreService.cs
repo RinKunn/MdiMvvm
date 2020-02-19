@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using MdiExample.Services.WindowsServices.Store.Extensions;
 using MdiExample.Services.WindowsServices.WindowsManager;
 
 namespace MdiExample.Services.WindowsServices.Store
@@ -32,13 +33,14 @@ namespace MdiExample.Services.WindowsServices.Store
             
             try
             {
-                await context.SaveObjectToJsonFile(filename).ConfigureAwait(false);
+                await context.SaveObjectToJsonFileAsync(filename);
                 success = true;
             }
             catch
             {
                 success = false;
             }
+            Console.WriteLine($"Succes? {success}");
             return success;
         }
     }

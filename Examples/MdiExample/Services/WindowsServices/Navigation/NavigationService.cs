@@ -29,9 +29,9 @@ namespace MdiExample.Services.WindowsServices.Navigation
             else
             {
                 viewModel = _windowsFactory.CreateWindow<TViewModel>();
-                viewModel = navigateParameters.GuidContainer == Guid.Empty 
+                viewModel = navigateParameters.GuidContainer == Guid.Empty
                     ? _windowManager.AppendWindow(viewModel)
-                    : _windowManager.AppendWindow(viewModel, navigateParameters.GuidContainer);
+                    : _windowManager.AppendWindowToContainer(viewModel, navigateParameters.GuidContainer);
             }
             _windowManager.ActivateWindow(viewModel);
             viewModel.NavigatedTo(navigateParameters.Context);

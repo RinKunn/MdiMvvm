@@ -7,6 +7,7 @@ using MdiExample.Services.WindowsServices.WindowsManager;
 using MdiMvvm.Interfaces;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using MdiExample.Services.WindowsServices.Store.Extensions;
 
 namespace MdiExample.Services.WindowsServices.Store
 {
@@ -22,7 +23,12 @@ namespace MdiExample.Services.WindowsServices.Store
             _windowsFactory = windowsFactory ?? throw new ArgumentNullException(nameof(windowsFactory));
         }
 
-        public async Task<bool> Load(string loadFileName = null)
+        public bool Load(string loadFileName = null)
+        {
+            return LoadAsync(loadFileName).Result;
+        }
+
+        public async Task<bool> LoadAsync(string loadFileName = null)
         {
             bool success = false;
             string filename = loadFileName ?? settingsFileName;
@@ -36,7 +42,7 @@ namespace MdiExample.Services.WindowsServices.Store
             {
                 try
                 {
-                    resumeContext = await filename.GetObjectFromJsonFile<ResumeStoreContext>().ConfigureAwait(false);
+                    resumeContext = await filename.GetObjectFromJsonFileAsync<ResumeStoreContext>().ConfigureAwait(false);
                     await Task.Delay(3000);
                     success = true;
                 }
@@ -49,30 +55,22 @@ namespace MdiExample.Services.WindowsServices.Store
             if (!success)
                 resumeContext = InitDefaultStoreContext();
 
-            ObservableCollection<IMdiContainerViewModel> loadedContainers = new ObservableCollection<IMdiContainerViewModel>();
-
+            List<IMdiContainerViewModel> loadedContainers = new List<IMdiContainerViewModel>();
             foreach (ContainersStoreContext containerContext in resumeContext.ContainerContextCollection)
             {
                 var container = (IMdiContainerViewModel)_windowsFactory.CreateContainer(containerContext.ViewModelType);
-                //_windowsManager.AppendContainer(container);
                 loadedContainers.Add(container);
                 await (container as IStorable<ContainersStoreContext>).OnLoading(containerContext);
                 
                 foreach (WindowsStoreContext windowContext in containerContext.WindowsContextCollection)
                 {
                     var window = (IMdiWindowViewModel)_windowsFactory.CreateWindow(windowContext.ViewModelType);
-                    //_windowsManager.AppendWindow(window, containerContext.Guid);
                     window.Container = container;
                     container.WindowsCollection.Add(window);
                     await (window as IStorable<WindowsStoreContext>).OnLoading(windowContext);
                 }
             }
-            //var activeContainer = resumeContext.ContainerContextCollection.FirstOrDefault(c => c.IsSelected);
-            //Guid activeContainerGuid = activeContainer == null
-            //    ? _windowsManager.Containers.First().Guid
-            //    : activeContainer.Guid;
-            //_windowsManager.ActivateContainer(activeContainerGuid);
-            _windowsManager.Containers = loadedContainers;
+            _windowsManager.LoadContainers(loadedContainers);
             return success;
         }
 

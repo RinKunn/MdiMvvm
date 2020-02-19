@@ -9,6 +9,10 @@ using MdiExample.Services.WindowsServices.WindowsManager;
 using MdiExample.Services.WindowsServices.Navigation;
 using MdiExample.Services.WindowsServices.Factory;
 using MdiExample.Services.WindowsServices.Store;
+using System.Threading.Tasks;
+using MdiExample.View;
+using MdiExample.ViewModel;
+using System.Threading;
 
 namespace MdiExample
 {
@@ -24,7 +28,7 @@ namespace MdiExample
 
         public App() : base()
         {
-
+            
         }
 
         protected override void ConfigureServices(IUnityContainer containerRegistry)
@@ -44,9 +48,38 @@ namespace MdiExample
         {
             MainWindow window = new MainWindow();
             window.DataContext = this.Container.Resolve<MainWindowViewModel>();
-            window.Loaded += async (o, e) => await ((MainWindowViewModel)window.DataContext).LoadSettings();
-            window.Closing += async (o, e) => await ((MainWindowViewModel)window.DataContext).SaveSettings();
+            window.Loaded += async (o, e) => await ((MainWindowViewModel)((Window)o).DataContext).LoadSettings();
             return window;
         }
+
+        //protected override void StartShell()
+        //{
+        //    var splashScreenContext = new SplashScreenViewModel();
+        //    var splashScreen = new SplashScreenView
+        //    {
+        //        DataContext = splashScreenContext
+        //    };
+        //    this.MainWindow = splashScreen;
+        //    splashScreen.Show();
+
+        //    Task.Factory.StartNew(() =>
+        //    {
+        //        splashScreen.Dispatcher.Invoke(() => { splashScreenContext.Progress = 10; splashScreenContext.Status = "Загрузка окон..."; });
+        //        var store = Container.Resolve<IWindowStoreService>();
+        //        store.Keep().Wait();
+        //        splashScreen.Dispatcher.Invoke(() => { splashScreenContext.Progress = 70; splashScreenContext.Status = "Соединение с умом..."; });
+        //        Thread.Sleep(500);
+        //        splashScreen.Dispatcher.Invoke(() => { splashScreenContext.Progress = 100; splashScreenContext.Status = "Соединение успешно!"; });
+
+        //        this.Dispatcher.Invoke(() =>
+        //        {
+        //            var mainWindow = new MainWindow();
+        //            mainWindow.DataContext = this.Container.Resolve<MainWindowViewModel>();
+        //            this.MainWindow = mainWindow;
+        //            mainWindow.Show();
+        //            splashScreen.Close();
+        //        });
+        //    });
+        //}
     }
 }

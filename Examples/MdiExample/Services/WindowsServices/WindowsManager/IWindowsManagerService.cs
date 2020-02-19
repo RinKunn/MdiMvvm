@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using MdiMvvm.Interfaces;
 
@@ -6,14 +7,32 @@ namespace MdiExample.Services.WindowsServices.WindowsManager
 {
     public interface IWindowsManagerService
     {
-        event EventHandler ContainerCollectionChanged;
+        /// <summary>
+        /// On Mdi-Container collection changed
+        /// </summary>
+        event ContainersCollectionChangedHandler ContainerCollectionChanged;
 
+        /// <summary>
+        /// On active Mdi-Container changed
+        /// </summary>
+        event ActiveContainerChangedHandler ActiveContainerChanged;
+
+        /// <summary>
+        /// Active Mdi-Container
+        /// </summary>
         IMdiContainerViewModel ActiveContainer { get; }
 
         /// <summary>
         /// Mdi-Containers
         /// </summary>
-        ObservableCollection<IMdiContainerViewModel> Containers { get; set; }
+        ReadOnlyObservableCollection<IMdiContainerViewModel> Containers { get; }
+
+        /// <summary>
+        /// Load new Mdi-Container's collection
+        /// </summary>
+        /// <param name="collection">New Mdi-Container's collection</param>
+        void LoadContainers(IEnumerable<IMdiContainerViewModel> collection);
+
 
         /// <summary>
         /// Append ViewModel of new Mdi-Window to Mdi-Container by <see cref="Guid"/>
@@ -22,7 +41,7 @@ namespace MdiExample.Services.WindowsServices.WindowsManager
         /// <param name="viewModel">ViewModel of adding Mdi-Window</param>
         /// <param name="containerGuid">Mdi-Container's <see cref="Guid"/> </param>
         /// <returns></returns>
-        TViewModel AppendWindow<TViewModel>(TViewModel viewModel, Guid containerGuid) where TViewModel : IMdiWindowViewModel;
+        TViewModel AppendWindowToContainer<TViewModel>(TViewModel viewModel, Guid containerGuid) where TViewModel : IMdiWindowViewModel;
 
         /// <summary>
         /// Append ViewModel of new Mdi-Window to Active Mdi-Container
@@ -37,7 +56,7 @@ namespace MdiExample.Services.WindowsServices.WindowsManager
         /// </summary>
         /// <param name="viewModel"></param>
         /// <returns></returns>
-        object AppendWindow(object viewModel, Guid containerGuid);
+        object AppendWindowToContainer(object viewModel, Guid containerGuid);
 
 
         /// <summary>
