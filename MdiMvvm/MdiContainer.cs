@@ -101,7 +101,7 @@ namespace MdiMvvm
 
                 window.Initialize(this);
                 window.InitPosition();
-
+                
                 if (window.WindowState == WindowState.Minimized)
                 {
                     if (!SnapshotManager.HasSnapshot(window))

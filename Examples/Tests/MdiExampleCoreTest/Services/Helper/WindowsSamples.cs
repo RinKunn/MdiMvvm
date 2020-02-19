@@ -18,7 +18,7 @@ namespace MdiExampleCoreTest.Services
                 List<Guid> winds = new List<Guid>();
                 for (int j = i; j <= 3; j++)
                 {
-                    var win = new MdiWindowMock() { Title = "Window" + i, InternalText = "Internal text"};
+                    var win = new MdiWindowMock() { Title = $"Window{i}{j}" , InternalText = "Internal text"};
                     winds.Add(win.Guid);
                     container.AddMdiWindow(win);
                 }

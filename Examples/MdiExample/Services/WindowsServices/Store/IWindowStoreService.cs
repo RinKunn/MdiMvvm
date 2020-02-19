@@ -4,6 +4,6 @@ namespace MdiExample.Services.WindowsServices.Store
 {
     public interface IWindowStoreService
     {
-        Task<bool> Keep(string saveFileName = null);
+        Task<bool> KeepAsync(string saveFileName = null);
     }
 }

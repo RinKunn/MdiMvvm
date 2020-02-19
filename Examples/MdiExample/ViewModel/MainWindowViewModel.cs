@@ -99,7 +99,7 @@ namespace MdiExample
             IsBusy = true;
             try
             {
-                await _storeService.Keep(saveFilename);
+                await _storeService.KeepAsync(saveFilename);
             }
             catch { }
             finally

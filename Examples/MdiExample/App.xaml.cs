@@ -52,6 +52,14 @@ namespace MdiExample
             return window;
         }
 
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            var manager = Container.Resolve<IWindowStoreService>();
+            var res = manager.KeepAsync().Result;
+            base.OnExit(e);
+        }
+
         //protected override void StartShell()
         //{
         //    var splashScreenContext = new SplashScreenViewModel();
@@ -66,7 +74,7 @@ namespace MdiExample
         //    {
         //        splashScreen.Dispatcher.Invoke(() => { splashScreenContext.Progress = 10; splashScreenContext.Status = "Загрузка окон..."; });
         //        var store = Container.Resolve<IWindowStoreService>();
-        //        store.Keep().Wait();
+        //        store.KeepAsync().Wait();
         //        splashScreen.Dispatcher.Invoke(() => { splashScreenContext.Progress = 70; splashScreenContext.Status = "Соединение с умом..."; });
         //        Thread.Sleep(500);
         //        splashScreen.Dispatcher.Invoke(() => { splashScreenContext.Progress = 100; splashScreenContext.Status = "Соединение успешно!"; });

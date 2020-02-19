@@ -37,7 +37,7 @@ namespace MdiExampleCoreTest.Services
 
             Assert.IsTrue(File.Exists(filename));
             Assert.AreNotEqual(0, (new FileInfo(filename)).Length);
-            File.Delete(filename);
+            //File.Delete(filename);
         }
 
         [TestMethod]
@@ -48,14 +48,14 @@ namespace MdiExampleCoreTest.Services
             var newManagerService = new WindowsManagerService();
             var loaderService = new JsonWindowLoaderService(newManagerService, factoryService);
 
-            await loaderService.Load(filename);
+            await loaderService.LoadAsync(filename);
 
             Assert.IsNotNull(newManagerService.Containers);
+            Assert.AreEqual("Title1", newManagerService.ActiveContainer.Title);
             Assert.AreEqual(3, newManagerService.Containers.Count);
             Assert.AreEqual(3, newManagerService.Containers[0].WindowsCollection.Count);
             Assert.AreEqual(2, newManagerService.Containers[1].WindowsCollection.Count);
             Assert.AreEqual(1, newManagerService.Containers[2].WindowsCollection.Count);
-            Assert.AreEqual("Title1", newManagerService.ActiveContainer.Title);
             var wind = (MdiWindowMock)newManagerService.Containers[2].WindowsCollection[0];
             Assert.AreEqual("Internal text", wind.InternalText);
         }

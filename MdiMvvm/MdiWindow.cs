@@ -424,8 +424,8 @@ namespace MdiMvvm
 
                 window.Height = Math.Max(content.ActualHeight + 34, ActualHeight);
                 window.Width = Math.Max(content.ActualWidth + 10, ActualWidth);
-                window.PreviousHeight = window.Height;
-                window.PreviousWidth = window.Width;
+                if(window.PreviousHeight == 0) window.PreviousHeight = window.Height;
+                if (window.PreviousWidth == 0) window.PreviousWidth = window.Width;
             }
         }
 

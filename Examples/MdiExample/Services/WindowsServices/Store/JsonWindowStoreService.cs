@@ -18,7 +18,7 @@ namespace MdiExample.Services.WindowsServices.Store
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
         }
 
-        public async Task<bool> Keep(string saveFileName = null)
+        public async Task<bool> KeepAsync(string saveFileName = null)
         {
             string filename = saveFileName ?? settingsFileName;
 
@@ -33,14 +33,13 @@ namespace MdiExample.Services.WindowsServices.Store
             
             try
             {
-                await context.SaveObjectToJsonFileAsync(filename);
-                success = true;
+                success = await context.SaveObjectToJsonFileAsync(filename).ConfigureAwait(false);
             }
             catch
             {
                 success = false;
             }
-            Console.WriteLine($"Succes? {success}");
+            Console.WriteLine($"succes: {success}");
             return success;
         }
     }

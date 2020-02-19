@@ -28,7 +28,6 @@ namespace MdiExample.Services.WindowsServices.Store.Extensions
                     return null;
                 }
             }).ConfigureAwait(false);
-
             return result;
         }
 
