@@ -1,12 +1,9 @@
-﻿using System.Collections.Specialized;
-using MdiMvvm.Interfaces;
-using System;
-using GalaSoft.MvvmLight.CommandWpf;
-using Newtonsoft.Json;
-using CommonServiceLocator;
-using MdiExample.Services.WindowsServices.Navigation;
-using MdiExample.ViewModel.Base;
+﻿using System;
 using System.Threading.Tasks;
+using GalaSoft.MvvmLight.CommandWpf;
+using MdiMvvm.AppCore.Services.WindowsServices.Navigation;
+using MdiMvvm.AppCore.ViewModelsBase;
+using MdiMvvm.Interfaces;
 
 namespace MdiExample
 {

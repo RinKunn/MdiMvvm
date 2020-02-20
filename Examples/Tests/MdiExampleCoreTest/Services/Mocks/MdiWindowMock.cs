@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using MdiExample.ViewModel.Base;
-using MdiExample.Services.WindowsServices.Navigation;
+using MdiMvvm.AppCore.Services.WindowsServices.Navigation;
+using MdiMvvm.AppCore.ViewModelsBase;
 
-namespace MdiExampleCoreTest.Services.Mocks
+namespace MdiMvvm.AppCore.Tests.Services.Mocks
 {
     public class MdiWindowMock : MdiWindowViewModelBase, INavigateAware
     {

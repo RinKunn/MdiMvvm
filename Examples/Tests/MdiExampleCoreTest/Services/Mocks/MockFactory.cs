@@ -1,8 +1,8 @@
 ﻿using System;
-using MdiExample.Services.WindowsServices.Factory;
+using MdiMvvm.AppCore.Services.WindowsServices.Factory;
 using MdiMvvm.Interfaces;
 
-namespace MdiExampleCoreTest.Services.Mocks
+namespace MdiMvvm.AppCore.Tests.Services.Mocks
 {
     public class WindowsFactoryMock : IWindowsFactory
     {

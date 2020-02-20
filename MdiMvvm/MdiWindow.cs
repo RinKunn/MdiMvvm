@@ -319,7 +319,6 @@ namespace MdiMvvm
                         _myAdorner = new HollowRectangleAdorner(this);
                     }
                     _myAdornerLayer.Add(_myAdorner);
-
                 }
                 else
                 {

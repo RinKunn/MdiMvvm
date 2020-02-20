@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using MdiExample.Services.WindowsServices.WindowsManager;
-using MdiExampleCoreTest.Services.Mocks;
+using MdiMvvm.AppCore.Tests.Services.Mocks;
+using MdiMvvm.AppCore.Services.WindowsServices.WindowsManager;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace MdiExampleCoreTest.Services
+namespace MdiMvvm.AppCore.Tests.Services
 {
     [TestClass]
     public class ManagerServiceTests

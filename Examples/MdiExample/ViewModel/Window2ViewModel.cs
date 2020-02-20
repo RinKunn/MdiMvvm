@@ -1,7 +1,7 @@
 ﻿using System;
-using MdiExample.ViewModel.Base;
-using MdiExample.Services.WindowsServices.Navigation;
 using System.Threading.Tasks;
+using MdiMvvm.AppCore.Services.WindowsServices.Navigation;
+using MdiMvvm.AppCore.ViewModelsBase;
 
 namespace MdiExample
 {

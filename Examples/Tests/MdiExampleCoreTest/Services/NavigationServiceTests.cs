@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
-using MdiExample.Services.WindowsServices.Factory;
-using MdiExample.Services.WindowsServices.Navigation;
-using MdiExample.Services.WindowsServices.WindowsManager;
-using MdiExample.ViewModel.Base;
-using MdiExampleCoreTest.Services.Mocks;
+using MdiMvvm.AppCore.Tests.Services.Mocks;
+using MdiMvvm.AppCore.Services.WindowsServices.Factory;
+using MdiMvvm.AppCore.Services.WindowsServices.Navigation;
+using MdiMvvm.AppCore.Services.WindowsServices.WindowsManager;
+using MdiMvvm.AppCore.ViewModelsBase;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace MdiExampleCoreTest.Services
+namespace MdiMvvm.AppCore.Tests.Services
 {
     [TestClass]
     public class NavigationServiceTests

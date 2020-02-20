@@ -5,9 +5,9 @@ using System.Windows.Forms;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using GalaSoft.MvvmLight.Threading;
-using MdiExample.Services.WindowsServices.WindowsManager;
-using MdiExample.Services.WindowsServices.Store;
-using MdiExample.ViewModel.Base;
+using MdiMvvm.AppCore.Services.WindowsServices.Store;
+using MdiMvvm.AppCore.Services.WindowsServices.WindowsManager;
+using MdiMvvm.AppCore.ViewModelsBase;
 using MdiMvvm.Interfaces;
 
 namespace MdiExample

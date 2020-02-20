@@ -10,7 +10,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MdiExample", "Examples\MdiE
 		{7EF1FEA7-C5D7-4A37-BF55-9FEDDBA81642} = {7EF1FEA7-C5D7-4A37-BF55-9FEDDBA81642}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MdiExampleCoreTest", "Examples\Tests\MdiExampleCoreTest\MdiExampleCoreTest.csproj", "{87F18AD1-6830-42B3-A937-B9DAF42A56F9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MdiMvvm.AppCore.Tests", "Examples\Tests\MdiExampleCoreTest\MdiMvvm.AppCore.Tests.csproj", "{87F18AD1-6830-42B3-A937-B9DAF42A56F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MdiMvvm.AppCore", "MdiMvvm.AppCore\MdiMvvm.AppCore.csproj", "{8FDD377A-B506-4AAE-B1E3-42222E1B11C5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,6 +32,10 @@ Global
 		{87F18AD1-6830-42B3-A937-B9DAF42A56F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87F18AD1-6830-42B3-A937-B9DAF42A56F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87F18AD1-6830-42B3-A937-B9DAF42A56F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FDD377A-B506-4AAE-B1E3-42222E1B11C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FDD377A-B506-4AAE-B1E3-42222E1B11C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FDD377A-B506-4AAE-B1E3-42222E1B11C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FDD377A-B506-4AAE-B1E3-42222E1B11C5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

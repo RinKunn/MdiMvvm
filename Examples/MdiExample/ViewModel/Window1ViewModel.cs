@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Command;
-using MdiExample.Services.WindowsServices.Navigation;
-using MdiExample.ViewModel.Base;
+using MdiMvvm.AppCore.Services.WindowsServices.Navigation;
+using MdiMvvm.AppCore.ViewModelsBase;
 
 namespace MdiExample
 {

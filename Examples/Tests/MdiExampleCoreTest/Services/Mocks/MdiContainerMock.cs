@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using MdiExample.ViewModel.Base;
+﻿using System.Threading.Tasks;
+using MdiMvvm.AppCore.ViewModelsBase;
 
-namespace MdiExampleCoreTest.Services.Mocks
+namespace MdiMvvm.AppCore.Tests.Services.Mocks
 {
     public class MdiContainerMock : MdiContainerViewModelBase
     {

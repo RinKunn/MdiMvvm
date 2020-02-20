@@ -1,13 +1,13 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Threading;
-using MdiExample.Services.WindowsServices.Factory;
-using MdiExample.Services.WindowsServices.Store;
-using MdiExample.Services.WindowsServices.WindowsManager;
-using MdiExampleCoreTest.Services.Mocks;
+using MdiMvvm.AppCore.Tests.Services.Mocks;
+using MdiMvvm.AppCore.Services.WindowsServices.Factory;
+using MdiMvvm.AppCore.Services.WindowsServices.Store;
+using MdiMvvm.AppCore.Services.WindowsServices.WindowsManager;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace MdiExampleCoreTest.Services
+namespace MdiMvvm.AppCore.Tests.Services
 {
     [TestClass]
     public class StoreServicesTests
@@ -33,7 +33,7 @@ namespace MdiExampleCoreTest.Services
         public async Task StoreWindowsManagerStates_NotEmptyFileCreated()
         {
             string filename = Path.Combine(Directory.GetCurrentDirectory(), "testsettings.txt");
-            await storeService.Keep(filename);
+            await storeService.KeepAsync(filename);
 
             Assert.IsTrue(File.Exists(filename));
             Assert.AreNotEqual(0, (new FileInfo(filename)).Length);
@@ -44,7 +44,7 @@ namespace MdiExampleCoreTest.Services
         public async Task LoadWindowsManagerStates_ValidLoaded()
         {
             string filename = Path.Combine(Directory.GetCurrentDirectory(), "testsettings2.txt");
-            await storeService.Keep(filename);
+            await storeService.KeepAsync(filename);
             var newManagerService = new WindowsManagerService();
             var loaderService = new JsonWindowLoaderService(newManagerService, factoryService);
 
