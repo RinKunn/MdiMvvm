@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 using MdiMvvm.AppCore.Services.WindowsServices.WindowsManager;
 
@@ -7,19 +6,18 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Store
 {
     public class JsonWindowStoreService : IWindowStoreService
     {
-        private readonly string settingsFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "GalaxyBond", "winsettings.json");
         private readonly IWindowsManagerService _windowsManager;
+        private readonly IStoreSettings _storeSettings;
 
-        public JsonWindowStoreService(IWindowsManagerService windowsManager)
+        public JsonWindowStoreService(IWindowsManagerService windowsManager, IStoreSettings storeSettings)
         {
             _windowsManager = windowsManager ?? throw new ArgumentNullException(nameof(windowsManager));
-            string path = Path.GetDirectoryName(settingsFileName);
-            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+            _storeSettings = storeSettings ?? throw new ArgumentNullException(nameof(storeSettings));
         }
 
         public async Task<bool> KeepAsync(string saveFileName = null)
         {
-            string filename = saveFileName ?? settingsFileName;
+            string filename = saveFileName ?? _storeSettings.StoreFileName;
 
             bool success = false;
             ResumeStoreContext context = new ResumeStoreContext("admin");
@@ -32,7 +30,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Store
 
             try
             {
-                success = await context.SaveObjectToJsonFileAsync(filename).ConfigureAwait(false);
+                success = await context.SaveObjectToJsonFileAsync(filename, _storeSettings.JsonSerializerSettings).ConfigureAwait(false);
             }
             catch
             {

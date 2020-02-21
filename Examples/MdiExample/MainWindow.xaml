@@ -47,6 +47,7 @@
                 ItemsSource="{Binding WindowsCollection}"
                 ItemContainerStyle="{StaticResource cp}"/>
         </DataTemplate>
+            
 
         </ResourceDictionary>
     </Window.Resources>

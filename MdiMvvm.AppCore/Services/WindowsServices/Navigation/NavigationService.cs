@@ -1,6 +1,7 @@
 ﻿using System;
 using MdiMvvm.AppCore.Services.WindowsServices.Factory;
 using MdiMvvm.AppCore.Services.WindowsServices.WindowsManager;
+using MdiMvvm.AppCore.ViewModelsBase;
 using MdiMvvm.Interfaces;
 
 namespace MdiMvvm.AppCore.Services.WindowsServices.Navigation
@@ -35,6 +36,17 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Navigation
             }
             _windowManager.ActivateWindow(viewModel);
             viewModel.NavigatedTo(navigateParameters.Context);
+        }
+
+
+        public void NavigateTo<TViewModel>(string key, object obj)
+            where TViewModel : class, IMdiWindowViewModel, INavigateAware
+        {
+            ViewModelContext context = new ViewModelContext();
+            context.AddValue(key, obj);
+            NavigateParameters navigateParameters = new NavigateParameters(context);
+
+            this.NavigateTo<TViewModel>(navigateParameters);
         }
     }
 }

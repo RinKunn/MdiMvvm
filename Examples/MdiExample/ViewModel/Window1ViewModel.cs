@@ -7,7 +7,7 @@ using MdiMvvm.AppCore.ViewModelsBase;
 namespace MdiExample
 {
 
-    public class Window1ViewModel : MdiWindowViewModelBase, INavigateAware
+    public class Window1ViewModel : MdiWindowViewModelBase
     {
         private readonly INavigationService _navigation;
 
@@ -32,12 +32,7 @@ namespace MdiExample
 
             _navigation.NavigateTo<Window2ViewModel>(new NavigateParameters(context));
         }
-
-        public void NavigatedTo(ViewModelContext context)
-        {
-            Title = context.GetValue<string>("Title");
-        }
-
+        
         protected override Task OnWindowLoading(ViewModelContext context)
         {
             return Task.CompletedTask;
@@ -46,6 +41,11 @@ namespace MdiExample
         protected override Task OnWindowKeepeng(ViewModelContext context)
         {
             return Task.CompletedTask;
+        }
+
+        public override void NavigatedTo(ViewModelContext context)
+        {
+            Title = context.GetValue<string>("Title");
         }
     }
 }

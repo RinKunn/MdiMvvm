@@ -7,7 +7,8 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Store
 {
     public static class SerialisationExtensions
     {
-        public static async Task<T> GetObjectFromJsonFileAsync<T>(this string filename) where T : class
+        public static async Task<T> GetObjectFromJsonFileAsync<T>(this string filename, JsonSerializerSettings settings = null)
+            where T : class
         {
             if (string.IsNullOrEmpty(filename))
                 throw new ArgumentNullException(nameof(filename));
@@ -20,7 +21,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Store
                 try
                 {
                     var json = File.ReadAllText(filename);
-                    T readResult = JsonConvert.DeserializeObject<T>(json, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+                    T readResult = JsonConvert.DeserializeObject<T>(json, settings);
                     return readResult;
                 }
                 catch
@@ -31,7 +32,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Store
             return result;
         }
 
-        public static async Task<bool> SaveObjectToJsonFileAsync<T>(this T obj, string filename) where T : class
+        public static async Task<bool> SaveObjectToJsonFileAsync<T>(this T obj, string filename, JsonSerializerSettings settings = null) where T : class
         {
             if (string.IsNullOrEmpty(filename))
                 throw new ArgumentNullException(nameof(filename));
@@ -43,7 +44,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Store
             {
                 try
                 {
-                    var json = JsonConvert.SerializeObject(obj, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+                    var json = JsonConvert.SerializeObject(obj, settings);
                     File.WriteAllText(filename, json);
                     return true;
                 }

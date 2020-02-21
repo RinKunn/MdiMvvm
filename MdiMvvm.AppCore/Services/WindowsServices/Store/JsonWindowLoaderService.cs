@@ -15,20 +15,23 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Store
 {
     public class JsonWindowLoaderService : IWindowLoaderService
     {
-        private readonly string settingsFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "GalaxyBond", "winsettings.json");
         private readonly IWindowsManagerService _windowsManager;
         private readonly IWindowsFactory _windowsFactory;
+        private readonly IStoreSettings _storeSettings;
 
-        public JsonWindowLoaderService(IWindowsManagerService windowsManager, IWindowsFactory windowsFactory)
+        public JsonWindowLoaderService(IWindowsManagerService windowsManager, 
+            IWindowsFactory windowsFactory,
+            IStoreSettings storeSettings)
         {
             _windowsManager = windowsManager ?? throw new ArgumentNullException(nameof(windowsManager));
             _windowsFactory = windowsFactory ?? throw new ArgumentNullException(nameof(windowsFactory));
+            _storeSettings = storeSettings ?? throw new ArgumentNullException(nameof(storeSettings));
         }
 
         public async Task<bool> LoadAsync(string loadFileName = null)
         {
             bool success = false;
-            string filename = loadFileName ?? settingsFileName;
+            string filename = loadFileName ?? _storeSettings.StoreFileName;
             ResumeStoreContext resumeContext = null;
 
             if (!File.Exists(filename))
@@ -39,7 +42,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Store
             {
                 try
                 {
-                    resumeContext = await filename.GetObjectFromJsonFileAsync<ResumeStoreContext>();
+                    resumeContext = await filename.GetObjectFromJsonFileAsync<ResumeStoreContext>(_storeSettings.JsonSerializerSettings).ConfigureAwait(false);
                     success = true;
                 }
                 catch
@@ -48,7 +51,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Store
                 }
             }
 
-            if (!success)
+            if (!success || resumeContext.ContainerContextCollection.Count == 0)
                 resumeContext = InitDefaultStoreContext();
 
             List<IMdiContainerViewModel> loadedContainers = new List<IMdiContainerViewModel>();
@@ -73,12 +76,14 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Store
         private ResumeStoreContext InitDefaultStoreContext()
         {
             ResumeStoreContext context = new ResumeStoreContext("admin");
+            Type continerType = Assembly.GetEntryAssembly().FindDerivedTypes<MdiContainerViewModelBase>().First();
+            if (continerType == null) throw new ArgumentNullException("Didn't find type inheriting MdiContainerViewModelBase");
             for (int i = 1; i <= 3; i++)
             {
                 ContainersStoreContext containersStoreContext = new ContainersStoreContext()
                 {
                     Guid = Guid.NewGuid(),
-                    ViewModelType = Assembly.GetExecutingAssembly().FindDerivedTypes<MdiContainerViewModelBase>().First(),
+                    ViewModelType = continerType,
                     IsSelected = i == 1 ? true : false,
                     Title = $"DefaultTab {i}"
                 };

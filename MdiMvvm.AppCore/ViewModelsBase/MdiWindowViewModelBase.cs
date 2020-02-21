@@ -4,11 +4,12 @@ using System.Windows;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Threading;
 using MdiMvvm.AppCore.Services.WindowsServices.Store;
+using MdiMvvm.AppCore.Services.WindowsServices.Navigation;
 using MdiMvvm.Interfaces;
 
 namespace MdiMvvm.AppCore.ViewModelsBase
 {
-    public abstract class MdiWindowViewModelBase : ViewModelBase, IMdiWindowViewModel, IStorable<WindowsStoreContext>, IBusy
+    public abstract class MdiWindowViewModelBase : ViewModelBase, IMdiWindowViewModel, IStorable<WindowsStoreContext>, IBusy, INavigateAware
     {
         #region Members
 
@@ -245,5 +246,7 @@ namespace MdiMvvm.AppCore.ViewModelsBase
 
         protected abstract Task OnWindowLoading(ViewModelContext context);
         protected abstract Task OnWindowKeepeng(ViewModelContext context);
+
+        public abstract void NavigatedTo(ViewModelContext context);
     }
 }

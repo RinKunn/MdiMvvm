@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace MdiMvvm.AppCore.ViewModelsBase
 {
@@ -21,14 +22,27 @@ namespace MdiMvvm.AppCore.ViewModelsBase
         {
             obj = default;
             if (string.IsNullOrEmpty(key)) return false;
+            if (!InternalParameter.ContainsKey(key)) return false;
             var value = InternalParameter[key];
-            if (value == null || !(value is T result)) return false;
-            obj = result;
+            if (value is T result)
+                obj = result;
+            else
+            {
+                try
+                {
+                    obj = (T)Convert.ChangeType(value, typeof(T));
+                }
+                catch
+                {
+                    return false;
+                }
+            }
             return true;
         }
 
         public T GetValue<T>(string key)
         {
+            Console.WriteLine($"key = {InternalParameter.Count}");
             if (!TryGetValue(key, out T result)) return default;
             return result;
         }

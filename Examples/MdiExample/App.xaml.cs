@@ -23,16 +23,13 @@ namespace MdiExample
 
         protected override void ConfigureServices(IUnityContainer containerRegistry)
         {
-            containerRegistry.RegisterType<IMdiContainerViewModel, MdiContainerViewModel>();
-            containerRegistry.RegisterType<IMdiWindowViewModel, Window1ViewModel>("Window1ViewModel");
-            containerRegistry.RegisterType<IMdiWindowViewModel, Window2ViewModel>("Window2ViewModel");
+
         }
 
         protected override Window CreateShell()
         {
             MainWindow window = new MainWindow();
             window.DataContext = this.Container.Resolve<MainWindowViewModel>();
-            window.Loaded += async (o, e) => await ((MainWindowViewModel)((Window)o).DataContext).LoadSettings();
             return window;
         }
 

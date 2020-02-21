@@ -5,7 +5,7 @@ using MdiMvvm.AppCore.ViewModelsBase;
 
 namespace MdiExample
 {
-    public class Window2ViewModel : MdiWindowViewModelBase, INavigateAware
+    public class Window2ViewModel : MdiWindowViewModelBase
     {
         public Window2ViewModel() : base()
         {
@@ -13,7 +13,7 @@ namespace MdiExample
             Title = $"Window {r.Next(1, 1000)}";
         }
 
-        public void NavigatedTo(ViewModelContext context)
+        public override void NavigatedTo(ViewModelContext context)
         {
             Title = context.GetValue<string>("Title");
         }

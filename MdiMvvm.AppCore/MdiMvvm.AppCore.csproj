@@ -93,6 +93,7 @@
     <Compile Include="Services\WindowsServices\Store\IWindowStoreService.cs" />
     <Compile Include="Services\WindowsServices\Store\JsonWindowLoaderService.cs" />
     <Compile Include="Services\WindowsServices\Store\JsonWindowStoreService.cs" />
+    <Compile Include="Services\WindowsServices\Store\StoreSettings.cs" />
     <Compile Include="Services\WindowsServices\WindowsManager\Events.cs" />
     <Compile Include="Services\WindowsServices\WindowsManager\IEnumerableExtensions.cs" />
     <Compile Include="Services\WindowsServices\WindowsManager\IWindowsManagerService.cs" />

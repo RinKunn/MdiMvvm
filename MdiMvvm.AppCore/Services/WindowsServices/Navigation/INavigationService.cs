@@ -12,5 +12,8 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Navigation
         /// <param name="navigateParameters">Navigate parameters with context</param>
         void NavigateTo<TViewModel>(NavigateParameters navigateParameters)
             where TViewModel : class, IMdiWindowViewModel, INavigateAware;
+
+        void NavigateTo<TViewModel>(string key, object obj)
+            where TViewModel : class, IMdiWindowViewModel, INavigateAware;
     }
 }

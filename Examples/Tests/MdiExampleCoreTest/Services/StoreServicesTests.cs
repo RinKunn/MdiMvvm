@@ -26,7 +26,7 @@ namespace MdiMvvm.AppCore.Tests.Services
             managerService = new WindowsManagerService();
             var samples = new WindowsSamples(managerService);
             factoryService = new WindowsFactoryMock();
-            storeService = new JsonWindowStoreService(managerService);
+            storeService = new JsonWindowStoreService(managerService, new DefaultStoreSettings());
         }
 
         [TestMethod]
@@ -37,7 +37,7 @@ namespace MdiMvvm.AppCore.Tests.Services
 
             Assert.IsTrue(File.Exists(filename));
             Assert.AreNotEqual(0, (new FileInfo(filename)).Length);
-            //File.Delete(filename);
+            File.Delete(filename);
         }
 
         [TestMethod]
@@ -46,7 +46,7 @@ namespace MdiMvvm.AppCore.Tests.Services
             string filename = Path.Combine(Directory.GetCurrentDirectory(), "testsettings2.txt");
             await storeService.KeepAsync(filename);
             var newManagerService = new WindowsManagerService();
-            var loaderService = new JsonWindowLoaderService(newManagerService, factoryService);
+            var loaderService = new JsonWindowLoaderService(newManagerService, factoryService, new DefaultStoreSettings());
 
             await loaderService.LoadAsync(filename);
 

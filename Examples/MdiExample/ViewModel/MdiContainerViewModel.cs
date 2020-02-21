@@ -30,7 +30,7 @@ namespace MdiExample
 
         private void OpenWindow<TWindow>(string contextStr) where TWindow : class, IMdiWindowViewModel, INavigateAware
         {
-            var context = new ViewModelContext();
+            var context = new ViewModelContext();   
             context.AddValue("Title", $"Hello from {contextStr}");
             _navigation.NavigateTo<TWindow>(new NavigateParameters(context, containerGuid: this.Guid));
         }

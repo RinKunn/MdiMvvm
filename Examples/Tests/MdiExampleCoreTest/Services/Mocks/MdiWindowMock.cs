@@ -4,13 +4,13 @@ using MdiMvvm.AppCore.ViewModelsBase;
 
 namespace MdiMvvm.AppCore.Tests.Services.Mocks
 {
-    public class MdiWindowMock : MdiWindowViewModelBase, INavigateAware
+    public class MdiWindowMock : MdiWindowViewModelBase
     {
         public string InternalText { get; set; }
 
         public MdiWindowMock() : base() { }
 
-        public void NavigatedTo(ViewModelContext context)
+        public override void NavigatedTo(ViewModelContext context)
         {
             Title = context.GetValue<string>("Title");
         }

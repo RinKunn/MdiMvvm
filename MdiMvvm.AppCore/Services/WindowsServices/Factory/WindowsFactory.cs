@@ -14,22 +14,22 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Factory
 
         public TContainerViewModel CreateContainer<TContainerViewModel>() where TContainerViewModel : IMdiContainerViewModel
         {
-            return (TContainerViewModel)_container.Resolve<IMdiContainerViewModel>();
+            return _container.Resolve<TContainerViewModel>();
         }
 
         public object CreateContainer(Type containerType)
         {
-            return _container.Resolve<IMdiContainerViewModel>();
+            return _container.Resolve(containerType);
         }
 
         public TWindowViewModel CreateWindow<TWindowViewModel>() where TWindowViewModel : IMdiWindowViewModel
         {
-            return (TWindowViewModel)_container.Resolve<IMdiWindowViewModel>(typeof(TWindowViewModel).Name);
+            return _container.Resolve<TWindowViewModel>();
         }
 
         public object CreateWindow(Type windowType)
         {
-            return _container.Resolve<IMdiWindowViewModel>(windowType.Name);
+            return _container.Resolve(windowType);
         }
     }
 }

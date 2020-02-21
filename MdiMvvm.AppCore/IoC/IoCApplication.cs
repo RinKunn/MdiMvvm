@@ -6,6 +6,7 @@ using MdiMvvm.AppCore.Services.WindowsServices.Navigation;
 using MdiMvvm.AppCore.Services.WindowsServices.Store;
 using Unity;
 using System.Threading.Tasks;
+using System;
 
 namespace MdiMvvm.AppCore
 {
@@ -16,7 +17,6 @@ namespace MdiMvvm.AppCore
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            this.LoadCompleted += async (o, args) => await LoadWindowsAsync();
             base.OnStartup(e);
             InitializeInternal();
         }
@@ -31,9 +31,9 @@ namespace MdiMvvm.AppCore
         private void InitializeInternal()
         {
             Initialize();
+            LoadWindowsAsync().ConfigureAwait(false);
             StartShell();
         }
-
 
         public virtual void Initialize()
         {
@@ -55,6 +55,7 @@ namespace MdiMvvm.AppCore
             containerRegistry.RegisterInstance(_container);
             containerRegistry.RegisterSingleton<IServiceLocator, UnityServiceLocatorAdapter>();
             containerRegistry.RegisterSingleton<IWindowsManagerService, WindowsManagerService>();
+            containerRegistry.RegisterSingleton<IStoreSettings, DefaultStoreSettings>();
             containerRegistry.RegisterType<INavigationService, NavigationService>();
             containerRegistry.RegisterType<IWindowsFactory, WindowsFactory>();
             containerRegistry.RegisterType<IWindowStoreService, JsonWindowStoreService>();
@@ -81,15 +82,11 @@ namespace MdiMvvm.AppCore
 
         protected abstract Window CreateShell();
 
-        
 
-
-
-
-        private async Task LoadWindowsAsync()
+        public async Task LoadWindowsAsync()
         {
             var loader = Container.Resolve<IWindowLoaderService>();
-            await loader.LoadAsync().ConfigureAwait(false);
+            await loader.LoadAsync();
         }
 
         private void SaveWindows()
