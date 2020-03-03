@@ -17,7 +17,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Navigation
             _windowsFactory = windowsFactory ?? throw new ArgumentNullException(nameof(windowsFactory));
         }
 
-        public void NavigateTo<TViewModel>(NavigateParameters navigateParameters)
+        private TViewModel FindOrCreateViewModel<TViewModel>(NavigateParameters navigateParameters)
             where TViewModel : class, IMdiWindowViewModel, INavigateAware
         {
             TViewModel viewModel;
@@ -34,10 +34,17 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Navigation
                     ? _windowManager.AppendWindow(viewModel)
                     : _windowManager.AppendWindowToContainer(viewModel, navigateParameters.GuidContainer);
             }
+            return viewModel;
+        }
+
+
+        public void NavigateTo<TViewModel>(NavigateParameters navigateParameters)
+            where TViewModel : class, IMdiWindowViewModel, INavigateAware
+        {
+            var viewModel = FindOrCreateViewModel<TViewModel>(navigateParameters);
             _windowManager.ActivateWindow(viewModel);
             viewModel.NavigatedTo(navigateParameters.Context);
         }
-
 
         public void NavigateTo<TViewModel>(string key, object obj)
             where TViewModel : class, IMdiWindowViewModel, INavigateAware
@@ -48,5 +55,27 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Navigation
 
             this.NavigateTo<TViewModel>(navigateParameters);
         }
+
+        public void NavigateTo<TViewModel>(NavigateParameters navigateParameters, Action<NavigationResult> navigationCallback)
+            where TViewModel : class, IMdiWindowViewModel, INavigateAware
+        {
+            if (navigationCallback == null)
+                throw new ArgumentNullException(nameof(navigationCallback));
+
+            var viewModel = FindOrCreateViewModel<TViewModel>(navigateParameters);
+            viewModel.CallBackAction = navigationCallback;
+            _windowManager.ActivateWindow(viewModel);
+            viewModel.NavigatedTo(navigateParameters.Context);
+        }
+
+        //public void NavigateTo<TViewModel>(string key, object obj, Action<NavigationResult> navigationCallback)
+        //    where TViewModel : class, IMdiWindowViewModel, INavigateAware
+        //{
+        //    ViewModelContext context = new ViewModelContext();
+        //    context.AddValue(key, obj);
+        //    NavigateParameters navigateParameters = new NavigateParameters(context);
+
+        //    this.NavigateTo<TViewModel>(navigateParameters, navigationCallback);
+        //}
     }
 }

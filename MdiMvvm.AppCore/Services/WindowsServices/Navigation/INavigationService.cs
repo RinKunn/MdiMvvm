@@ -1,4 +1,5 @@
-﻿using MdiMvvm.Interfaces;
+﻿using System;
+using MdiMvvm.Interfaces;
 
 namespace MdiMvvm.AppCore.Services.WindowsServices.Navigation
 {
@@ -14,6 +15,12 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Navigation
             where TViewModel : class, IMdiWindowViewModel, INavigateAware;
 
         void NavigateTo<TViewModel>(string key, object obj)
+            where TViewModel : class, IMdiWindowViewModel, INavigateAware;
+
+        //void NavigateTo<TViewModel>(string key, object obj, Action<NavigationResult> navigationCallback)
+        //    where TViewModel : class, IMdiWindowViewModel, INavigateAware;
+
+        void NavigateTo<TViewModel>(NavigateParameters navigateParameters, Action<NavigationResult> navigationCallback)
             where TViewModel : class, IMdiWindowViewModel, INavigateAware;
     }
 }

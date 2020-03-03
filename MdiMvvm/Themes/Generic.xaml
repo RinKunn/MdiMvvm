@@ -10,10 +10,11 @@
         <ResourceDictionary Source="/MdiMvvm;component/Themes/ScrollBarStyle.xaml"/>
         <ResourceDictionary Source="/MdiMvvm;component/Themes/DefaultTheme.xaml"/>
         <ResourceDictionary Source="/MdiMvvm;component/Themes/MinimizedWindowsListBox.xaml"/>
+        <ResourceDictionary Source="/MdiMvvm;component/Themes/LoadingSpinner.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
-
-
+    <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    
     <Style TargetType="{x:Type local:MdiContainer}">
         <Setter Property="IsTabStop" Value="False"/>
         <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
@@ -176,6 +177,11 @@
                             <Border x:Name="PART_BorderContent" BorderBrush="{StaticResource WindowContentBorder}" BorderThickness="1" Grid.Row="1">
                                 <ContentPresenter x:Name="PART_Content" Margin="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
                             </Border>
+
+                            <AdornerDecorator Grid.Row="1">
+                                <Control Style="{StaticResource BusyAnimationStyle}"
+                                         Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                            </AdornerDecorator>
                         </Grid>
                     </Border>
 
@@ -209,7 +215,6 @@
                                 </Setter>
                             </MultiTrigger.Setters>
                         </MultiTrigger>
-                        
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

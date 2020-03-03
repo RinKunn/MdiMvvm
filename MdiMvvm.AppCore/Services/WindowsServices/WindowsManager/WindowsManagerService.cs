@@ -19,19 +19,20 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.WindowsManager
             private set
             {
                 if (ReferenceEquals(_activeContainer, value)) return;
-
                 var oldContainer = _activeContainer;
                 if (_activeContainer != null) _activeContainer.IsSelected = false;
                 Set(ref _activeContainer, value);
                 if (_activeContainer != null) _activeContainer.IsSelected = true;
                 ActiveContainerChanged?.Invoke(new ActiveContainerChangedArgs(oldContainer, value));
+                //Console.WriteLine($"_activeContainer = {_activeContainer.IsBusy}, IsInited = {_activeContainer.IsInited}");
+                if (!_activeContainer.IsInited) _activeContainer.Init();
+                //Console.WriteLine($"\t {_activeContainer.IsBusy}, IsInited = {_activeContainer.IsInited}");
             }
         }
         public ReadOnlyObservableCollection<IMdiContainerViewModel> Containers => _containersReadOnly;
 
         public event ContainersCollectionChangedHandler ContainerCollectionChanged;
         public event ActiveContainerChangedHandler ActiveContainerChanged;
-
 
         public WindowsManagerService()
         {
@@ -40,6 +41,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.WindowsManager
         }
 
         #region COllection behaviour
+
         public void LoadContainers(IEnumerable<IMdiContainerViewModel> collection)
         {
             if (ReferenceEquals(_containers, collection)) return;
@@ -62,6 +64,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.WindowsManager
             if (mdiContainer == null) throw new ArgumentNullException(nameof(mdiContainer));
             ActiveContainer = mdiContainer;
             mdiContainer.AddMdiWindow(viewModel);
+            viewModel.InitAsync().ConfigureAwait(false);
             return viewModel;
         }
 
@@ -70,6 +73,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.WindowsManager
         {
             if (viewModel == null) throw new ArgumentNullException(nameof(viewModel));
             ActiveContainer.AddMdiWindow(viewModel);
+            viewModel.InitAsync().ConfigureAwait(false);
             return viewModel;
         }
 
@@ -86,6 +90,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.WindowsManager
 
             if (mdiContainer == null) throw new ArgumentNullException(nameof(mdiContainer));
             mdiContainer.AddMdiWindow(mdiWindow);
+            mdiWindow.InitAsync().ConfigureAwait(false);
             return mdiWindow;
         }
 

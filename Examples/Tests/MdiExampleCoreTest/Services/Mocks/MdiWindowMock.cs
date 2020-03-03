@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using MdiMvvm.AppCore.Services.WindowsServices.Navigation;
 using MdiMvvm.AppCore.ViewModelsBase;
 
 namespace MdiMvvm.AppCore.Tests.Services.Mocks
@@ -15,15 +14,15 @@ namespace MdiMvvm.AppCore.Tests.Services.Mocks
             Title = context.GetValue<string>("Title");
         }
 
-        protected override Task OnWindowKeepeng(ViewModelContext context)
+        protected override Task OnLoadingState(ViewModelContext context)
         {
-            context.AddValue("InternalText", InternalText);
+            InternalText = context.GetValue<string>("InternalText");
             return Task.CompletedTask;
         }
 
-        protected override Task OnWindowLoading(ViewModelContext context)
+        protected override Task OnSavingState(ViewModelContext context)
         {
-            InternalText = context.GetValue<string>("InternalText");
+            context.AddValue("InternalText", InternalText);
             return Task.CompletedTask;
         }
     }

@@ -5,5 +5,6 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Store
     public interface IWindowStoreService
     {
         Task<bool> KeepAsync(string saveFileName = null);
+        bool Keep(string saveFileName = null);
     }
 }

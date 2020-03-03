@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
+using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Threading;
+using MdiMvvm.AppCore.Services.WindowsServices.Store;
+using MdiMvvm.AppCore.Services.WindowsServices.Navigation;
 using MdiMvvm.Interfaces;
-using Newtonsoft.Json;
 
-namespace MdiMvvm.ViewModels
+namespace MdiMvvm.AppCore.ViewModelsBase
 {
-    [Obsolete("Create custom ViewModelBase, that implement IMdiWindowViewModel", true)]
-    public abstract class MdiWindowViewModelBase : ObservableObject, IMdiWindowViewModel
+    public abstract class MdiWindowNotStorableViewModelBase : ViewModelBase, IMdiWindowViewModel, IBusy, INavigateAware
     {
         #region Members
 
@@ -19,29 +22,25 @@ namespace MdiMvvm.ViewModels
         private double _previousWidth;
         private double _previousHeight;
         private WindowState _previousState;
-
-        private double _currentLeft; // bind Canvas.Left
-        private double _currentTop; // bind Canvas.Top
+        private double _currentLeft;
+        private double _currentTop;
         private double _currentWidth;
         private double _currentHeight;
         private WindowState _windowState;
-
         private IMdiContainerViewModel _container;
-
-        [JsonIgnore]
-        public IMdiContainerViewModel Container
-        {
-            get => _container;
-            set => Set(ref _container, value);
-        }
+        private bool _isBusy;
+        private bool _isInited;
         #endregion
 
         #region Props
         /// <summary>
         /// GUID of window
         /// </summary>
-        [JsonIgnore]
-        public Guid Guid => _uid;
+        public Guid Guid
+        {
+            get => _uid;
+            set => Set(ref _uid, value);
+        }
 
         /// <summary>
         /// Title
@@ -160,16 +159,61 @@ namespace MdiMvvm.ViewModels
             set => Set(ref _windowState, value);
         }
 
+        /// <summary>
+        /// Контейнер
+        /// </summary>
+        public IMdiContainerViewModel Container
+        {
+            get => _container;
+            set => Set(ref _container, value);
+        }
+
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set => Set(ref _isBusy, value);
+        }
+
+        public bool IsInited
+        {
+            get => _isInited;
+            private set => Set(ref _isInited, value);
+        }
+
+        public Action<NavigationResult> CallBackAction { get; set; }
         #endregion
 
-        public MdiWindowViewModelBase()
+        public MdiWindowNotStorableViewModelBase()
         {
             _uid = Guid.NewGuid();
+            IsInited = false;
         }
 
         protected void Close()
         {
-            this.Container.RemoveMdiWindow(this);
+            Container?.RemoveMdiWindow(this);
+        }
+
+        public abstract void NavigatedTo(ViewModelContext context);
+
+
+
+        public void RaiseCallBack(NavigationResult result)
+        {
+            CallBackAction?.Invoke(result);
+        }
+
+        public async Task InitAsync()
+        {
+            IsBusy = true;
+            await OnIniting();
+            IsBusy = false;
+            IsInited = true;
+        }
+
+        protected virtual Task OnIniting()
+        {
+            return Task.CompletedTask;
         }
     }
 }

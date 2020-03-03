@@ -16,6 +16,9 @@
       <DataTemplate DataType="{x:Type local:Window2ViewModel}">
         <views:Window2View />
       </DataTemplate>
+      <DataTemplate DataType="{x:Type local:Window3ViewModelCallBack}">
+        <views:Window3View />
+      </DataTemplate>
       <!--<vm:ViewModelLocator x:Key="Locator" d:IsDataSource="True" xmlns:vm="clr-namespace:MdiExample.ViewModel" />-->
         
     </ResourceDictionary>

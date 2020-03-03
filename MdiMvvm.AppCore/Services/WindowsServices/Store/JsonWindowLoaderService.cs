@@ -4,10 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using MdiMvvm.AppCore.Extensions;
 using MdiMvvm.AppCore.Services.WindowsServices.Factory;
 using MdiMvvm.AppCore.Services.WindowsServices.WindowsManager;
 using MdiMvvm.AppCore.ViewModelsBase;
-using MdiMvvm.AppCore.Extensions;
 using MdiMvvm.Interfaces;
 
 
@@ -54,23 +54,62 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Store
             if (!success || resumeContext.ContainerContextCollection.Count == 0)
                 resumeContext = InitDefaultStoreContext();
 
+            var loadedContainers = InitMdiContainers(resumeContext);
+            _windowsManager.LoadContainers(loadedContainers);
+            return success;
+        }
+
+        public bool Load(string loadFileName = null)
+        {
+            bool success = true;
+            string filename = loadFileName ?? _storeSettings.StoreFileName;
+            ResumeStoreContext resumeContext = null;
+
+            if (!File.Exists(filename))
+            {
+                success = false;
+            }
+            else
+            {
+                try
+                {
+                    resumeContext = filename.GetObjectFromJsonFile<ResumeStoreContext>(_storeSettings.JsonSerializerSettings);
+                }
+                catch
+                {
+                    success = false;
+                }
+            }
+
+            if (!success || resumeContext.ContainerContextCollection.Count == 0)
+                resumeContext = InitDefaultStoreContext();
+
+            var loadedContainers = InitMdiContainers(resumeContext);
+            _windowsManager.LoadContainers(loadedContainers);
+            return success;
+        }
+
+        private IList<IMdiContainerViewModel> InitMdiContainers(ResumeStoreContext resumeContext)
+        {
             List<IMdiContainerViewModel> loadedContainers = new List<IMdiContainerViewModel>();
+
             foreach (ContainersStoreContext containerContext in resumeContext.ContainerContextCollection)
             {
-                var container = (IMdiContainerViewModel)_windowsFactory.CreateContainer(containerContext.ViewModelType);
-                await (container as IStorable<ContainersStoreContext>).OnLoading(containerContext);
+                var container = (MdiContainerViewModelBase)_windowsFactory.CreateContainer(containerContext.ViewModelType);
 
-                foreach (WindowsStoreContext windowContext in containerContext.WindowsContextCollection)
+                container.LoadFromStoreContext(containerContext);
+
+                foreach (var windowContext in containerContext.WindowsContextCollection)
                 {
                     var window = (IMdiWindowViewModel)_windowsFactory.CreateWindow(windowContext.ViewModelType);
                     window.Container = container;
                     container.WindowsCollection.Add(window);
-                    await (window as IStorable<WindowsStoreContext>).OnLoading(windowContext);
+                    (window as IStorable<WindowsStoreContext>).LoadFromStoreContext(windowContext);
                 }
                 loadedContainers.Add(container);
             }
-            _windowsManager.LoadContainers(loadedContainers);
-            return success;
+
+            return loadedContainers;
         }
 
         private ResumeStoreContext InitDefaultStoreContext()

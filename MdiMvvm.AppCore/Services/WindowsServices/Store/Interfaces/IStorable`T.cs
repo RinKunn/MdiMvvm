@@ -4,7 +4,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Store
 {
     public interface IStorable<TStoreContext> where TStoreContext : IStoreContext
     {
-        Task<TStoreContext> OnLoading(TStoreContext context);
-        Task<TStoreContext> OnKeeping(TStoreContext context);
+        void LoadFromStoreContext(TStoreContext context);
+        TStoreContext InitStoreContext();
     }
 }

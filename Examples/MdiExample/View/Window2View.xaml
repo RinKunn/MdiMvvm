@@ -4,9 +4,22 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MdiExample.View"
+             xmlns:vm="clr-namespace:MdiExample"
              mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type={x:Type vm:Window2ViewModel}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <TextBlock Text="THIS IS Window 2" FontSize="25"/>
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Открыть окно 3" Command="{Binding OpenWin3Command}"/>
+            </ContextMenu>
+        </Grid.ContextMenu>
+
+        <StackPanel Orientation="Vertical">
+            <TextBlock Text="{Binding IsBusy, StringFormat={}IsBusy:{0}}" FontSize="25"/>
+            <TextBlock Text="{Binding IsInited, StringFormat={}IsInited:{0}}" FontSize="25"/>
+            <TextBlock Text="{Binding Text}" FontSize="25"/>
+        </StackPanel>
+        
     </Grid>
 </UserControl>

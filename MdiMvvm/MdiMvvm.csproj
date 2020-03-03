@@ -64,7 +64,6 @@
     <Compile Include="Exceptions\MdiContainerLoadingException.cs" />
     <Compile Include="Exceptions\MdiWindowAlreadyExistsException.cs" />
     <Compile Include="Exceptions\MdiWindowNotFoundedException.cs" />
-    <Compile Include="Extensions\SerialisationExtensions.cs" />
     <Compile Include="Extensions\VisualTreeExtension.cs" />
     <Compile Include="Extensions\WindowBehaviorExtension.cs" />
     <Compile Include="MdiContainer.cs" />
@@ -85,11 +84,7 @@
     <Compile Include="ValueObjects\MinimizedWindowCollection.cs" />
     <Compile Include="ValueObjects\SnapshotManager.cs" />
     <Compile Include="Interfaces\IMdiContainerViewModel.cs" />
-    <Compile Include="ViewModels\MdiContainerCollectionViewModelBase.cs" />
-    <Compile Include="ViewModels\MdiContainerViewModelBase.cs" />
     <Compile Include="Interfaces\IMdiWindowViewModel.cs" />
-    <Compile Include="ViewModels\MdiWindowViewModelBase.cs" />
-    <Compile Include="ViewModels\ObservableObject.cs" />
     <Compile Include="WindowControls\HollowRectangleAdorner.cs" />
     <Compile Include="WindowControls\MoveThumb.cs" />
     <Compile Include="WindowControls\ResizeThumb.cs" />
@@ -110,6 +105,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\LoadingSpinner.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

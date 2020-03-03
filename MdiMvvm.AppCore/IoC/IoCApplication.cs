@@ -1,12 +1,11 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
 using CommonServiceLocator;
-using MdiMvvm.AppCore.Services.WindowsServices.WindowsManager;
 using MdiMvvm.AppCore.Services.WindowsServices.Factory;
 using MdiMvvm.AppCore.Services.WindowsServices.Navigation;
 using MdiMvvm.AppCore.Services.WindowsServices.Store;
+using MdiMvvm.AppCore.Services.WindowsServices.WindowsManager;
 using Unity;
-using System.Threading.Tasks;
-using System;
 
 namespace MdiMvvm.AppCore
 {
@@ -31,7 +30,7 @@ namespace MdiMvvm.AppCore
         private void InitializeInternal()
         {
             Initialize();
-            LoadWindowsAsync().ConfigureAwait(false);
+            var loadingTask = LoadWindowsAsync();
             StartShell();
         }
 
@@ -92,7 +91,7 @@ namespace MdiMvvm.AppCore
         private void SaveWindows()
         {
             var keeper = Container.Resolve<IWindowStoreService>();
-            var res = keeper.KeepAsync().Result;
+            keeper.Keep();
         }
     }
 }

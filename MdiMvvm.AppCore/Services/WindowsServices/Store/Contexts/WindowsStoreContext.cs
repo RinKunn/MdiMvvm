@@ -30,9 +30,5 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Store
             ViewModelContext = new ViewModelContext();
         }
 
-        internal async Task LoadContextFromEntity(IStorable<WindowsStoreContext> storable)
-        {
-            await storable.OnKeeping(this);
-        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace MdiMvvm.Interfaces
@@ -77,5 +78,8 @@ namespace MdiMvvm.Interfaces
         /// </summary>
         WindowState WindowState { get; set; }
 
+        bool IsInited { get; }
+
+        Task InitAsync();
     }
 }

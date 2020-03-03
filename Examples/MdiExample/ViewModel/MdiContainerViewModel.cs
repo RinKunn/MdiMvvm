@@ -35,14 +35,14 @@ namespace MdiExample
             _navigation.NavigateTo<TWindow>(new NavigateParameters(context, containerGuid: this.Guid));
         }
 
-        public override Task OnContainerLoading(ViewModelContext context)
+        protected override void OnLoadingContainerState(ViewModelContext context)
         {
-            return Task.CompletedTask;
+           
         }
 
-        public override Task OnContainerKeeping(ViewModelContext context)
+        protected override void OnSavingContainerState(ViewModelContext context)
         {
-            return Task.CompletedTask;
+           
         }
     }
 }

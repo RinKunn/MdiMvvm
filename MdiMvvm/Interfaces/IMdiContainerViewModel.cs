@@ -25,6 +25,8 @@ namespace MdiMvvm.Interfaces
         /// </summary>
         bool IsBusy { get; set; }
 
+        bool IsInited { get; set; }
+
         /// <summary>
         /// <see cref="IMdiWindowViewModel" />'s collection
         /// </summary>
@@ -32,5 +34,7 @@ namespace MdiMvvm.Interfaces
 
         void AddMdiWindow<TWindow>(TWindow window) where TWindow : IMdiWindowViewModel;
         void RemoveMdiWindow<TWindow>(TWindow window) where TWindow : IMdiWindowViewModel;
+
+        void Init();
     }
 }

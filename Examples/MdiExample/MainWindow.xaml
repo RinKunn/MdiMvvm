@@ -21,26 +21,22 @@
 
             <Style x:Key="cp" TargetType="{x:Type control:MdiWindow}">
                 <Setter Property="Uid" Value="{Binding Guid, Mode=OneWay}"/>
-            <Setter Property="Title" Value="{Binding Title, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            <Setter Property="IsModal" Value="{Binding IsModal, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"/>
-            <Setter Property="Width" Value="{Binding CurrentWidth, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
-            <Setter Property="Height" Value="{Binding CurrentHeight, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
-            <Setter Property="Canvas.Left" Value="{Binding CurrentLeft, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
-            <Setter Property="Canvas.Top" Value="{Binding CurrentTop, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
-            <Setter Property="WindowState" Value="{Binding WindowState, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
-
-                <!--<Setter Property="ScreenShot" Value="{Binding ScreenShot, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>-->
-
-            <Setter Property="PreviousWidth" Value="{Binding PreviousWidth, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
-            <Setter Property="PreviousHeight" Value="{Binding PreviousHeight, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
-            <Setter Property="PreviousLeft" Value="{Binding PreviousLeft, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
-            <Setter Property="PreviousTop" Value="{Binding PreviousTop, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
-            <Setter Property="PreviousWindowState" Value="{Binding PreviousState, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
-            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
-            
-            <Setter Property="IsResizable" Value="True"/>
-            <Setter Property="HasDropShadow" Value="False"/>
-        </Style>
+                <Setter Property="Title" Value="{Binding Title, Mode=TwoWay}"/>
+                <Setter Property="IsModal" Value="{Binding IsModal, Mode=OneWayToSource}"/>
+                <Setter Property="Width" Value="{Binding CurrentWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Setter Property="Height" Value="{Binding CurrentHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Setter Property="Canvas.Left" Value="{Binding CurrentLeft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Setter Property="Canvas.Top" Value="{Binding CurrentTop, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Setter Property="WindowState" Value="{Binding WindowState, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Setter Property="PreviousWidth" Value="{Binding PreviousWidth, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"/>
+                <Setter Property="PreviousHeight" Value="{Binding PreviousHeight, Mode=TwoWay,  UpdateSourceTrigger=PropertyChanged}"/>
+                <Setter Property="PreviousLeft" Value="{Binding PreviousLeft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Setter Property="PreviousTop" Value="{Binding PreviousTop, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Setter Property="PreviousWindowState" Value="{Binding PreviousState, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Setter Property="IsResizable" Value="True"/>
+                <Setter Property="HasDropShadow" Value="False"/>
+            </Style>
 
         <DataTemplate DataType="{x:Type local:MdiContainerViewModel}">
             <control:MdiContainer
@@ -73,7 +69,15 @@
 
             <TabControl.ItemTemplate>
                 <DataTemplate DataType="{x:Type local:MdiContainerViewModel}">
-                    <TextBlock Text="{Binding Title}"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Ellipse x:Name="indicator" Width="5" Height="5" VerticalAlignment="Center" Fill="Red"/>
+                        <TextBlock Text="{Binding Title}"/>
+                    </StackPanel>
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding IsInited}" Value="True">
+                            <Setter TargetName="indicator" Property="Fill" Value="Green"/>
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
                 </DataTemplate>
             </TabControl.ItemTemplate>
         </TabControl>

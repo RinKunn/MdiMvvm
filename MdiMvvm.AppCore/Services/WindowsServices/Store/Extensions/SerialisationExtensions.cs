@@ -29,7 +29,29 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Store
                     return null;
                 }
             }).ConfigureAwait(false);
+
             return result;
+        }
+
+        public static T GetObjectFromJsonFile<T>(this string filename, JsonSerializerSettings settings = null)
+            where T : class
+        {
+            if (string.IsNullOrEmpty(filename))
+                throw new ArgumentNullException(nameof(filename));
+
+            if (!File.Exists(filename))
+                throw new FileNotFoundException("File not found", filename);
+
+            try
+            {
+                var json = File.ReadAllText(filename);
+                T readResult = JsonConvert.DeserializeObject<T>(json, settings);
+                return readResult;
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public static async Task<bool> SaveObjectToJsonFileAsync<T>(this T obj, string filename, JsonSerializerSettings settings = null) where T : class
@@ -54,6 +76,27 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Store
                 }
             }).ConfigureAwait(false);
 
+            return result;
+        }
+
+        public static bool SaveObjectToJsonFile<T>(this T obj, string filename, JsonSerializerSettings settings = null) where T : class
+        {
+            if (string.IsNullOrEmpty(filename))
+                throw new ArgumentNullException(nameof(filename));
+
+            if (!Directory.Exists(Path.GetDirectoryName(filename)))
+                Directory.CreateDirectory(Path.GetDirectoryName(filename));
+
+            bool result = true;
+            try
+            {
+                var json = JsonConvert.SerializeObject(obj, settings);
+                File.WriteAllText(filename, json);                
+            }
+            catch
+            {
+                result = false;
+            }
             return result;
         }
     }

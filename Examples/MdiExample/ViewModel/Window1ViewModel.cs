@@ -23,7 +23,7 @@ namespace MdiExample
         
         
         public RelayCommand OpenWin2Command => _openWin2Command ?? (_openWin2Command = new RelayCommand(OpenWind2));
-        public RelayCommand CloseCommand => _closeCommand ?? (_closeCommand = new RelayCommand(() => this.Container.RemoveMdiWindow(this)));
+        public RelayCommand CloseCommand => _closeCommand ?? (_closeCommand = new RelayCommand(() => this.Container. RemoveMdiWindow(this)));
 
         private void OpenWind2()
         {
@@ -33,19 +33,19 @@ namespace MdiExample
             _navigation.NavigateTo<Window2ViewModel>(new NavigateParameters(context));
         }
         
-        protected override Task OnWindowLoading(ViewModelContext context)
-        {
-            return Task.CompletedTask;
-        }
-
-        protected override Task OnWindowKeepeng(ViewModelContext context)
-        {
-            return Task.CompletedTask;
-        }
-
         public override void NavigatedTo(ViewModelContext context)
         {
             Title = context.GetValue<string>("Title");
+        }
+
+        protected override void OnLoadingState(ViewModelContext context)
+        {
+            
+        }
+
+        protected override void OnSavingState(ViewModelContext context)
+        {
+            
         }
     }
 }

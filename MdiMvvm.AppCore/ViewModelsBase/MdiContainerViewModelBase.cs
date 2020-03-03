@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Threading;
@@ -18,6 +20,7 @@ namespace MdiMvvm.AppCore.ViewModelsBase
         private string _title;
         private bool _isSelected;
         private bool _isBusy;
+        private bool _isInited;
         private ObservableCollection<IMdiWindowViewModel> _windowsCollection;
         #endregion
 
@@ -58,6 +61,12 @@ namespace MdiMvvm.AppCore.ViewModelsBase
             set => Set(ref _isBusy, value);
         }
 
+        public bool IsInited
+        {
+            get => _isInited;
+            set => Set(ref _isInited, value);
+        }
+
         /// <summary>
         /// <see cref="IMdiWindowViewModel" />'s collection
         /// </summary>
@@ -86,6 +95,7 @@ namespace MdiMvvm.AppCore.ViewModelsBase
         {
             _guid = Guid.NewGuid();
             WindowsCollection = new ObservableCollection<IMdiWindowViewModel>();
+            IsInited = false;
         }
 
         /// <summary>
@@ -121,55 +131,48 @@ namespace MdiMvvm.AppCore.ViewModelsBase
         {
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
-                foreach (MdiWindowViewModelBase win in e.NewItems)
+                foreach (MdiWindowNotStorableViewModelBase win in e.NewItems)
                     win.Container = this;
             }
             else if (e.Action == NotifyCollectionChangedAction.Remove)
             {
-                foreach (MdiWindowViewModelBase win in e.OldItems)
+                foreach (MdiWindowNotStorableViewModelBase win in e.OldItems)
                     win.Container = null;
             }
         }
 
-        public async Task<ContainersStoreContext> OnLoading(ContainersStoreContext context)
+        public void LoadFromStoreContext(ContainersStoreContext context)
         {
-            IsBusy = true;
-
             Guid = context.Guid;
             IsSelected = context.IsSelected;
             Title = context.Title;
-
-            await OnContainerLoading(context.ViewModelContext);
-
-            DispatcherHelper.CheckBeginInvokeOnUI(() => { IsBusy = false; });
-            return context;
+            OnLoadingContainerState(context.ViewModelContext);
         }
-
-        public async Task<ContainersStoreContext> OnKeeping(ContainersStoreContext context)
+        public ContainersStoreContext InitStoreContext()
         {
-            IsBusy = true;
-
+            ContainersStoreContext context = new ContainersStoreContext();
             context.Guid = Guid;
             context.IsSelected = IsSelected;
             context.Title = Title;
             context.ViewModelType = GetType();
-
-            var collection = WindowsCollection.Where(w => w is IStorable<WindowsStoreContext>).Select(w => (IStorable<WindowsStoreContext>)w);
-            foreach (var wind in collection)
-            {
-                var windowsStoreContext = new WindowsStoreContext();
-                await windowsStoreContext.LoadContextFromEntity(wind);
-                context.WindowsContextCollection.Add(windowsStoreContext);
-            }
-
-            await OnContainerKeeping(context.ViewModelContext);
-
-            DispatcherHelper.CheckBeginInvokeOnUI(() => { IsBusy = false; });
-
+            OnSavingContainerState(context.ViewModelContext);
             return context;
         }
 
-        public abstract Task OnContainerLoading(ViewModelContext context);
-        public abstract Task OnContainerKeeping(ViewModelContext context);
+        protected abstract void OnLoadingContainerState(ViewModelContext context);
+        protected abstract void OnSavingContainerState(ViewModelContext context);
+
+        public void Init()
+        {
+            if (WindowsCollection.Count > 0)
+            {
+                foreach (var window in WindowsCollection)
+                {
+                    window.InitAsync();
+                }
+            }
+            IsInited = true;
+        }
+
     }
 }

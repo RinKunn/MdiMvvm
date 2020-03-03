@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using MdiMvvm.AppCore.ViewModelsBase;
+﻿using MdiMvvm.AppCore.ViewModelsBase;
 
 namespace MdiMvvm.AppCore.Tests.Services.Mocks
 {
@@ -7,14 +6,15 @@ namespace MdiMvvm.AppCore.Tests.Services.Mocks
     {
         public MdiContainerMock() : base() { }
 
-        public override Task OnContainerKeeping(ViewModelContext context)
+
+        protected override void OnLoadingContainerState(ViewModelContext context)
         {
-            return Task.CompletedTask;
+            
         }
 
-        public override Task OnContainerLoading(ViewModelContext context)
+        protected override void OnSavingContainerState(ViewModelContext context)
         {
-            return Task.CompletedTask;
+            
         }
     }
 }

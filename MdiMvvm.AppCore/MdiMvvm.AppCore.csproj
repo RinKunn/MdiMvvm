@@ -82,6 +82,7 @@
     <Compile Include="Services\WindowsServices\Navigation\INavigateAware.cs" />
     <Compile Include="Services\WindowsServices\Navigation\INavigationService.cs" />
     <Compile Include="Services\WindowsServices\Navigation\NavigateParameters.cs" />
+    <Compile Include="Services\WindowsServices\Navigation\NavigationResult.cs" />
     <Compile Include="Services\WindowsServices\Navigation\NavigationService.cs" />
     <Compile Include="Services\WindowsServices\Store\Contexts\ContainersStoreContext.cs" />
     <Compile Include="Services\WindowsServices\Store\Contexts\ResumeStoreContext.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="ViewModelsBase\IBusy.cs" />
     <Compile Include="ViewModelsBase\MdiContainerViewModelBase.cs" />
     <Compile Include="ViewModelsBase\MdiWindowViewModelBase.cs" />
+    <Compile Include="ViewModelsBase\MdiWindowNotStorableViewModelBase.cs" />
     <Compile Include="ViewModelsBase\ViewModelContext.cs" />
   </ItemGroup>
   <ItemGroup>
