@@ -21,7 +21,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Navigation
             where TViewModel : class, IMdiWindowViewModel, INavigateAware
         {
             TViewModel viewModel;
-            if (navigateParameters.GuidWindows != Guid.Empty)
+            if (navigateParameters != null && navigateParameters.GuidWindows != Guid.Empty)
             {
                 viewModel = _windowManager.FindWindow<TViewModel>(navigateParameters.GuidWindows);
                 if (viewModel == null)
@@ -30,7 +30,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Navigation
             else
             {
                 viewModel = _windowsFactory.CreateWindow<TViewModel>();
-                viewModel = navigateParameters.GuidContainer == Guid.Empty
+                viewModel = navigateParameters == null || navigateParameters.GuidContainer == Guid.Empty
                     ? _windowManager.AppendWindow(viewModel)
                     : _windowManager.AppendWindowToContainer(viewModel, navigateParameters.GuidContainer);
             }
@@ -43,7 +43,8 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Navigation
         {
             var viewModel = FindOrCreateViewModel<TViewModel>(navigateParameters);
             _windowManager.ActivateWindow(viewModel);
-            viewModel.NavigatedTo(navigateParameters.Context);
+            viewModel.NavigatedTo(navigateParameters?.Context);
+            viewModel.InitAsync();
         }
 
         public void NavigateTo<TViewModel>(string key, object obj)
@@ -65,7 +66,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Navigation
             var viewModel = FindOrCreateViewModel<TViewModel>(navigateParameters);
             viewModel.CallBackAction = navigationCallback;
             _windowManager.ActivateWindow(viewModel);
-            viewModel.NavigatedTo(navigateParameters.Context);
+            viewModel.NavigatedTo(navigateParameters?.Context);
         }
 
         //public void NavigateTo<TViewModel>(string key, object obj, Action<NavigationResult> navigationCallback)

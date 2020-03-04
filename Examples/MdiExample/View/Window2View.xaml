@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:MdiExample.View"
              xmlns:vm="clr-namespace:MdiExample"
              mc:Ignorable="d" 
+             MinWidth="300"
              d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type={x:Type vm:Window2ViewModel}}"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>

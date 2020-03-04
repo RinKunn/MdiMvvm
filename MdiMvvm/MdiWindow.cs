@@ -109,7 +109,6 @@ namespace MdiMvvm
             SetValue(Canvas.LeftProperty, left);
             SetValue(Canvas.TopProperty, top);
 
-
             PreviousLeft = left;
             PreviousTop = top;
 
@@ -348,6 +347,8 @@ namespace MdiMvvm
                 window.PreviousWindowState = (WindowState)e.OldValue;
 
                 var args = new WindowStateChangedEventArgs(WindowStateChangedEvent, (WindowState)e.OldValue, (WindowState)e.NewValue);
+                //if((WindowState)e.OldValue == WindowState.Minimized)
+                    
                 window.RaiseEvent(args);
             }
         }
@@ -423,7 +424,7 @@ namespace MdiMvvm
 
                 window.Height = Math.Max(content.ActualHeight + 34, ActualHeight);
                 window.Width = Math.Max(content.ActualWidth + 10, ActualWidth);
-                if(window.PreviousHeight == 0) window.PreviousHeight = window.Height;
+                if (window.PreviousHeight == 0) window.PreviousHeight = window.Height;
                 if (window.PreviousWidth == 0) window.PreviousWidth = window.Width;
             }
         }
@@ -473,7 +474,7 @@ namespace MdiMvvm
             this.ToggleMinimize();
         }
 
-        private void CloseWindow(object sender, RoutedEventArgs e)
+        internal void CloseWindow(object sender, RoutedEventArgs e)
         {
             var canCloseBinding = BindingOperations.GetBindingExpression(this, CanCloseProperty);
             if (canCloseBinding != null)

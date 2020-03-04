@@ -1,6 +1,4 @@
 ﻿using System;
-
-
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
@@ -10,10 +8,12 @@ namespace MdiMvvm.ValueObjects
 {
     public class SnapshotManager
     {
-        public SnapshotManager()
+        private static string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "GalaxyBond", "temp", "snaps");
+
+        static SnapshotManager()
         {
-            string snapsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "gb_mdi");
-            if (!Directory.Exists(snapsPath)) Directory.CreateDirectory(snapsPath);
+            if(!Directory.Exists(path))
+                Directory.CreateDirectory(path);
         }
 
         internal ImageSource GetSnapshot(MdiWindow window)
@@ -59,15 +59,14 @@ namespace MdiMvvm.ValueObjects
 
             return bitmap;
         }
-
         public RenderTargetBitmap CreateSnapshot(MdiWindow window)
         {
-            var bitmap = new RenderTargetBitmap((int)Math.Round(window.Width), (int)Math.Round(window.Height), 96, 96, PixelFormats.Default);
+            var bitmap = new RenderTargetBitmap((int)Math.Round(window.ActualWidth), (int)Math.Round(window.ActualHeight), 96, 96, PixelFormats.Default);
             var drawingVisual = new DrawingVisual();
             using (var context = drawingVisual.RenderOpen())
             {
                 var brush = new VisualBrush(window);
-                context.DrawRectangle(brush, null, new Rect(new Point(), new Size(window.Width, window.Height)));
+                context.DrawRectangle(brush, null, new Rect(new Point(), new Size(window.ActualWidth, window.ActualHeight)));
                 context.Close();
             }
             bitmap.Render(drawingVisual);
@@ -78,7 +77,7 @@ namespace MdiMvvm.ValueObjects
 
         private string GetSnapshotfilename(string uid)
         {
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "gb_mdi", $"snp_{uid}.snap");
+            return Path.Combine(path, $"snp_{uid}.snap");
         }
     }
 }

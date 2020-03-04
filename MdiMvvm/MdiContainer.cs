@@ -67,7 +67,6 @@ namespace MdiMvvm
             SnapshotManager = new SnapshotManager();
         }
 
-
         private void MdiContainer_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Add && MaximizedWindow != null) MaximizedWindow.Normalize();
@@ -123,7 +122,7 @@ namespace MdiMvvm
 
         protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
         {
-            //_logger.Trace($"OnItemsSourceChanged: oldSouce = {(oldValue == null ? "null" : $"{(oldValue as IList).Count}")}, newSouce = {(newValue == null ? "null" : $"{(newValue as IList).Count}")}");
+            Console.WriteLine($"OnItemsSourceChanged: oldSouce = {(oldValue == null ? "null" : $"{(oldValue as IList).Count}")}, newSouce = {(newValue == null ? "null" : $"{(newValue as IList).Count}")}");
             base.OnItemsSourceChanged(oldValue, newValue);
             WindowsOffset = 5;
             if (newValue != null && newValue is IList)
@@ -243,7 +242,7 @@ namespace MdiMvvm
         {
             if (sender is MdiWindow window)
             {
-                //_logger.Trace($"OnMdiWindow_Unloaded: Window '{window.Title}': {window.WindowState}");
+                Console.WriteLine($"OnMdiWindow_Unloaded: Window '{window.Title}': {window.WindowState}");
                 if (window.WindowState == WindowState.Maximized) MaximizedWindow = null;
                 window.FocusChanged -= OnMdiWindowFocusChanged;
                 window.Closing -= OnMdiWindowClosing;
