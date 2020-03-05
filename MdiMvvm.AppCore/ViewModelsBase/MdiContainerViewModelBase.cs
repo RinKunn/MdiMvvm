@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Linq.Expressions;
 using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Threading;
 using MdiMvvm.AppCore.Services.WindowsServices.Store;
 using MdiMvvm.Exceptions;
+using System.Data.Common;
 using MdiMvvm.Interfaces;
+using System.Threading.Tasks;
+using MdiMvvm.AppCore.Extensions;
 
 namespace MdiMvvm.AppCore.ViewModelsBase
 {
@@ -21,6 +22,7 @@ namespace MdiMvvm.AppCore.ViewModelsBase
         private bool _isSelected;
         private bool _isBusy;
         private bool _isInited;
+        private bool _isScrollBarVisible;
         private ObservableCollection<IMdiWindowViewModel> _windowsCollection;
         #endregion
 
@@ -67,6 +69,12 @@ namespace MdiMvvm.AppCore.ViewModelsBase
             set => Set(ref _isInited, value);
         }
 
+        public bool IsScrollBarVisible
+        {
+            get => _isScrollBarVisible;
+            set => Set(ref _isScrollBarVisible, value);
+        }
+        
         /// <summary>
         /// <see cref="IMdiWindowViewModel" />'s collection
         /// </summary>
@@ -96,6 +104,7 @@ namespace MdiMvvm.AppCore.ViewModelsBase
             _guid = Guid.NewGuid();
             WindowsCollection = new ObservableCollection<IMdiWindowViewModel>();
             IsInited = false;
+            _isScrollBarVisible = true;
         }
 
         /// <summary>
@@ -173,6 +182,7 @@ namespace MdiMvvm.AppCore.ViewModelsBase
             }
             IsInited = true;
         }
-
+        
     }
+
 }

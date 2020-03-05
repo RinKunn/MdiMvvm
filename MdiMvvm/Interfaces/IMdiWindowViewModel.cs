@@ -4,7 +4,7 @@ using System.Windows;
 
 namespace MdiMvvm.Interfaces
 {
-    public interface IMdiWindowViewModel
+    public interface IMdiWindowViewModel : IClosable
     {
         IMdiContainerViewModel Container { get; set; }
 

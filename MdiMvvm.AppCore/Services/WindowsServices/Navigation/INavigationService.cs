@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using MdiMvvm.Interfaces;
 
 namespace MdiMvvm.AppCore.Services.WindowsServices.Navigation
@@ -11,16 +12,16 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Navigation
         /// </summary>
         /// <typeparam name="TViewModel">Must implement <see cref="IMdiWindowViewModel"/> and <see cref="INavigateAware"/> </typeparam>
         /// <param name="navigateParameters">Navigate parameters with context</param>
-        void NavigateTo<TViewModel>(NavigateParameters navigateParameters)
+        Task NavigateTo<TViewModel>(NavigateParameters navigateParameters)
             where TViewModel : class, IMdiWindowViewModel, INavigateAware;
 
-        void NavigateTo<TViewModel>(string key, object obj)
+        Task NavigateTo<TViewModel>(string key, object obj)
             where TViewModel : class, IMdiWindowViewModel, INavigateAware;
 
         //void NavigateTo<TViewModel>(string key, object obj, Action<NavigationResult> navigationCallback)
         //    where TViewModel : class, IMdiWindowViewModel, INavigateAware;
 
-        void NavigateTo<TViewModel>(NavigateParameters navigateParameters, Action<NavigationResult> navigationCallback)
+        Task NavigateTo<TViewModel>(NavigateParameters navigateParameters, Action<NavigationResult> navigationCallback)
             where TViewModel : class, IMdiWindowViewModel, INavigateAware;
     }
 }

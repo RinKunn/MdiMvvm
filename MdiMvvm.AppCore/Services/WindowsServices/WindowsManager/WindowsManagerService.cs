@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
 using MdiMvvm.Interfaces;
 
@@ -18,7 +19,8 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.WindowsManager
             get => _activeContainer;
             private set
             {
-                if (ReferenceEquals(_activeContainer, value)) return;
+                if (ReferenceEquals(_activeContainer, value) || _activeContainer.Guid == value.Guid) return;
+
                 var oldContainer = _activeContainer;
                 if (_activeContainer != null) _activeContainer.IsSelected = false;
                 Set(ref _activeContainer, value);
@@ -55,8 +57,8 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.WindowsManager
         #endregion
 
         #region Mdi-windows behaviour
-
-        public TViewModel AppendWindowToContainer<TViewModel>(TViewModel viewModel, Guid containerGuid)
+         
+        public TViewModel AppendWindowToContainer<TViewModel>(TViewModel viewModel, Guid containerGuid, bool withIniting = true)
             where TViewModel : IMdiWindowViewModel
         {
             if (viewModel == null) throw new ArgumentNullException(nameof(viewModel));
@@ -64,7 +66,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.WindowsManager
             if (mdiContainer == null) throw new ArgumentNullException(nameof(mdiContainer));
             ActiveContainer = mdiContainer;
             mdiContainer.AddMdiWindow(viewModel);
-            viewModel.InitAsync().ConfigureAwait(false);
+            viewModel.InitAsync();
             return viewModel;
         }
 

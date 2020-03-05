@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
@@ -58,22 +59,27 @@ namespace MdiMvvm.Extensions
 
         public static ContentControl FindContent(Visual visual, int row = 0)
         {
-            ContentControl content = null;
+            //ContentControl content = null;
             for (int i = 0; i < VisualTreeHelper.GetChildrenCount(visual); i++)
             {
                 Visual child = VisualTreeHelper.GetChild(visual, i) as Visual;
                 if (child != null)
                 {
-                    if (VisualTreeHelper.GetParent(child) is ContentPresenter && child is ContentControl)
+                    if (child is ContentControl && VisualTreeHelper.GetParent(child) is ContentPresenter)
                     {
-                        content = (ContentControl)child;
-                        break;
+                        object temp = child;
+                        return (ContentControl)temp;
                     }
-                    else
-                        content = FindContent(child, row + 1);
+
+                    ContentControl panel = FindContent(child);
+                    if (panel != null)
+                    {
+                        object temp = panel;
+                        return (ContentControl)temp;
+                    }
                 }
             }
-            return content;
+            return null;
         }
 
         public static MdiWindow FindMdiWindow(FrameworkElement sender)

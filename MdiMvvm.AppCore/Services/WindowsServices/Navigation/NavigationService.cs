@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using MdiMvvm.AppCore.Services.WindowsServices.Factory;
 using MdiMvvm.AppCore.Services.WindowsServices.WindowsManager;
 using MdiMvvm.AppCore.ViewModelsBase;
@@ -37,27 +38,26 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Navigation
             return viewModel;
         }
 
-
-        public void NavigateTo<TViewModel>(NavigateParameters navigateParameters)
+        public async Task NavigateTo<TViewModel>(NavigateParameters navigateParameters)
             where TViewModel : class, IMdiWindowViewModel, INavigateAware
         {
             var viewModel = FindOrCreateViewModel<TViewModel>(navigateParameters);
             _windowManager.ActivateWindow(viewModel);
             viewModel.NavigatedTo(navigateParameters?.Context);
-            viewModel.InitAsync();
+            await viewModel.InitAsync();
         }
 
-        public void NavigateTo<TViewModel>(string key, object obj)
+        public async Task NavigateTo<TViewModel>(string key, object obj)
             where TViewModel : class, IMdiWindowViewModel, INavigateAware
         {
             ViewModelContext context = new ViewModelContext();
             context.AddValue(key, obj);
             NavigateParameters navigateParameters = new NavigateParameters(context);
 
-            this.NavigateTo<TViewModel>(navigateParameters);
+            await this.NavigateTo<TViewModel>(navigateParameters);
         }
 
-        public void NavigateTo<TViewModel>(NavigateParameters navigateParameters, Action<NavigationResult> navigationCallback)
+        public async Task NavigateTo<TViewModel>(NavigateParameters navigateParameters, Action<NavigationResult> navigationCallback)
             where TViewModel : class, IMdiWindowViewModel, INavigateAware
         {
             if (navigationCallback == null)
@@ -67,6 +67,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Navigation
             viewModel.CallBackAction = navigationCallback;
             _windowManager.ActivateWindow(viewModel);
             viewModel.NavigatedTo(navigateParameters?.Context);
+            await viewModel.InitAsync();
         }
 
         //public void NavigateTo<TViewModel>(string key, object obj, Action<NavigationResult> navigationCallback)

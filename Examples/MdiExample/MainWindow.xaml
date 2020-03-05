@@ -23,8 +23,8 @@
                 <Setter Property="Uid" Value="{Binding Guid, Mode=OneWay}"/>
                 <Setter Property="Title" Value="{Binding Title, Mode=TwoWay}"/>
                 <Setter Property="IsModal" Value="{Binding IsModal, Mode=OneWayToSource}"/>
-                <Setter Property="Width" Value="{Binding CurrentWidth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                <Setter Property="Height" Value="{Binding CurrentHeight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Setter Property="Width" Value="{Binding CurrentWidth, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
+                <Setter Property="Height" Value="{Binding CurrentHeight, Mode=TwoWay, NotifyOnSourceUpdated=True, UpdateSourceTrigger=PropertyChanged}"/>
                 <Setter Property="Canvas.Left" Value="{Binding CurrentLeft, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 <Setter Property="Canvas.Top" Value="{Binding CurrentTop, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 <Setter Property="WindowState" Value="{Binding WindowState, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
@@ -40,6 +40,8 @@
 
         <DataTemplate DataType="{x:Type local:MdiContainerViewModel}">
             <control:MdiContainer
+                Uid="{Binding Guid, Mode=OneWay}"
+                IsScrollBarVisible="{Binding IsScrollBarVisible, UpdateSourceTrigger=PropertyChanged}"
                 ItemsSource="{Binding WindowsCollection}"
                 ItemContainerStyle="{StaticResource cp}"/>
         </DataTemplate>
@@ -55,8 +57,13 @@
         </Grid.RowDefinitions>
         
         <Menu>
-            <MenuItem Header="+" Command="{Binding SelectedContainer.AddCommand}"/>
-            <MenuItem Header="++" Command="{Binding SelectedContainer.AddCommandModal}"/>
+            <MenuItem Header="Windows">
+                <MenuItem Header="New" Command="{Binding SelectedContainer.AddCommand}"/>
+                <MenuItem Header="Close all" Command="{Binding SelectedContainer.CloseAllCommand}"/>
+                <MenuItem Header="Hide all" Command="{Binding SelectedContainer.HideAllCommand}"/>
+                <MenuItem Header="Scroll View" IsCheckable="True" IsChecked="{Binding SelectedContainer.IsScrollBarVisible}"/>
+            </MenuItem>
+            
             <MenuItem Header="Save" Command="{Binding SaveCommand}"/>
             <MenuItem Header="Load" Command="{Binding LoadCommand}"/>
             <TextBlock Text="{Binding SelectedContainer.WindowsCount, StringFormat={}Окон: {0}}" Foreground="Blue"/>

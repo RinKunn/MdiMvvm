@@ -10,7 +10,7 @@
     <Style x:Key="TumblrStyle" TargetType="{x:Type ToolTip}">
         <Setter Property="Background" Value="{StaticResource ToolTipBackgroundColor}"/>
         <Setter Property="BorderBrush" Value="{StaticResource ToolTipBackgroundBorderColor}"/>
-        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="BorderThickness" Value="0"/>
         <Setter Property="RenderTransform">
             <Setter.Value>
                 <ScaleTransform ScaleX="0.7" CenterX="90" />
@@ -47,50 +47,44 @@
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
-        <Setter Property="ItemTemplate">
-            <Setter.Value>
-                <DataTemplate>
-                    <Border x:Name="PART_ListBoxItem_Border"
-                        Height="Auto" Width="100" BorderThickness="1" CornerRadius="2"
-                            Background="{StaticResource InactiveWindowColor}"
-                            BorderBrush="{StaticResource InactiveWindowColor}">
-                        
-                        <Grid VerticalAlignment="Center" HorizontalAlignment="Left">
-                            <TextBlock Text="{Binding Title}" IsHitTestVisible="False" TextTrimming="CharacterEllipsis"  Margin="2,0"/>
-                        </Grid>
-                    </Border>
-                    <DataTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="PART_ListBoxItem_Border" Property="Background" Value="{StaticResource ActiveWindowColor}" />
-                            <Setter TargetName="PART_ListBoxItem_Border" Property="BorderBrush" Value="{StaticResource ActiveWindowColor}" />
-                        </Trigger>
-                    </DataTemplate.Triggers>
-                </DataTemplate>
-            </Setter.Value>
-        </Setter>
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
                 <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <Border x:Name="PART_ListBoxItem_Border" BorderThickness="0"
+                                        CornerRadius="2" Margin="0.5,0.5"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                        Background="{StaticResource InactiveWindowColor}">
+                                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                                        <TextBlock Text="{Binding Title}" IsHitTestVisible="False" TextTrimming="CharacterEllipsis" Margin="5,0"/>
+                                    </Grid>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="PART_ListBoxItem_Border" Property="Background" Value="{StaticResource ActiveWindowColor}" />
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
                     <Setter Property="ToolTipService.IsEnabled" Value="True"/>
                     <Setter Property="ToolTipService.HasDropShadow" Value="False"/>
                     <Setter Property="ToolTipService.Placement" Value="Bottom"/>
                     <Setter Property="ToolTip">
                         <Setter.Value>
-                            <ToolTip Style="{StaticResource TumblrStyle}" >
-                                <Viewbox Width="180" Height="180" RenderOptions.BitmapScalingMode="HighQuality" Panel.ZIndex="100">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="*"/>
-                                        </Grid.RowDefinitions>
-                                        <TextBlock Text="{Binding Title}" TextWrapping="WrapWithOverflow" FontSize="14" TextTrimming="CharacterEllipsis"/>
-                                        <Image x:Name="PART_ListBoxTumblr" VerticalAlignment="Center" HorizontalAlignment="Center" Source="{Binding ImageSource}" Grid.Row="1" />
-                                    </Grid>
-                                </Viewbox>
+                            <ToolTip Style="{StaticResource TumblrStyle}">
+                                <StackPanel Orientation="Vertical" Width="180">
+                                    <TextBlock Text="{Binding Title}" FontSize="14" TextTrimming="CharacterEllipsis"/>
+                                    <Viewbox Width="180" Height="180" RenderOptions.BitmapScalingMode="HighQuality" Panel.ZIndex="100">
+                                        <Image x:Name="PART_ListBoxTumblr" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                   Source="{Binding ImageSource}" Grid.Row="1" />
+                                    </Viewbox>
+                                </StackPanel>
                             </ToolTip>
                         </Setter.Value>
                     </Setter>
-
                     <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
                     <Setter Property="RenderTransform">
                         <Setter.Value>
@@ -99,6 +93,7 @@
                     </Setter>
                     <Setter Property="Background" Value="Transparent"/>
                     <Setter Property="Focusable" Value="False"/>
+                    <Setter Property="Width" Value="100"/>
                 </Style>
             </Setter.Value>
         </Setter>

@@ -40,7 +40,6 @@ namespace MdiMvvm.Extensions
         /// <param name="window"></param>
         public static void Maximize(this MdiWindow window)
         {
-            //_logger.Trace($"Maximize: '{window.Title} go to Maximized from {window.WindowState}");
             if (window.IsResizable)
             {
                 if (window.WindowState == WindowState.Normal) window.SavePreviousPosition();
@@ -67,7 +66,7 @@ namespace MdiMvvm.Extensions
 
             //window.DeleteSnapshot();
             Panel.SetZIndex(window, 0);
-            window.PreviousWindowState = window.WindowState;
+            //window.PreviousWindowState = window.WindowState;
             window.WindowState = WindowState.Normal;
             window.DoFocus(null);
         }
@@ -78,32 +77,22 @@ namespace MdiMvvm.Extensions
         /// <param name="window"></param>
         public static void Minimize(this MdiWindow window)
         {
-            window.ImageSource = window.Container.SnapshotManager.GetSnapshot(window);
-
-            window.PreviousWindowState = window.WindowState;
             window.WindowState = WindowState.Minimized;
         }
 
         internal static void AnimateResize(MdiWindow window, double newWidth, double newHeight, bool lockWindow)
         {
             window.LayoutTransform = new ScaleTransform();
-
             window.Height = newHeight;
             window.Width = newWidth;
         }
 
-
-
         public static void ToggleMaximize(this MdiWindow window)
         {
             if (window.WindowState == WindowState.Maximized)
-            {
                 window.Normalize();
-            }
             else
-            {
                 window.Maximize();
-            }
         }
 
         public static void ToggleMinimize(this MdiWindow window)
@@ -114,8 +103,6 @@ namespace MdiMvvm.Extensions
             }
             else
             {
-                window.Container.SnapshotManager.DeleteSnapshot(window.Uid);
-                window.ImageSource = null;
                 switch (window.PreviousWindowState)
                 {
                     case WindowState.Maximized:

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -8,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Threading;
 using MdiMvvm.Events;
 using MdiMvvm.Extensions;
+using MdiMvvm.Interfaces;
 using MdiMvvm.ValueObjects;
 
 namespace MdiMvvm
@@ -23,7 +25,6 @@ namespace MdiMvvm
         private IList _internalItemSource;
 
         internal int WindowsOffset = 5;
-        internal SnapshotManager SnapshotManager;
         private MdiWindow MaximizedWindow
         {
             get => _maximizedWindow;
@@ -58,20 +59,18 @@ namespace MdiMvvm
 
         public MdiContainer() : base()
         {
+
             this.Loaded += MdiContainer_Loaded;
             this.SelectionChanged += MdiContainer_SelectionChanged;
             this.SizeChanged += MdiContainer_SizeChanged;
 
             ((INotifyCollectionChanged)Items).CollectionChanged += MdiContainer_CollectionChanged;
-
-            SnapshotManager = new SnapshotManager();
         }
 
         private void MdiContainer_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action == NotifyCollectionChangedAction.Add && MaximizedWindow != null) MaximizedWindow.Normalize();
         }
-
 
         #region Overrides
 
@@ -82,6 +81,7 @@ namespace MdiMvvm
             ContainerMinWinListox = GetTemplateChild("PART_ContainerMinWin_ListBox") as ListBox;
             MinimizedWindows = new MinimizedWindowCollection(ContainerMinWinListox);
             ContainerMinWinListox.ItemsSource = MinimizedWindows;
+            EnableContainerScroll(IsScrollBarVisible);
         }
 
         protected override DependencyObject GetContainerForItemOverride()
@@ -91,26 +91,25 @@ namespace MdiMvvm
 
         protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
         {
+            
             if (element is MdiWindow window)
             {
                 window.FocusChanged += OnMdiWindowFocusChanged;
                 window.WindowStateChanged += OnMdiWindowStateChanged;
                 window.Closing += OnMdiWindowClosing;
                 window.Unloaded += OnMdiWindow_Unloaded;
+                if (item is IClosable closable) closable.Closing += (o, e) => OnMdiWindowClosing(window, null);
 
                 window.Initialize(this);
                 window.InitPosition();
-                
+
                 if (window.WindowState == WindowState.Minimized)
                 {
                     if (!SnapshotManager.HasSnapshot(window))
                     {
                         window.WindowState = WindowState.Normal;
-                        Dispatcher.BeginInvoke(new Action(() =>
-                        {
-                            window.ImageSource = SnapshotManager.CreateSnapshot(window);
-                            window.WindowState = WindowState.Minimized;
-                        }), DispatcherPriority.ContextIdle, null);
+                        Dispatcher.BeginInvoke(new Action(() => window.WindowState = WindowState.Minimized), 
+                            DispatcherPriority.ContextIdle, null);
                     }
                     else
                         window.ImageSource = SnapshotManager.GetSnapshot(window);
@@ -122,7 +121,7 @@ namespace MdiMvvm
 
         protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
         {
-            Console.WriteLine($"OnItemsSourceChanged: oldSouce = {(oldValue == null ? "null" : $"{(oldValue as IList).Count}")}, newSouce = {(newValue == null ? "null" : $"{(newValue as IList).Count}")}");
+            //Console.WriteLine($"OnItemsSourceChanged: oldSouce = {(oldValue == null ? "null" : $"{(oldValue as IList).Count}")}, newSouce = {(newValue == null ? "null" : $"{(newValue as IList).Count}")}");
             base.OnItemsSourceChanged(oldValue, newValue);
             WindowsOffset = 5;
             if (newValue != null && newValue is IList)
@@ -143,12 +142,20 @@ namespace MdiMvvm
             get { return (bool)GetValue(IsModalProperty); }
             set { SetValue(IsModalProperty, value); }
         }
+        public bool IsScrollBarVisible
+        {
+            get { return (bool)GetValue(IsScrollBarVisibleProperty); }
+            set { SetValue(IsScrollBarVisibleProperty, value); }
+        }
         #endregion
 
         #region Registers
 
         public static readonly DependencyProperty IsModalProperty =
                 DependencyProperty.Register("IsModal", typeof(bool?), typeof(MdiContainer), new UIPropertyMetadata(IsModalChangedCallback));
+
+        public static readonly DependencyProperty IsScrollBarVisibleProperty =
+                DependencyProperty.Register("IsScrollBarVisible", typeof(bool), typeof(MdiContainer), new UIPropertyMetadata(true, IsScrollBarVisibleChangedCallBack));
 
         #endregion
 
@@ -157,6 +164,12 @@ namespace MdiMvvm
         {
             if (e.NewValue == null) return;
             ((MdiContainer)d).IsModal = (bool)e.NewValue;
+        }
+
+        private static void IsScrollBarVisibleChangedCallBack(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            Debug.WriteLine($"IsScrollBarVisibleChangedCallBack: {((bool)e.NewValue)} for {((MdiContainer)d).Uid}");
+            (d as MdiContainer)?.EnableContainerScroll((bool)e.NewValue);
         }
         #endregion 
 
@@ -218,8 +231,13 @@ namespace MdiMvvm
         private void OnMdiWindowClosing(object sender, RoutedEventArgs e)
         {
             var window = sender as MdiWindow;
-            //_logger.Trace($"OnMdiWindowClosing: Window '{window.Title}'");
             if (window.WindowState == WindowState.Maximized) MaximizedWindow = null;
+            else if (window.WindowState == WindowState.Minimized)
+            {
+                MinimizedWindows.Remove(window);
+                window.DeleteSnapshot();
+            }
+
             if (window?.DataContext != null)
             {
                 _internalItemSource?.Remove(window.DataContext);
@@ -229,7 +247,6 @@ namespace MdiMvvm
                     if (ItemContainerGenerator.ContainerFromItem(SelectedItem) is MdiWindow windowNew) windowNew.IsSelected = true;
                 }
 
-                // clear
                 window.FocusChanged -= OnMdiWindowFocusChanged;
                 window.Closing -= OnMdiWindowClosing;
                 window.WindowStateChanged -= OnMdiWindowStateChanged;
@@ -242,7 +259,7 @@ namespace MdiMvvm
         {
             if (sender is MdiWindow window)
             {
-                Console.WriteLine($"OnMdiWindow_Unloaded: Window '{window.Title}': {window.WindowState}");
+                //Console.WriteLine($"OnMdiWindow_Unloaded: Window '{window.Title}': {window.WindowState}");
                 if (window.WindowState == WindowState.Maximized) MaximizedWindow = null;
                 window.FocusChanged -= OnMdiWindowFocusChanged;
                 window.Closing -= OnMdiWindowClosing;
@@ -349,6 +366,7 @@ namespace MdiMvvm
 
         private void EnableContainerScroll(bool enable = true)
         {
+            if (ContainerScrollViewer == null) return;
             ContainerScrollViewer.VerticalScrollBarVisibility = enable ? ScrollBarVisibility.Auto : ScrollBarVisibility.Disabled;
             ContainerScrollViewer.HorizontalScrollBarVisibility = enable ? ScrollBarVisibility.Auto : ScrollBarVisibility.Disabled;
         }

@@ -100,6 +100,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helper\AsyncCommand.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\MdiContainerViewModel.cs" />
     <Compile Include="ViewModel\Window1ViewModel.cs" />

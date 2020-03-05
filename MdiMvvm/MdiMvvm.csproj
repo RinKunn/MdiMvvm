@@ -66,6 +66,7 @@
     <Compile Include="Exceptions\MdiWindowNotFoundedException.cs" />
     <Compile Include="Extensions\VisualTreeExtension.cs" />
     <Compile Include="Extensions\WindowBehaviorExtension.cs" />
+    <Compile Include="Interfaces\IClosable.cs" />
     <Compile Include="MdiContainer.cs" />
     <Compile Include="MdiWindow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -82,7 +83,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="ValueObjects\MinimizedWindowCollection.cs" />
-    <Compile Include="ValueObjects\SnapshotManager.cs" />
+    <Compile Include="Extensions\SnapshotManager.cs" />
     <Compile Include="Interfaces\IMdiContainerViewModel.cs" />
     <Compile Include="Interfaces\IMdiWindowViewModel.cs" />
     <Compile Include="WindowControls\HollowRectangleAdorner.cs" />

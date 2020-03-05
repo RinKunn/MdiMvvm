@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.Command;
+using MdiExample.Helper;
 using MdiMvvm.AppCore.Services.WindowsServices.Navigation;
 using MdiMvvm.AppCore.ViewModelsBase;
 
@@ -18,19 +19,27 @@ namespace MdiExample
             _navigation = navigation ?? throw new ArgumentNullException(nameof(navigation));
         }
 
-        private RelayCommand _openWin2Command;
+        private AsyncCommand _openWin2Command;
         private RelayCommand _closeCommand;
         
         
-        public RelayCommand OpenWin2Command => _openWin2Command ?? (_openWin2Command = new RelayCommand(OpenWind2));
-        public RelayCommand CloseCommand => _closeCommand ?? (_closeCommand = new RelayCommand(() => this.Container. RemoveMdiWindow(this)));
+        public AsyncCommand OpenWin2Command => _openWin2Command ?? (_openWin2Command = new AsyncCommand(OpenWind2));
+        public RelayCommand CloseCommand => _closeCommand ?? (_closeCommand = new RelayCommand(() => Close()));
 
-        private void OpenWind2()
+        private async Task OpenWind2()
         {
             var context = new ViewModelContext();
             context.AddValue("Title", "hello from Window1ViewModel");
 
-            _navigation.NavigateTo<Window2ViewModel>(new NavigateParameters(context));
+            try
+            {
+                await _navigation.NavigateTo<Window2ViewModel>(new NavigateParameters(context));
+            }
+            catch(Exception ex)
+            {
+                Title = "Error occur on Wind 2";
+                
+            }
         }
         
         public override void NavigatedTo(ViewModelContext context)

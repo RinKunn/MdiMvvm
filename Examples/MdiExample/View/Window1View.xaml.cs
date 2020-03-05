@@ -10,7 +10,6 @@ namespace MdiExample
     {
         public Window1View()
         {
-            Console.WriteLine($"'Window1View' is created");
             InitializeComponent();
 
         }

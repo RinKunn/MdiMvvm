@@ -4,6 +4,7 @@ using GalaSoft.MvvmLight.CommandWpf;
 using MdiMvvm.AppCore.Services.WindowsServices.Navigation;
 using MdiMvvm.AppCore.ViewModelsBase;
 using MdiMvvm.AppCore.Services.WindowsServices;
+using System.Threading;
 
 namespace MdiExample
 {
@@ -23,11 +24,20 @@ namespace MdiExample
             Title = $"Window {r.Next(1, 1000)}";
         }
 
-        protected override async Task OnIniting()
+        protected override async Task OnIniting(CancellationToken token)
         {
             Random r = new Random();
-            await Task.Delay(r.Next(1, 10)*1000);
-            if(string.IsNullOrEmpty(Text)) Text = "Default text";
+            try
+            {
+                await Task.Delay(r.Next(1, 10) * 1000, token);
+                
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"error in Task delay");
+                throw ex;
+            }
+            if (string.IsNullOrEmpty(Text)) Text = "Default text";
         }
 
         public override void NavigatedTo(ViewModelContext context)
@@ -48,6 +58,7 @@ namespace MdiExample
         private void CallBack(NavigationResult result)
         {
             Text = result.Context.GetValue<string>("Text");
+            Title = result.Context.GetValue<string>("Text");
         }
 
         protected override void OnLoadingState(ViewModelContext context)

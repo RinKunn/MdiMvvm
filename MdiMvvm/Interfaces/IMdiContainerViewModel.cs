@@ -27,6 +27,8 @@ namespace MdiMvvm.Interfaces
 
         bool IsInited { get; set; }
 
+        bool IsScrollBarVisible { get; set; }
+
         /// <summary>
         /// <see cref="IMdiWindowViewModel" />'s collection
         /// </summary>

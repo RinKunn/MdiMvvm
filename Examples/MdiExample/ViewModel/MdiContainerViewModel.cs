@@ -19,13 +19,25 @@ namespace MdiExample
         }
 
         private RelayCommand _addCommand;
-        private RelayCommand _addCommandModal;
+        private RelayCommand _hideAllCommand;
+        private RelayCommand _closeAllCommand;
 
         public RelayCommand AddCommand =>
             _addCommand ?? (_addCommand = new RelayCommand(() => OpenWindow<Window1ViewModel>("AddCommand")));
 
-        public RelayCommand AddCommandModal =>
-            _addCommandModal ?? (_addCommandModal = new RelayCommand(() => OpenWindow<Window1ViewModel>("AddCommandModal")));
+        public RelayCommand HideAllCommand =>
+            _hideAllCommand ?? (_hideAllCommand = new RelayCommand(() =>
+            {
+                foreach (var win in WindowsCollection)
+                    win.WindowState = System.Windows.WindowState.Minimized;
+            }));
+
+        public RelayCommand CloseAllCommand =>
+            _closeAllCommand ?? (_closeAllCommand = new RelayCommand(() =>
+            {
+                for (int i = WindowsCollection.Count - 1; i >= 0; i--)
+                    WindowsCollection[i].Close();
+            }));
 
 
         private void OpenWindow<TWindow>(string contextStr) where TWindow : class, IMdiWindowViewModel, INavigateAware

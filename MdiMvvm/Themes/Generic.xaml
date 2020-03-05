@@ -118,6 +118,7 @@
                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                    />
                     </Border>
+                    
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter Property="Background" Value="{StaticResource WindowButtonOnMouseOverColor}"/>
@@ -149,7 +150,7 @@
                     <Border x:Name="PART_Border" CornerRadius="2" BorderBrush="{StaticResource InactiveWindowColor}" BorderThickness="4" >
                         <Grid x:Name="PART_BorderGrid" Background="{TemplateBinding Background}">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="24"/>
+                                <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             

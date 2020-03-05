@@ -42,7 +42,6 @@ namespace MdiMvvm.AppCore.ViewModelsBase
 
         public T GetValue<T>(string key)
         {
-            Console.WriteLine($"key = {InternalParameter.Count}");
             if (!TryGetValue(key, out T result)) return default;
             return result;
         }

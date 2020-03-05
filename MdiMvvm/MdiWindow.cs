@@ -9,6 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using MdiMvvm.Events;
 using MdiMvvm.Extensions;
+using MdiMvvm.Interfaces;
 using MdiMvvm.WindowControls;
 
 namespace MdiMvvm
@@ -28,6 +29,9 @@ namespace MdiMvvm
 
     public sealed class MdiWindow : ContentControl
     {
+        private static int Content_Width_Margin = 14;
+        private static int Content_Height_Margin = 38;
+
         internal static bool UseSnapshots = false;
 
         private const int WindowOffsetDiff = 25;
@@ -90,31 +94,34 @@ namespace MdiMvvm
 
         public void InitPosition()
         {
-            if (this.WindowState == WindowState.Maximized || (Width != 0 && Height != 0)) return;
+            var actualWidth = ActualWidth;
+            var actualHeight = ActualHeight;
+
+            if ((Width == 0 || Height == 0) && this.WindowState != WindowState.Maximized)
+            {
+                UpdateLayout();
+                InvalidateMeasure();
+
+                PreviousWidth = ActualWidth;
+                PreviousHeight = ActualHeight;
+
+                double left = Math.Max(0, Container.WindowsOffset);
+                double top = Math.Max(0, Container.WindowsOffset);
+
+                SetValue(Canvas.LeftProperty, left);
+                SetValue(Canvas.TopProperty, top);
+
+                PreviousLeft = left;
+                PreviousTop = top;
+            }
 
             var actualContainerHeight = Container.ActualHeight;
             var actualContainerWidth = Container.ActualWidth;
 
-            UpdateLayout();
-            InvalidateMeasure();
-            var actualWidth = ActualWidth;
-            var actualHeight = ActualHeight;
-
-            PreviousWidth = ActualWidth;
-            PreviousHeight = ActualHeight;
-
-            double left = Math.Max(0, Container.WindowsOffset);
-            double top = Math.Max(0, Container.WindowsOffset);
-
-            SetValue(Canvas.LeftProperty, left);
-            SetValue(Canvas.TopProperty, top);
-
-            PreviousLeft = left;
-            PreviousTop = top;
-
             Container.WindowsOffset += WindowOffsetDiff;
 
-            if (Container.WindowsOffset + actualHeight > actualContainerHeight || Container.WindowsOffset + actualWidth > actualContainerWidth)
+            if (Container.WindowsOffset + actualHeight > actualContainerHeight 
+                || Container.WindowsOffset + actualWidth > actualContainerWidth)
                 Container.WindowsOffset = 5;
         }
 
@@ -226,9 +233,6 @@ namespace MdiMvvm
         public static readonly DependencyProperty PreviousWindowStateProperty =
             DependencyProperty.Register("PreviousWindowState", typeof(WindowState), typeof(MdiWindow), new FrameworkPropertyMetadata(WindowState.Normal));
 
-
-        //public static readonly DependencyProperty ScreenshotProperty =
-        //    DependencyProperty.Register("Screenshot", typeof(byte[]), typeof(MdiWindow), new FrameworkPropertyMetadata(WindowState.Normal));
         #endregion
 
         #region Properties
@@ -240,7 +244,10 @@ namespace MdiMvvm
         public WindowState WindowState
         {
             get { return (WindowState)GetValue(WindowStateProperty); }
-            set { SetValue(WindowStateProperty, value); }
+            set
+            {
+                SetValue(WindowStateProperty, value);
+            }
         }
 
         public double PreviousLeft
@@ -329,12 +336,6 @@ namespace MdiMvvm
                 SetValue(IsModalProperty, value);
             }
         }
-
-        //public byte[] Screenshot
-        //{
-        //    get { return (byte[])GetValue(ScreenshotProperty); }
-        //    set { SetValue(ScreenshotProperty, value); }
-        //}
         #endregion
 
         #region Callbacks
@@ -343,13 +344,20 @@ namespace MdiMvvm
             var window = obj as MdiWindow;
             if (window != null)
             {
-                //window._logger.Trace($"IsWindowStateChangedCallBack: {e.OldValue} to {e.NewValue}");
                 window.PreviousWindowState = (WindowState)e.OldValue;
 
-                var args = new WindowStateChangedEventArgs(WindowStateChangedEvent, (WindowState)e.OldValue, (WindowState)e.NewValue);
-                //if((WindowState)e.OldValue == WindowState.Minimized)
-                    
-                window.RaiseEvent(args);
+                if ((WindowState)e.NewValue == WindowState.Minimized)
+                {
+                    window.ImageSource = window.GetSnapshot();
+                }
+                else
+                {
+                    window.DeleteSnapshot();
+                    window.ImageSource = null;
+                }
+
+                window.RaiseEvent(
+                    new WindowStateChangedEventArgs(WindowStateChangedEvent, (WindowState)e.OldValue, (WindowState)e.NewValue));
             }
         }
 
@@ -419,11 +427,11 @@ namespace MdiMvvm
             var content = VisualTreeExtension.FindContent(window);
             if (content != null)
             {
-                window.MinHeight = content.MinHeight + 34;
-                window.MinWidth = content.MinWidth + 10;
+                window.MinHeight = content.MinHeight + Content_Height_Margin;
+                window.MinWidth = content.MinWidth + Content_Width_Margin;
 
-                window.Height = Math.Max(content.ActualHeight + 34, ActualHeight);
-                window.Width = Math.Max(content.ActualWidth + 10, ActualWidth);
+                window.Height = Math.Max(content.ActualHeight + Content_Height_Margin, ActualHeight);
+                window.Width = Math.Max(content.ActualWidth + Content_Width_Margin, ActualWidth);
                 if (window.PreviousHeight == 0) window.PreviousHeight = window.Height;
                 if (window.PreviousWidth == 0) window.PreviousWidth = window.Width;
             }
@@ -482,7 +490,9 @@ namespace MdiMvvm
                 canCloseBinding.UpdateTarget();
             }
 
-            if (CanClose)
+            if (this.DataContext is IClosable closable)
+                closable.Close();
+            else if (CanClose)
             {
                 RaiseEvent(new RoutedEventArgs(ClosingEvent));
             }

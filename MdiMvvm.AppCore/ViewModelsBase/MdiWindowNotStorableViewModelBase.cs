@@ -6,13 +6,18 @@ using GalaSoft.MvvmLight.Threading;
 using MdiMvvm.AppCore.Services.WindowsServices.Store;
 using MdiMvvm.AppCore.Services.WindowsServices.Navigation;
 using MdiMvvm.Interfaces;
+using System.Threading;
+using System.Diagnostics;
 
 namespace MdiMvvm.AppCore.ViewModelsBase
 {
     public abstract class MdiWindowNotStorableViewModelBase : ViewModelBase, IMdiWindowViewModel, IBusy, INavigateAware
     {
-        #region Members
 
+        #region Members
+        CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+
+        CancellationToken token = new CancellationToken();
         private Guid _uid;
         private string _title;
         private bool _isModal;
@@ -30,6 +35,8 @@ namespace MdiMvvm.AppCore.ViewModelsBase
         private IMdiContainerViewModel _container;
         private bool _isBusy;
         private bool _isInited;
+
+        public event EventHandler Closing;
         #endregion
 
         #region Props
@@ -187,16 +194,17 @@ namespace MdiMvvm.AppCore.ViewModelsBase
         {
             _uid = Guid.NewGuid();
             IsInited = false;
+            token = cancelTokenSource.Token;
         }
 
-        protected void Close()
+        public void Close()
         {
-            Container?.RemoveMdiWindow(this);
+            cancelTokenSource.Cancel();
+            Closing?.Invoke(this, null);
+            cancelTokenSource.Dispose();
         }
 
         public abstract void NavigatedTo(ViewModelContext context);
-
-
 
         public void RaiseCallBack(NavigationResult result)
         {
@@ -206,12 +214,19 @@ namespace MdiMvvm.AppCore.ViewModelsBase
         public async Task InitAsync()
         {
             IsBusy = true;
-            await OnIniting();
+            try
+            {
+                await OnIniting(token);
+            }
+            catch
+            {
+                
+            }
             IsBusy = false;
             IsInited = true;
         }
 
-        protected virtual Task OnIniting()
+        protected virtual Task OnIniting(CancellationToken token)
         {
             return Task.CompletedTask;
         }
