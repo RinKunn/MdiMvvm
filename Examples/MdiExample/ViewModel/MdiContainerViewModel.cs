@@ -44,7 +44,7 @@ namespace MdiExample
         {
             var context = new ViewModelContext();   
             context.AddValue("Title", $"Hello from {contextStr}");
-            _navigation.NavigateTo<TWindow>(new NavigateParameters(context, containerGuid: this.Guid));
+            _navigation.NavigateToAsync<TWindow>(new NavigateParameters(context, containerGuid: this.Guid));
         }
 
         protected override void OnLoadingContainerState(ViewModelContext context)

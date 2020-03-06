@@ -11,6 +11,7 @@
         <ResourceDictionary Source="/MdiMvvm;component/Themes/DefaultTheme.xaml"/>
         <ResourceDictionary Source="/MdiMvvm;component/Themes/MinimizedWindowsListBox.xaml"/>
         <ResourceDictionary Source="/MdiMvvm;component/Themes/LoadingSpinner.xaml"/>
+        <ResourceDictionary Source="/MdiMvvm;component/Themes/NotificationTextBlock.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -184,6 +185,9 @@
                                 <Control Style="{StaticResource BusyAnimationStyle}"
                                          Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                             </AdornerDecorator>
+                            
+                            <ContentControl Grid.Row="1"
+                                Template="{StaticResource NotificationTemplate}" Panel.ZIndex="2"/>
                         </Grid>
                     </Border>
 

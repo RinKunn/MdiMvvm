@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight;
+using MdiMvvm.Exceptions;
 using MdiMvvm.Interfaces;
 
 namespace MdiMvvm.AppCore.Services.WindowsServices.WindowsManager
@@ -19,16 +20,15 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.WindowsManager
             get => _activeContainer;
             private set
             {
-                if (ReferenceEquals(_activeContainer, value) || _activeContainer.Guid == value.Guid) return;
+                if (value == null || ReferenceEquals(_activeContainer, value) || 
+                    (_activeContainer != null && _activeContainer.Guid == value.Guid)) return;
 
                 var oldContainer = _activeContainer;
                 if (_activeContainer != null) _activeContainer.IsSelected = false;
                 Set(ref _activeContainer, value);
                 if (_activeContainer != null) _activeContainer.IsSelected = true;
                 ActiveContainerChanged?.Invoke(new ActiveContainerChangedArgs(oldContainer, value));
-                //Console.WriteLine($"_activeContainer = {_activeContainer.IsBusy}, IsInited = {_activeContainer.IsInited}");
                 if (!_activeContainer.IsInited) _activeContainer.Init();
-                //Console.WriteLine($"\t {_activeContainer.IsBusy}, IsInited = {_activeContainer.IsInited}");
             }
         }
         public ReadOnlyObservableCollection<IMdiContainerViewModel> Containers => _containersReadOnly;
@@ -42,7 +42,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.WindowsManager
             _containersReadOnly = new ReadOnlyObservableCollection<IMdiContainerViewModel>(_containers);
         }
 
-        #region COllection behaviour
+        #region Collection behaviour
 
         public void LoadContainers(IEnumerable<IMdiContainerViewModel> collection)
         {
@@ -58,48 +58,50 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.WindowsManager
 
         #region Mdi-windows behaviour
          
-        public TViewModel AppendWindowToContainer<TViewModel>(TViewModel viewModel, Guid containerGuid, bool withIniting = true)
+        public TViewModel AppendWindowWithoutInit<TViewModel>(TViewModel viewModel, Guid containerGuid = default, bool activateWindow = true)
             where TViewModel : IMdiWindowViewModel
         {
             if (viewModel == null) throw new ArgumentNullException(nameof(viewModel));
-            IMdiContainerViewModel mdiContainer = _containers.FirstOrDefault(c => c.Guid == containerGuid);
+
+            var mdiContainer = containerGuid == default
+                ? ActiveContainer
+                : _containers.FirstOrDefault(c => c.Guid == containerGuid);
+
             if (mdiContainer == null) throw new ArgumentNullException(nameof(mdiContainer));
-            ActiveContainer = mdiContainer;
-            mdiContainer.AddMdiWindow(viewModel);
-            viewModel.InitAsync();
+            
+            if (mdiContainer.WindowsCollection.FirstOrDefault(w => w.Guid == viewModel.Guid) != null)
+                throw new MdiWindowAlreadyExistsException(viewModel.Guid, viewModel.Title);
+
+            mdiContainer.WindowsCollection.Add(viewModel);
+            if (viewModel.Container == null) viewModel.Container = mdiContainer;
+
+            if (activateWindow)
+            {
+                ActivateWindow<TViewModel>(viewModel);
+            }
             return viewModel;
         }
 
-        public TViewModel AppendWindow<TViewModel>(TViewModel viewModel)
-            where TViewModel : IMdiWindowViewModel
+        public async Task<TViewModel> AppendWindowAsync<TViewModel>(TViewModel viewModel, Guid containerGuid = default, bool activateWindow = true)
+           where TViewModel : IMdiWindowViewModel
         {
-            if (viewModel == null) throw new ArgumentNullException(nameof(viewModel));
-            ActiveContainer.AddMdiWindow(viewModel);
-            viewModel.InitAsync().ConfigureAwait(false);
-            return viewModel;
+            var addedViewModel = AppendWindowWithoutInit(viewModel, containerGuid, activateWindow);
+            await addedViewModel.InitAsync();
+            return addedViewModel;
         }
 
-        public object AppendWindowToContainer(object viewModel, Guid containerGuid)
+        public object AppendWindowWithoutInit(object viewModel, Guid containerGuid = default, bool activateWindow = true)
         {
             if (viewModel == null) throw new ArgumentNullException(nameof(viewModel));
             if (!(viewModel is IMdiWindowViewModel mdiWindow))
                 throw new NotImplementedException($"Object with type '{viewModel.GetType()}' not implement '{typeof(IMdiWindowViewModel).Name}'");
-
-            IMdiContainerViewModel mdiContainer;
-            mdiContainer = containerGuid == Guid.Empty ?
-                ActiveContainer :
-                _containers.FirstOrDefault(c => c.Guid == containerGuid);
-
-            if (mdiContainer == null) throw new ArgumentNullException(nameof(mdiContainer));
-            mdiContainer.AddMdiWindow(mdiWindow);
-            mdiWindow.InitAsync().ConfigureAwait(false);
-            return mdiWindow;
+            return AppendWindowWithoutInit<IMdiWindowViewModel>(mdiWindow, containerGuid, activateWindow);
         }
 
-        public TViewModel FindWindow<TViewModel>(Guid windowGuid) where TViewModel : class, IMdiWindowViewModel
+        public TViewModel FindWindow<TViewModel>(Guid windowGuid) where TViewModel : IMdiWindowViewModel
         {
             //TODO create internal dictionary with windows for fast searching
-            TViewModel window = null;
+            TViewModel window = default;
             foreach (var cont in _containers)
             {
                 var findedWin = cont.WindowsCollection.FirstOrDefault(w => w.Guid == windowGuid);
@@ -112,7 +114,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.WindowsManager
             return window;
         }
 
-        public void ActivateWindow<TViewModel>(TViewModel window) where TViewModel : class, IMdiWindowViewModel
+        public void ActivateWindow<TViewModel>(TViewModel window) where TViewModel : IMdiWindowViewModel
         {
             if (window == null) throw new ArgumentNullException(nameof(window));
             ActivateContainer(window.Container);

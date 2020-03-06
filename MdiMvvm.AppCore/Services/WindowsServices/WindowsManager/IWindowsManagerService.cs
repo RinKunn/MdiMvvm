@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using MdiMvvm.Interfaces;
 
 namespace MdiMvvm.AppCore.Services.WindowsServices.WindowsManager
@@ -34,29 +35,57 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.WindowsManager
         void LoadContainers(IEnumerable<IMdiContainerViewModel> collection);
 
 
+        #region Mdi-windows
         /// <summary>
-        /// Append ViewModel of new Mdi-Window to Mdi-Container by <see cref="Guid"/>
+        /// Append ViewModel of new Mdi-Window to Mdi-Container by <see cref="Guid"/> or ActiveContainer without running Init
         /// </summary>
-        /// <typeparam name="TViewModel">Must implement <see cref="IMdiWindowViewModel"/> </typeparam>
+        /// <typeparam name="TViewModel">Must implement <see cref="IMdiWindowViewModel"/></typeparam>
         /// <param name="viewModel">ViewModel of adding Mdi-Window</param>
         /// <param name="containerGuid">Mdi-Container's <see cref="Guid"/> </param>
-        /// <returns></returns>
-        TViewModel AppendWindowToContainer<TViewModel>(TViewModel viewModel, Guid containerGuid) where TViewModel : IMdiWindowViewModel;
+        /// <param name="activateWindow">Activate Mdi-window after adding</param>
+        /// <returns>Added Mdi-Window's ViewModel</returns>
+        TViewModel AppendWindowWithoutInit<TViewModel>(TViewModel viewModel, Guid containerGuid = default, bool activateWindow = true)
+            where TViewModel : IMdiWindowViewModel;
+
 
         /// <summary>
-        /// Append ViewModel of new Mdi-Window to Active Mdi-Container
+        /// Append ViewModel of new Mdi-Window to Mdi-Container by <see cref="Guid"/> or ActiveCOntainer and run Init
+        /// </summary>
+        /// <typeparam name="TViewModel">Must implement <see cref="IMdiWindowViewModel"/></typeparam>
+        /// <param name="viewModel">ViewModel of adding Mdi-Window</param>
+        /// <param name="containerGuid">Mdi-Container's <see cref="Guid"/> </param>
+        /// <param name="activateWindow">Activate Mdi-window after adding</param>
+        /// <returns>Added Mdi-Window's ViewModel</returns>
+        Task<TViewModel> AppendWindowAsync<TViewModel>(TViewModel viewModel, Guid containerGuid = default, bool activateWindow = true)
+            where TViewModel : IMdiWindowViewModel;
+
+
+        /// <summary>
+        /// Append ViewModel of new Mdi-Window to Mdi-Container by <see cref="Guid"/> or ActiveContainer without running Init
+        /// </summary>
+        /// <param name="viewModel">ViewModel of adding Mdi-Window implementing <see cref="IMdiWindowViewModel"/></param>
+        /// <param name="containerGuid">Mdi-Container's <see cref="Guid"/> </param>
+        /// <param name="activateWindow">Activate Mdi-window after adding</param>
+        /// <returns>Added Mdi-Window's ViewModel</returns>
+        object AppendWindowWithoutInit(object viewModel, Guid containerGuid = default, bool activateWindow = true);
+
+
+        /// <summary>
+        /// Find Mdi-Window by <see cref=Guid"/>
         /// </summary>
         /// <typeparam name="TViewModel">Must implement <see cref="IMdiWindowViewModel"/> </typeparam>
-        /// <param name="viewModel">ViewModel of adding Mdi-Window</param>
-        /// <returns></returns>
-        TViewModel AppendWindow<TViewModel>(TViewModel viewModel) where TViewModel : IMdiWindowViewModel;
+        /// <param name="windowGuid"><see cref="Guid"/> of desired Mdi-Window</param>
+        /// <returns>Desired Mdi-Window if exists of <see cref="null"/> </returns>
+        TViewModel FindWindow<TViewModel>(Guid windowGuid) where TViewModel : IMdiWindowViewModel;
+
 
         /// <summary>
-        /// 
+        /// Activate Mdi-Window
         /// </summary>
-        /// <param name="viewModel"></param>
-        /// <returns></returns>
-        object AppendWindowToContainer(object viewModel, Guid containerGuid);
+        /// <typeparam name="TViewModel">Must implement <see cref="IMdiWindowViewModel"/> </typeparam>
+        /// <param name="windowGuid">Activiting Mdi-Window</param>
+        void ActivateWindow<TViewModel>(TViewModel window) where TViewModel : IMdiWindowViewModel; 
+        #endregion
 
 
         /// <summary>
@@ -74,14 +103,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.WindowsManager
         /// <returns></returns>
         object AppendContainer(object viewModel);
 
-        /// <summary>
-        /// Find Mdi-Window by <see cref=Guid"/>
-        /// </summary>
-        /// <typeparam name="TViewModel">Must implement <see cref="IMdiWindowViewModel"/> </typeparam>
-        /// <param name="windowGuid"><see cref="Guid"/> of desired Mdi-Window</param>
-        /// <returns>Desired Mdi-Window if exists of <see cref="null"/> </returns>
-        TViewModel FindWindow<TViewModel>(Guid windowGuid) where TViewModel : class, IMdiWindowViewModel;
-
+        
         /// <summary>
         /// Activate Mdi-Container if it's not activated by <see cref="Guid"/>
         /// </summary>
@@ -95,12 +117,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.WindowsManager
         /// <param name="containerViewModel">Activiting Mdi-Container</param>
         void ActivateContainer<TContainerViewModel>(TContainerViewModel containerViewModel) where TContainerViewModel : IMdiContainerViewModel;
 
-        /// <summary>
-        /// Activate Mdi-Window
-        /// </summary>
-        /// <typeparam name="TViewModel">Must implement <see cref="IMdiWindowViewModel"/> </typeparam>
-        /// <param name="windowGuid">Activiting Mdi-Window</param>
-        void ActivateWindow<TViewModel>(TViewModel window) where TViewModel : class, IMdiWindowViewModel;
+        
 
     }
 }

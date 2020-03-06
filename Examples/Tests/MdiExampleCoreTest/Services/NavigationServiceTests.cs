@@ -27,14 +27,14 @@ namespace MdiMvvm.AppCore.Tests.Services
         }
 
         [TestMethod]
-        public void NavigateToExists_AtActiveContainer_ActiveContainerNotChanged()
+        public void NavigateToAsyncExists_AtActiveContainer_ActiveContainerNotChanged()
         {
             Guid winGuid = samples.Guids[0].Value[0];
             ViewModelContext viewModelContext = new ViewModelContext();
             viewModelContext.AddValue<string>("Title", "New title");
             NavigateParameters navigateParameters = new NavigateParameters(viewModelContext, windowGuid: winGuid);
 
-            navigationService.NavigateTo<MdiWindowMock>(navigateParameters);
+            navigationService.NavigateToAsync<MdiWindowMock>(navigateParameters);
 
             var aimWindow = managerService.Containers[0].WindowsCollection[0];
             Assert.AreEqual("Title1", managerService.ActiveContainer.Title);
@@ -45,14 +45,14 @@ namespace MdiMvvm.AppCore.Tests.Services
         }
 
         [TestMethod]
-        public void NavigateToExists_AtNotActiveContainer_ActiveContainerChanged()
+        public void NavigateToAsyncExists_AtNotActiveContainer_ActiveContainerChanged()
         {
             Guid winGuid = samples.Guids[1].Value[0];
             ViewModelContext viewModelContext = new ViewModelContext();
             viewModelContext.AddValue<string>("Title", "New title");
             NavigateParameters navigateParameters = new NavigateParameters(viewModelContext, windowGuid: winGuid);
 
-            navigationService.NavigateTo<MdiWindowMock>(navigateParameters);
+            navigationService.NavigateToAsync<MdiWindowMock>(navigateParameters);
 
             var aimWindow = managerService.Containers[1].WindowsCollection[0];
             Assert.AreEqual("Title2", managerService.ActiveContainer.Title);
@@ -63,13 +63,13 @@ namespace MdiMvvm.AppCore.Tests.Services
         }
 
         [TestMethod]
-        public void NavigateToNotExists_AtActiveContainer_ActiveContainerNotChangedAndCreatedNewWindow()
+        public void NavigateToAsyncNotExists_AtActiveContainer_ActiveContainerNotChangedAndCreatedNewWindow()
         {
             ViewModelContext viewModelContext = new ViewModelContext();
             viewModelContext.AddValue<string>("Title", "New title");
             NavigateParameters navigateParameters = new NavigateParameters(viewModelContext);
 
-            navigationService.NavigateTo<MdiWindowMock>(navigateParameters);
+            navigationService.NavigateToAsync<MdiWindowMock>(navigateParameters);
 
             var aimWindow = managerService.Containers[0].WindowsCollection.Last();
             Assert.AreEqual("Title1", managerService.ActiveContainer.Title);
@@ -79,14 +79,14 @@ namespace MdiMvvm.AppCore.Tests.Services
         }
 
         [TestMethod]
-        public void NavigateToNotExists_AtNotActiveContainer_ActiveContainerChangedAndCreatedNewWindow()
+        public void NavigateToAsyncNotExists_AtNotActiveContainer_ActiveContainerChangedAndCreatedNewWindow()
         {
             Guid contGuid = samples.Guids[1].Key;
             ViewModelContext viewModelContext = new ViewModelContext();
             viewModelContext.AddValue<string>("Title", "New title");
             NavigateParameters navigateParameters = new NavigateParameters(viewModelContext, containerGuid: contGuid);
 
-            navigationService.NavigateTo<MdiWindowMock>(navigateParameters);
+            navigationService.NavigateToAsync<MdiWindowMock>(navigateParameters);
 
             var aimWindow = managerService.Containers[1].WindowsCollection.Last();
             Assert.AreEqual("Title2", managerService.ActiveContainer.Title);

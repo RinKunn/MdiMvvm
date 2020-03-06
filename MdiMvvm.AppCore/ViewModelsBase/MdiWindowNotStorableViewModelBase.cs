@@ -35,6 +35,7 @@ namespace MdiMvvm.AppCore.ViewModelsBase
         private IMdiContainerViewModel _container;
         private bool _isBusy;
         private bool _isInited;
+        private string _notificationMessage;
 
         public event EventHandler Closing;
         #endregion
@@ -188,6 +189,19 @@ namespace MdiMvvm.AppCore.ViewModelsBase
         }
 
         public Action<NavigationResult> CallBackAction { get; set; }
+
+        public bool IsSuccess => NotificationMessage != null && NotificationMessage.ToLower().Contains("успешно");
+
+        public string NotificationMessage
+        {
+            get => _notificationMessage;
+            protected set
+            {
+                _notificationMessage = value;
+                RaisePropertyChanged(nameof(IsSuccess));
+                RaisePropertyChanged(nameof(NotificationMessage));
+            }
+        }
         #endregion
 
         public MdiWindowNotStorableViewModelBase()
@@ -214,14 +228,7 @@ namespace MdiMvvm.AppCore.ViewModelsBase
         public async Task InitAsync()
         {
             IsBusy = true;
-            try
-            {
-                await OnIniting(token);
-            }
-            catch
-            {
-                
-            }
+            await OnIniting(token);
             IsBusy = false;
             IsInited = true;
         }

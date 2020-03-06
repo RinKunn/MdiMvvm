@@ -23,22 +23,20 @@ namespace MdiExample
         private RelayCommand _closeCommand;
         
         
-        public AsyncCommand OpenWin2Command => _openWin2Command ?? (_openWin2Command = new AsyncCommand(OpenWind2));
+        public AsyncCommand OpenWin2Command => _openWin2Command ?? (_openWin2Command = new AsyncCommand(async() => await OpenWind2()));
         public RelayCommand CloseCommand => _closeCommand ?? (_closeCommand = new RelayCommand(() => Close()));
 
         private async Task OpenWind2()
         {
             var context = new ViewModelContext();
             context.AddValue("Title", "hello from Window1ViewModel");
-
             try
             {
-                await _navigation.NavigateTo<Window2ViewModel>(new NavigateParameters(context));
+                await _navigation.NavigateToAsync<Window2ViewModel>(new NavigateParameters(context));
             }
-            catch(Exception ex)
+            catch
             {
-                Title = "Error occur on Wind 2";
-                
+                NotificationMessage = "Error on Win2 open";
             }
         }
         

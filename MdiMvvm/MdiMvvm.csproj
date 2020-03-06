@@ -60,6 +60,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converters\StringToBoolConverter.cs" />
     <Compile Include="Events\WindowStateChangedEventArgs.cs" />
     <Compile Include="Exceptions\MdiContainerLoadingException.cs" />
     <Compile Include="Exceptions\MdiWindowAlreadyExistsException.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="Extensions\VisualTreeExtension.cs" />
     <Compile Include="Extensions\WindowBehaviorExtension.cs" />
     <Compile Include="Interfaces\IClosable.cs" />
+    <Compile Include="Interfaces\INotifiable.cs" />
     <Compile Include="MdiContainer.cs" />
     <Compile Include="MdiWindow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -116,6 +118,10 @@
     <Page Include="Themes\MinimizedWindowsListBox.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\NotificationTextBlock.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Themes\ScrollBarStyle.xaml">
       <Generator>MSBuild:Compile</Generator>

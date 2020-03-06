@@ -12,16 +12,14 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Navigation
         /// </summary>
         /// <typeparam name="TViewModel">Must implement <see cref="IMdiWindowViewModel"/> and <see cref="INavigateAware"/> </typeparam>
         /// <param name="navigateParameters">Navigate parameters with context</param>
-        Task NavigateTo<TViewModel>(NavigateParameters navigateParameters)
-            where TViewModel : class, IMdiWindowViewModel, INavigateAware;
+        Task NavigateToAsync<TViewModel>(NavigateParameters navigateParameters)
+            where TViewModel : IMdiWindowViewModel, INavigateAware;
 
-        Task NavigateTo<TViewModel>(string key, object obj)
-            where TViewModel : class, IMdiWindowViewModel, INavigateAware;
 
-        //void NavigateTo<TViewModel>(string key, object obj, Action<NavigationResult> navigationCallback)
-        //    where TViewModel : class, IMdiWindowViewModel, INavigateAware;
+        Task NavigateToAsync<TViewModel>(string key, object obj)
+            where TViewModel : IMdiWindowViewModel, INavigateAware;
 
-        Task NavigateTo<TViewModel>(NavigateParameters navigateParameters, Action<NavigationResult> navigationCallback)
-            where TViewModel : class, IMdiWindowViewModel, INavigateAware;
+        Task NavigateToAsync<TViewModel>(NavigateParameters navigateParameters, Action<NavigationResult> navigationCallback)
+            where TViewModel : IMdiWindowViewModel, INavigateAware;
     }
 }

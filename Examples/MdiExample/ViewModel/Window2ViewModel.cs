@@ -1,10 +1,9 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using GalaSoft.MvvmLight.CommandWpf;
 using MdiMvvm.AppCore.Services.WindowsServices.Navigation;
 using MdiMvvm.AppCore.ViewModelsBase;
-using MdiMvvm.AppCore.Services.WindowsServices;
-using System.Threading;
 
 namespace MdiExample
 {
@@ -27,16 +26,7 @@ namespace MdiExample
         protected override async Task OnIniting(CancellationToken token)
         {
             Random r = new Random();
-            try
-            {
-                await Task.Delay(r.Next(1, 10) * 1000, token);
-                
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine($"error in Task delay");
-                throw ex;
-            }
+            await Task.Delay(r.Next(1, 10) * 1000, token);
             if (string.IsNullOrEmpty(Text)) Text = "Default text";
         }
 
@@ -52,13 +42,13 @@ namespace MdiExample
             {
                 ViewModelContext context = new ViewModelContext();
                 context.AddValue("Title", "Hello from win 2");
-                _navigation.NavigateTo<Window3ViewModelCallBack>(new NavigateParameters(context), CallBack);
+                _navigation.NavigateToAsync<Window3ViewModelCallBack>(new NavigateParameters(context), CallBack);
             }));
 
         private void CallBack(NavigationResult result)
         {
             Text = result.Context.GetValue<string>("Text");
-            Title = result.Context.GetValue<string>("Text");
+            NotificationMessage = "Выполнено успешно";
         }
 
         protected override void OnLoadingState(ViewModelContext context)

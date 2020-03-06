@@ -19,7 +19,7 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Navigation
         }
 
         private TViewModel FindOrCreateViewModel<TViewModel>(NavigateParameters navigateParameters)
-            where TViewModel : class, IMdiWindowViewModel, INavigateAware
+            where TViewModel : IMdiWindowViewModel, INavigateAware
         {
             TViewModel viewModel;
             if (navigateParameters != null && navigateParameters.GuidWindows != Guid.Empty)
@@ -31,15 +31,14 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Navigation
             else
             {
                 viewModel = _windowsFactory.CreateWindow<TViewModel>();
-                viewModel = navigateParameters == null || navigateParameters.GuidContainer == Guid.Empty
-                    ? _windowManager.AppendWindow(viewModel)
-                    : _windowManager.AppendWindowToContainer(viewModel, navigateParameters.GuidContainer);
+                Guid containerGuid = navigateParameters == null ? Guid.Empty : navigateParameters.GuidContainer;
+                viewModel = _windowManager.AppendWindowWithoutInit(viewModel, containerGuid, false);
             }
             return viewModel;
         }
 
-        public async Task NavigateTo<TViewModel>(NavigateParameters navigateParameters)
-            where TViewModel : class, IMdiWindowViewModel, INavigateAware
+        public async Task NavigateToAsync<TViewModel>(NavigateParameters navigateParameters)
+            where TViewModel : IMdiWindowViewModel, INavigateAware
         {
             var viewModel = FindOrCreateViewModel<TViewModel>(navigateParameters);
             _windowManager.ActivateWindow(viewModel);
@@ -47,18 +46,18 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Navigation
             await viewModel.InitAsync();
         }
 
-        public async Task NavigateTo<TViewModel>(string key, object obj)
-            where TViewModel : class, IMdiWindowViewModel, INavigateAware
+        public async Task NavigateToAsync<TViewModel>(string key, object obj)
+            where TViewModel : IMdiWindowViewModel, INavigateAware
         {
             ViewModelContext context = new ViewModelContext();
             context.AddValue(key, obj);
             NavigateParameters navigateParameters = new NavigateParameters(context);
 
-            await this.NavigateTo<TViewModel>(navigateParameters);
+            await NavigateToAsync<TViewModel>(navigateParameters);
         }
 
-        public async Task NavigateTo<TViewModel>(NavigateParameters navigateParameters, Action<NavigationResult> navigationCallback)
-            where TViewModel : class, IMdiWindowViewModel, INavigateAware
+        public async Task NavigateToAsync<TViewModel>(NavigateParameters navigateParameters, Action<NavigationResult> navigationCallback)
+            where TViewModel : IMdiWindowViewModel, INavigateAware
         {
             if (navigationCallback == null)
                 throw new ArgumentNullException(nameof(navigationCallback));
@@ -69,15 +68,5 @@ namespace MdiMvvm.AppCore.Services.WindowsServices.Navigation
             viewModel.NavigatedTo(navigateParameters?.Context);
             await viewModel.InitAsync();
         }
-
-        //public void NavigateTo<TViewModel>(string key, object obj, Action<NavigationResult> navigationCallback)
-        //    where TViewModel : class, IMdiWindowViewModel, INavigateAware
-        //{
-        //    ViewModelContext context = new ViewModelContext();
-        //    context.AddValue(key, obj);
-        //    NavigateParameters navigateParameters = new NavigateParameters(context);
-
-        //    this.NavigateTo<TViewModel>(navigateParameters, navigationCallback);
-        //}
     }
 }

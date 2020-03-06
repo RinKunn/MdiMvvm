@@ -20,8 +20,8 @@ namespace MdiMvvm.AppCore.Tests.Services
             manager = new WindowsManagerService();
 
             guids.Add(manager.AppendContainer(new MdiContainerMock() { IsSelected = true, Title = "Title1" }).Guid);
-            winguids.Add(manager.AppendWindowToContainer(new MdiWindowMock() { Title = "Window 1" }, guids[0]).Guid);
-            winguids.Add(manager.AppendWindowToContainer(new MdiWindowMock() { Title = "Window 2" }, guids[0]).Guid);
+            winguids.Add(manager.AppendWindowWithoutInit(new MdiWindowMock() { Title = "Window 1" }, guids[0]).Guid);
+            winguids.Add(manager.AppendWindowWithoutInit(new MdiWindowMock() { Title = "Window 2" }, guids[0]).Guid);
             guids.Add(manager.AppendContainer(new MdiContainerMock() { Title = "Title2" }).Guid);
             guids.Add(manager.AppendContainer(new MdiContainerMock() { Title = "Title3" }).Guid);
             
@@ -54,7 +54,7 @@ namespace MdiMvvm.AppCore.Tests.Services
         {
             MdiWindowMock window = new MdiWindowMock();
 
-            manager.AppendWindow(window);
+            manager.AppendWindowWithoutInit(window);
 
             Assert.AreEqual("Title1", manager.ActiveContainer.Title);
             Assert.AreEqual(3, manager.ActiveContainer.WindowsCollection.Count);
@@ -65,7 +65,7 @@ namespace MdiMvvm.AppCore.Tests.Services
         {
             MdiWindowMock window = new MdiWindowMock();
 
-            manager.AppendWindowToContainer(window, guids[1]);
+            manager.AppendWindowWithoutInit(window, guids[1]);
 
             Assert.AreEqual("Title2", manager.ActiveContainer.Title);
             Assert.AreEqual(1, manager.ActiveContainer.WindowsCollection.Count);
